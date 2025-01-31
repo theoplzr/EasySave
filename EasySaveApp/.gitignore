@@ -85,3 +85,5 @@ project.fragment.lock.json
 # bin and obj folders
 bin/
 obj/
+
+Logs/
