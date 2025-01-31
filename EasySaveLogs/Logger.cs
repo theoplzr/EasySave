@@ -1,3 +1,5 @@
+//classe Logger qui permet de gérer l'enregistrement des logs dans un fichier JSON 
+
 using Newtonsoft.Json;
 
 namespace EasySaveLogs
