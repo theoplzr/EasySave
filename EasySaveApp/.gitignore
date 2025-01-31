@@ -1,4 +1,5 @@
-# Ignore les fichiers temporaires de Visual Studio, les résultats de compilation et les fichiers générés par les extensions populaires de Visual Studio.
+# Ignore les fichiers temporaires de Visual Studio, les résultats de compilation et les fichiers générés par les extensions populaires de Visual Studio, ou les fichier de compilation.
+
 
 # Répertoires de build
 [Dd]ebug/

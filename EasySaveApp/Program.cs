@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿//classe entry point for the application 
+
+using Microsoft.Extensions.Configuration;
 using EasySaveApp.Models;
 using EasySaveApp.Utils;
 
