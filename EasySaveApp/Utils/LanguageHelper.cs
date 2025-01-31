@@ -1,3 +1,5 @@
+//classe pour gérer les langues à l'aide de dictionnaires
+
 namespace EasySaveApp.Utils
 {
     public static class LanguageHelper
