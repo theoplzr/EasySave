@@ -1,3 +1,5 @@
+//classe pour gérer les sauvegardes complètes et différentielles.
+
 using System.Diagnostics;
 using EasySaveApp.Models;
 using EasySaveLogs;
