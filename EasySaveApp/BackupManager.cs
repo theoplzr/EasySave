@@ -1,9 +1,9 @@
-using System.Diagnostics;
 using EasySaveApp.Models;
 using EasySaveLogs;
 using EasySaveApp.Models.BackupStrategies;
 using EasySaveApp.Observers;
-using EasySaveApp.Repositories; 
+using EasySaveApp.Repositories;
+using EasySaveApp.Template;
 
 namespace EasySaveApp
 {
@@ -18,7 +18,7 @@ namespace EasySaveApp
         public BackupManager(IBackupJobRepository jobRepository, string logDirectory)
         {
             _jobRepository = jobRepository;
-            _logger = new Logger(logDirectory);
+            _logger = Logger.GetInstance(logDirectory)
 
             // Charger les jobs depuis le repository
             _backupJobs = _jobRepository.Load();
@@ -27,7 +27,7 @@ namespace EasySaveApp
             _observers = new List<IBackupObserver>();
         }
 
-        // Méthodes d'observers identiques
+        // Méthodes d'observers
         public void AddObserver(IBackupObserver observer)
         {
             if (!_observers.Contains(observer))
@@ -52,7 +52,6 @@ namespace EasySaveApp
             }
         }
 
-        // Au lieu de SaveBackupJobs(), on appelle _jobRepository.Save()
         private void SaveChanges()
         {
             _jobRepository.Save(_backupJobs);
@@ -66,7 +65,7 @@ namespace EasySaveApp
             }
 
             _backupJobs.Add(job);
-            SaveChanges();  // Sauvegarde via le repository
+            SaveChanges();
             Console.WriteLine($"Backup job '{job.Name}' added.");
         }
 
@@ -95,7 +94,6 @@ namespace EasySaveApp
             }
         }
 
-        // Suppression d'un job
         public void RemoveBackupJob(int index)
         {
             if (index < 0 || index >= _backupJobs.Count)
@@ -107,7 +105,6 @@ namespace EasySaveApp
             Console.WriteLine($"Backup job '{jobToRemove.Name}' removed.");
         }
 
-        // Mise à jour d'un job
         public void UpdateBackupJob(int index, string? newName, string? newSource, string? newTarget, BackupType? newType)
         {
             if (index < 0 || index >= _backupJobs.Count)
@@ -134,7 +131,6 @@ namespace EasySaveApp
             Console.WriteLine($"Job '{job.Name}' updated successfully.");
         }
 
-        // Lister les jobs
         public void ListBackupJobs()
         {
             if (_backupJobs.Count == 0)
@@ -150,140 +146,35 @@ namespace EasySaveApp
             }
         }
 
+        /// <summary>
+        /// Méthode refactorisée pour utiliser le Template Method :
+        /// On instancie la sous-classe adaptée (Full vs Differential),
+        /// puis on appelle algorithm.Execute(job).
+        /// </summary>
         private void ExecuteBackup(BackupJob job)
         {
-            Console.WriteLine($"Executing backup: {job.Name}");
-            var stopwatch = new Stopwatch();
-
-            try
+            // Choix de l'implémentation du Template Method en fonction du type de sauvegarde
+            AbstractBackupAlgorithm algorithm;
+            if (job.BackupType == BackupType.Complete)
             {
-                if (!Directory.Exists(job.SourceDirectory))
-                {
-                    Console.WriteLine($"Source directory does not exist: {job.SourceDirectory}");
-                    return;
-                }
-
-                if (!Directory.Exists(job.TargetDirectory))
-                {
-                    if (string.IsNullOrEmpty(job.TargetDirectory))
-                    {
-                        Console.WriteLine("Error: Target directory is null or empty.");
-                        return;
-                    }
-                    Directory.CreateDirectory(job.TargetDirectory);
-                }
-
-                var files = Directory.GetFiles(job.SourceDirectory, "*.*", SearchOption.AllDirectories);
-
-                long totalSize = files.Sum(f => new FileInfo(f).Length);
-                int totalFiles = files.Length;
-
-                int filesProcessed = 0;
-                long bytesProcessed = 0;
-                var backupStrategy = BackupStrategyFactory.GetStrategy(job.BackupType);
-
-                foreach (var file in files)
-                {
-                    var relativePath = Path.GetRelativePath(job.SourceDirectory, file);
-                    var targetFilePath = Path.Combine(job.TargetDirectory, relativePath);
-                    var targetDirectory = Path.GetDirectoryName(targetFilePath);
-                    
-                    if (!Directory.Exists(targetDirectory) && !string.IsNullOrEmpty(targetDirectory))
-                    {
-                        Directory.CreateDirectory(targetDirectory);
-                    }
-
-                    if (!backupStrategy.ShouldCopyFile(file, targetFilePath))
-                    {
-                        continue;
-                    }
-
-                    stopwatch.Restart();
-                    try
-                    {
-                        File.Copy(file, targetFilePath, true);
-                    }
-                    catch (UnauthorizedAccessException)
-                    {
-                        Console.WriteLine($"Error: accès refusé pour le fichier : {file}");
-                        _logger.LogAction(new LogEntry
-                        {
-                            Timestamp = DateTime.Now,
-                            BackupName = job.Name,
-                            SourceFilePath = file,
-                            TargetFilePath = targetFilePath,
-                            FileSize = 0,
-                            TransferTimeMs = -1,
-                            Status = "AccessDenied"
-                        });
-                        continue;
-                    }
-                    catch (IOException ioEx)
-                    {
-                        Console.WriteLine($"Erreur lors de la copie du fichier {file}: {ioEx.Message}");
-                        _logger.LogAction(new LogEntry
-                        {
-                            Timestamp = DateTime.Now,
-                            BackupName = job.Name,
-                            SourceFilePath = file,
-                            TargetFilePath = targetFilePath,
-                            FileSize = 0,
-                            TransferTimeMs = -1,
-                            Status = "IOError"
-                        });
-                        continue;
-                    }
-                    stopwatch.Stop();
-
-                    var fileSize = new FileInfo(file).Length;
-                    filesProcessed++;
-                    bytesProcessed += fileSize;
-
-                    // Log succès
-                    _logger.LogAction(new LogEntry
-                    {
-                        Timestamp = DateTime.Now,
-                        BackupName = job.Name,
-                        SourceFilePath = file,
-                        TargetFilePath = targetFilePath,
-                        FileSize = fileSize,
-                        TransferTimeMs = stopwatch.ElapsedMilliseconds,
-                        Status = "Success"
-                    });
-
-                    Console.WriteLine($"Copied: {file} -> {targetFilePath}");
-
-                    var state = new BackupState
-                    {
-                        JobId = job.Id,
-                        BackupName = job.Name,
-                        LastActionTime = DateTime.Now,
-                        Status = "Actif",
-                        TotalFiles = totalFiles,
-                        TotalSize = totalSize,
-                        RemainingFiles = totalFiles - filesProcessed,
-                        RemainingSize = totalSize - bytesProcessed,
-                        CurrentSourceFile = file,
-                        CurrentTargetFile = targetFilePath
-                    };
-
-                    NotifyObservers(state);
-                }
-
-                Console.WriteLine($"Backup '{job.Name}' completed successfully.");
-                SaveChanges();  // Sauvegarde des modifications si besoin
+                algorithm = new FullBackupAlgorithm(
+                    _logger,
+                    state => NotifyObservers(state),  
+                    () => SaveChanges()               
+                );
             }
-            catch (Exception ex)
+            else
             {
-                _logger.LogAction(new LogEntry
-                {
-                    Timestamp = DateTime.Now,
-                    BackupName = job.Name,
-                    Status = $"Error: {ex.Message}"
-                });
-
-                Console.WriteLine($"Error during backup '{job.Name}': {ex.Message}");
+                algorithm = new DifferentialBackupAlgorithm
+                (
+                    _logger,
+                    state => NotifyObservers(state),
+                    () => SaveChanges()
+                );
             }
+
+            // Appel de la méthode template
+            algorithm.Execute(job);
         }
     }
 }

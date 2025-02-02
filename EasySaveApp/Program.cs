@@ -1,48 +1,45 @@
 ﻿using Microsoft.Extensions.Configuration;
+using EasySaveApp.Facade;
 using EasySaveApp.Models;
 using EasySaveApp.Utils;
 using EasySaveApp.Observers;
-using EasySaveApp.Commands;
 using EasySaveApp.Repositories; 
-
 namespace EasySaveApp
 {
     class Program
     {
         static void Main(string[] args)
         {
-            // Charger la configuration depuis le fichier appsettings.json
+            // 1) Charger la configuration depuis appsettings.json
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             var configuration = builder.Build();
 
-            // Lire la configuration pour la langue et le répertoire des logs
+            // 2) Lire la config pour la langue et le répertoire de logs
             string language = configuration["Language"] ?? "en";
             string logDirectory = configuration["Logging:LogDirectory"] ?? "Logs";
 
-            // REPOSITORY : On instancie le repository JSON
-            // (Chemin du fichier où sont sauvegardés les BackupJobs)
+            // 3) Créer le repository pour la persistance (JSON)
             string repositoryPath = "backup_jobs.json";
             IBackupJobRepository jobRepository = new JsonBackupJobRepository(repositoryPath);
 
-            // REPOSITORY : On injecte ce repository dans le BackupManager
-            var backupManager = new BackupManager(jobRepository, logDirectory);
-
-            // Instancier et enregistrer l'observer de fichier d'état
-            string stateFilePath = "state.json"; 
+            // 4) Créer un observer pour l'état (fichier state.json)
+            string stateFilePath = "state.json";
             var fileStateObserver = new FileStateObserver(stateFilePath);
-            backupManager.AddObserver(fileStateObserver);
 
-            // Vérifier si des arguments en ligne de commande sont passés
+            // 5) Instancier la Façade en lui injectant le repository, le logDirectory, et l’observer
+            var facade = new EasySaveFacade(jobRepository, logDirectory, fileStateObserver);
+
+            // 6) Vérifier si des arguments en ligne de commande sont passés
             if (args.Length > 0)
             {
-                ExecuteBackupFromArgs(backupManager, args);
+                ExecuteBackupFromArgs(facade, args); 
                 return;
             }
 
-            // Demander à l'utilisateur de choisir la langue
+            // 7) Demander à l’utilisateur de choisir la langue
             Console.Write("Choose language (en/fr): ");
             var userInput = Console.ReadLine();
             if (!string.IsNullOrEmpty(userInput) && (userInput == "fr" || userInput == "en"))
@@ -50,7 +47,7 @@ namespace EasySaveApp
                 language = userInput;
             }
 
-            // Boucle principale de l'application
+            // 8) Boucle principale de l’application (menu)
             while (true)
             {
                 Console.WriteLine("\n--- " + LanguageHelper.GetMessage("MenuTitle", language) + " ---");
@@ -68,39 +65,35 @@ namespace EasySaveApp
                 {
                     case "1":
                         {
-                            // On crée un nouveau job depuis la console
+                            // Créer un nouveau job via la console
                             var job = CreateJobFromConsole(language);
                             if (job != null)
                             {
-                                // On exécute la commande AddJobCommand
-                                var addCmd = new AddJobCommand(backupManager, job);
-                                addCmd.Execute();
+                                // Appel direct à la façade
+                                facade.AddJob(job);
                             }
                             break;
                         }
                     case "2":
                         {
-                            // Commande pour exécuter tous les jobs
-                            var executeAllCmd = new ExecuteAllJobsCommand(backupManager);
-                            executeAllCmd.Execute();
+                            // Exécuter tous les jobs
+                            facade.ExecuteAllJobs();
                             break;
                         }
                     case "3":
                         {
-                            // Commande pour lister tous les jobs
-                            var listCmd = new ListJobsCommand(backupManager);
-                            listCmd.Execute();
+                            // Lister les jobs
+                            facade.ListJobs();
                             break;
                         }
                     case "4":
                         {
-                            // Commande pour supprimer un job
+                            // Supprimer un job
                             Console.Write("Enter the index of the job to remove: ");
                             if (int.TryParse(Console.ReadLine(), out int removeIndex))
                             {
-                                removeIndex -= 1; // Conversion en zéro-based
-                                var removeCmd = new RemoveJobCommand(backupManager, removeIndex);
-                                removeCmd.Execute();
+                                removeIndex -= 1; // Conversion en zero-based
+                                facade.RemoveJob(removeIndex);
                             }
                             else
                             {
@@ -110,7 +103,7 @@ namespace EasySaveApp
                         }
                     case "5":
                         {
-                            // Commande pour mettre à jour un job
+                            // Mettre à jour un job
                             Console.Write("Enter the index of the job to update: ");
                             if (int.TryParse(Console.ReadLine(), out int updateIndex))
                             {
@@ -132,8 +125,7 @@ namespace EasySaveApp
                                 if (typeInput == "1") newType = BackupType.Complete;
                                 else if (typeInput == "2") newType = BackupType.Differential;
 
-                                var updateCmd = new UpdateJobCommand(backupManager, updateIndex, newName, newSource, newTarget, newType);
-                                updateCmd.Execute();
+                                facade.UpdateJob(updateIndex, newName, newSource, newTarget, newType);
                             }
                             else
                             {
@@ -154,13 +146,10 @@ namespace EasySaveApp
         }
 
         /// <summary>
-        /// Exécute des sauvegardes via la ligne de commande en interprétant l'argument.
-        /// Les formats acceptés sont :
-        /// - "1"    : exécuter le job numéro 1
-        /// - "1-3"  : exécuter les jobs 1, 2 et 3
-        /// - "1;3"  : exécuter les jobs 1 et 3
+        /// Gère l'exécution de jobs via des arguments en ligne de commande
+        /// (ex: "1" => job 1, "1-3" => jobs 1 à 3, "1;3" => job 1 et 3, etc.)
         /// </summary>
-        private static void ExecuteBackupFromArgs(BackupManager backupManager, string[] args)
+        private static void ExecuteBackupFromArgs(EasySaveFacade facade, string[] args)
         {
             var jobIndices = args[0]
                 .Split(new char[] { '-', ';' }, StringSplitOptions.RemoveEmptyEntries)
@@ -174,13 +163,11 @@ namespace EasySaveApp
                 return;
             }
 
-            // Pour chaque index validé, on exécute un ExecuteJobCommand
             foreach (var index in jobIndices)
             {
-                if (index < backupManager.GetBackupJobCount())
+                if (index < facade.GetJobCount())
                 {
-                    var cmd = new ExecuteJobCommand(backupManager, index);
-                    cmd.Execute();
+                    facade.ExecuteJobByIndex(index);
                 }
                 else
                 {
@@ -190,8 +177,8 @@ namespace EasySaveApp
         }
 
         /// <summary>
-        /// Crée un BackupJob via la console (demande les informations à l'utilisateur).
-        /// Renvoie null si des champs obligatoires sont vides.
+        /// Crée un BackupJob via la console (en demandant les infos à l’utilisateur).
+        /// Retourne null si des champs obligatoires sont vides.
         /// </summary>
         private static BackupJob? CreateJobFromConsole(string language)
         {
