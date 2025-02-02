@@ -3,6 +3,7 @@ using EasySaveApp.Models;
 using EasySaveLogs;
 using Newtonsoft.Json;
 using EasySaveApp.Models.BackupStrategies;
+using EasySaveApp.Observers;
 
 namespace EasySaveApp
 {
@@ -10,13 +11,43 @@ namespace EasySaveApp
     {
         private readonly List<BackupJob> _backupJobs;
         private readonly Logger _logger;
-        private const string StateFilePath = "state.json";
+
+        // Liste d'observers pour l'état des sauvegardes
+        private readonly List<IBackupObserver> _observers;
+
         private const string BackupJobsFilePath = "backup_jobs.json";
 
         public BackupManager(string logDirectory)
         {
             _logger = new Logger(logDirectory);
             _backupJobs = LoadBackupJobs();
+            _observers = new List<IBackupObserver>();
+        }
+
+        // Méthodes pour s'abonner/désabonner aux notifications
+        public void AddObserver(IBackupObserver observer)
+        {
+            if (!_observers.Contains(observer))
+            {
+                _observers.Add(observer);
+            }
+        }
+
+        public void RemoveObserver(IBackupObserver observer)
+        {
+            if (_observers.Contains(observer))
+            {
+                _observers.Remove(observer);
+            }
+        }
+
+        // Méthode de notification
+        private void NotifyObservers(BackupState state)
+        {
+            foreach (var observer in _observers)
+            {
+                observer.Update(state);
+            }
         }
 
         private List<BackupJob> LoadBackupJobs()
@@ -103,6 +134,11 @@ namespace EasySaveApp
                 }
 
                 var files = Directory.GetFiles(job.SourceDirectory, "*.*", SearchOption.AllDirectories);
+
+                // Calculer la taille totale et le nombre total de fichiers
+                long totalSize = files.Sum(f => new FileInfo(f).Length);
+                int totalFiles = files.Length;
+
                 int filesProcessed = 0;
                 long bytesProcessed = 0;
                 var backupStrategy = BackupStrategyFactory.GetStrategy(job.BackupType);
@@ -131,11 +167,33 @@ namespace EasySaveApp
                     catch (UnauthorizedAccessException)
                     {
                         Console.WriteLine($"Error: accès refusé pour le fichier : {file}");
+                        // Log erreur
+                        _logger.LogAction(new LogEntry
+                        {
+                            Timestamp = DateTime.Now,
+                            BackupName = job.Name,
+                            SourceFilePath = file,
+                            TargetFilePath = targetFilePath,
+                            FileSize = 0,
+                            TransferTimeMs = -1,
+                            Status = "AccessDenied"
+                        });
                         continue;
                     }
                     catch (IOException ioEx)
                     {
                         Console.WriteLine($"Erreur lors de la copie du fichier {file}: {ioEx.Message}");
+                        // Log erreur
+                        _logger.LogAction(new LogEntry
+                        {
+                            Timestamp = DateTime.Now,
+                            BackupName = job.Name,
+                            SourceFilePath = file,
+                            TargetFilePath = targetFilePath,
+                            FileSize = 0,
+                            TransferTimeMs = -1,
+                            Status = "IOError"
+                        });
                         continue;
                     }
                     stopwatch.Stop();
@@ -144,6 +202,7 @@ namespace EasySaveApp
                     filesProcessed++;
                     bytesProcessed += fileSize;
 
+                    // Log succès
                     _logger.LogAction(new LogEntry
                     {
                         Timestamp = DateTime.Now,
@@ -157,21 +216,23 @@ namespace EasySaveApp
 
                     Console.WriteLine($"Copied: {file} -> {targetFilePath}");
 
+                    // Créer un nouvel état à chaque fichier copié
                     var state = new BackupState
                     {
                         JobId = job.Id,
                         BackupName = job.Name,
                         LastActionTime = DateTime.Now,
                         Status = "Actif",
-                        TotalFiles = files.Length,
-                        TotalSize = files.Sum(f => new FileInfo(f).Length),
-                        RemainingFiles = files.Length - filesProcessed,
-                        RemainingSize = files.Sum(f => new FileInfo(f).Length) - bytesProcessed,
+                        TotalFiles = totalFiles,
+                        TotalSize = totalSize,
+                        RemainingFiles = totalFiles - filesProcessed,
+                        RemainingSize = totalSize - bytesProcessed,
                         CurrentSourceFile = file,
                         CurrentTargetFile = targetFilePath
                     };
 
-                    File.WriteAllText(StateFilePath, JsonConvert.SerializeObject(state, Formatting.Indented));
+                    // Notifier tous les observers
+                    NotifyObservers(state);
                 }
 
                 Console.WriteLine($"Backup '{job.Name}' completed successfully.");
