@@ -1,6 +1,6 @@
 # **README : EasySave Application (Version 1.0)**
 
-> **Projet FISA A3 Informatique – CESI École d’ingénieurs, bloc Génie Logiciel**  
+> **Projet FISA A3 Informatique – CESI École d’ingénieurs, bloc Génie Logiciel**.
 > Réalisé par **Théo PELLIZZARI**, **Basile ROSIER** et **Axel Mourot**.
 
 Bienvenue dans la **version 1.0** d’**EasySave**, une application console en C# pour gérer des **travaux de sauvegarde** (complets ou différentiels). Voici un aperçu global de l’architecture, des fonctionnalités, et des **design patterns** utilisés.
