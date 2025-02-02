@@ -1,0 +1,159 @@
+@startuml
+skinparam classAttributeIcon hide
+skinparam classMethodIcon hide
+skinparam wrapWidth 200
+title EasySave - Class Diagram (Simplifié)
+
+' On définit les classes sans trop d’attributs/méthodes pour la lisibilité.
+
+'-----------------------
+' Les Classes Principales
+'-----------------------
+
+class Program {
+  + Main(args: string[]): void
+  --
+  - ExecuteBackupFromArgs(facade: EasySaveFacade, args: string[]): void
+  - CreateJobFromConsole(language: string): BackupJob?
+}
+
+class EasySaveFacade {
+  - backupManager: BackupManager
+  --
+  + EasySaveFacade(repo: IBackupJobRepository, logDir: string, obs?: IBackupObserver)
+  + AddJob(job: BackupJob): void
+  + RemoveJob(index: int): void
+  + UpdateJob(index: int, name?: string, src?: string, tgt?: string, type?: BackupType): void
+  + ExecuteAllJobs(): void
+  + ExecuteJobByIndex(index: int): void
+  + ListJobs(): void
+  + GetJobCount(): int
+}
+
+class BackupManager {
+  - jobRepository: IBackupJobRepository
+  - backupJobs: List<BackupJob>
+  - logger: Logger
+  - observers: List<IBackupObserver>
+  --
+  + BackupManager(repo: IBackupJobRepository, logDir: string)
+  + AddBackupJob(job: BackupJob): void
+  + ExecuteAllJobs(): void
+  + ExecuteBackupByIndex(index: int): void
+  + RemoveBackupJob(index: int): void
+  + UpdateBackupJob(index: int, name?: string, src?: string, tgt?: string, type?: BackupType?): void
+  + ListBackupJobs(): void
+  - ExecuteBackup(job: BackupJob): void
+}
+
+class BackupJob {
+  - id: Guid
+  - name: string
+  - sourceDirectory: string
+  - targetDirectory: string
+  - backupType: BackupType
+  - _backupStrategy: IBackupStrategy
+  --
+  + BackupJob(name: string, src: string, tgt: string, type: BackupType)
+  + ToString(): string
+}
+
+enum BackupType {
+  Complete
+  Differential
+}
+
+interface IBackupStrategy {
+  + ShouldCopyFile(srcFile: string, tgtFile: string): bool
+}
+
+class FullBackupStrategy {
+  + ShouldCopyFile(...): bool
+}
+
+class DifferentialBackupStrategy {
+  + ShouldCopyFile(...): bool
+}
+
+interface IBackupObserver {
+  + Update(state: BackupState): void
+}
+
+class FileStateObserver {
+  - stateFilePath: string
+  - states: Dictionary<Guid, BackupState>
+  --
+  + FileStateObserver(path: string)
+  + Update(state: BackupState): void
+}
+
+class BackupState {
+  + BackupName: string
+  + LastActionTime: DateTime
+  + Status: string
+  + TotalFiles: int
+  + TotalSize: long
+  + RemainingFiles: int
+  + RemainingSize: long
+  + CurrentSourceFile: string
+  + CurrentTargetFile: string
+  + JobId: Guid
+}
+
+interface IBackupJobRepository {
+  + Load(): List<BackupJob>
+  + Save(jobs: List<BackupJob>): void
+}
+
+class JsonBackupJobRepository {
+  - filePath: string
+  --
+  + JsonBackupJobRepository(filePath: string)
+  + Load(): List<BackupJob>
+  + Save(jobs: List<BackupJob>): void
+}
+
+class Logger {
+  - static instance: Logger
+  - logDirectory: string
+  --
+  + static GetInstance(dir = "Logs"): Logger
+  + LogAction(entry: LogEntry): void
+}
+
+class LogEntry {
+  + Timestamp: DateTime
+  + BackupName: string
+  + SourceFilePath: string
+  + TargetFilePath: string
+  + FileSize: long
+  + TransferTimeMs: long
+  + Status: string
+}
+
+'-----------------------
+' Relations
+'-----------------------
+
+Program --> EasySaveFacade : "facade"
+
+EasySaveFacade --> BackupManager : "backupManager"
+
+BackupManager --> IBackupJobRepository : "jobRepository"
+BackupManager --> Logger : "logger"
+BackupManager "1" *-- "many" BackupJob : "backupJobs"
+BackupManager --> IBackupObserver : "observers"
+
+BackupJob --> IBackupStrategy : "_backupStrategy"
+
+IBackupStrategy <|-- FullBackupStrategy
+IBackupStrategy <|-- DifferentialBackupStrategy
+
+IBackupObserver <|-- FileStateObserver
+
+IBackupJobRepository <|-- JsonBackupJobRepository
+
+Logger --> LogEntry : "LogAction()"
+FileStateObserver --> BackupState : "Update()"
+
+@enduml
