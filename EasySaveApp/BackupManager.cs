@@ -1,30 +1,33 @@
 using System.Diagnostics;
 using EasySaveApp.Models;
 using EasySaveLogs;
-using Newtonsoft.Json;
 using EasySaveApp.Models.BackupStrategies;
 using EasySaveApp.Observers;
+using EasySaveApp.Repositories; 
 
 namespace EasySaveApp
 {
     public class BackupManager
     {
+        private readonly IBackupJobRepository _jobRepository; 
         private readonly List<BackupJob> _backupJobs;
         private readonly Logger _logger;
 
-        // Liste d'observers pour l'état des sauvegardes
         private readonly List<IBackupObserver> _observers;
 
-        private const string BackupJobsFilePath = "backup_jobs.json";
-
-        public BackupManager(string logDirectory)
+        public BackupManager(IBackupJobRepository jobRepository, string logDirectory)
         {
+            _jobRepository = jobRepository;
             _logger = new Logger(logDirectory);
-            _backupJobs = LoadBackupJobs();
+
+            // Charger les jobs depuis le repository
+            _backupJobs = _jobRepository.Load();
+
+            // Initialiser la liste d'observers
             _observers = new List<IBackupObserver>();
         }
 
-        // Méthodes pour s'abonner/désabonner aux notifications
+        // Méthodes d'observers identiques
         public void AddObserver(IBackupObserver observer)
         {
             if (!_observers.Contains(observer))
@@ -41,36 +44,18 @@ namespace EasySaveApp
             }
         }
 
-        // Méthode de notification
         private void NotifyObservers(BackupState state)
         {
-            foreach (var observer in _observers)
+            foreach (var obs in _observers)
             {
-                observer.Update(state);
+                obs.Update(state);
             }
         }
 
-        private List<BackupJob> LoadBackupJobs()
+        // Au lieu de SaveBackupJobs(), on appelle _jobRepository.Save()
+        private void SaveChanges()
         {
-            if (File.Exists(BackupJobsFilePath))
-            {
-                var json = File.ReadAllText(BackupJobsFilePath);
-                var jobs = JsonConvert.DeserializeObject<List<BackupJob>>(json) ?? new List<BackupJob>();
-                
-                // Réinstancier _backupStrategy pour chaque job chargé
-                foreach (var job in jobs)
-                {
-                    job._backupStrategy = BackupStrategyFactory.GetStrategy(job.BackupType);
-                }
-                
-                return jobs;
-            }
-            return new List<BackupJob>();
-        }
-
-        private void SaveBackupJobs()
-        {
-            File.WriteAllText(BackupJobsFilePath, JsonConvert.SerializeObject(_backupJobs, Formatting.Indented));
+            _jobRepository.Save(_backupJobs);
         }
 
         public void AddBackupJob(BackupJob job)
@@ -81,7 +66,7 @@ namespace EasySaveApp
             }
 
             _backupJobs.Add(job);
-            SaveBackupJobs();
+            SaveChanges();  // Sauvegarde via le repository
             Console.WriteLine($"Backup job '{job.Name}' added.");
         }
 
@@ -110,7 +95,7 @@ namespace EasySaveApp
             }
         }
 
-        // NEW: Supprimer un job par son index (zéro-based)
+        // Suppression d'un job
         public void RemoveBackupJob(int index)
         {
             if (index < 0 || index >= _backupJobs.Count)
@@ -118,12 +103,11 @@ namespace EasySaveApp
 
             var jobToRemove = _backupJobs[index];
             _backupJobs.RemoveAt(index);
-            SaveBackupJobs();
+            SaveChanges();
             Console.WriteLine($"Backup job '{jobToRemove.Name}' removed.");
         }
 
-        // NEW: Mettre à jour un job
-        // Les paramètres non null ou non vides sont pris en compte, sinon on garde l'ancienne valeur.
+        // Mise à jour d'un job
         public void UpdateBackupJob(int index, string? newName, string? newSource, string? newTarget, BackupType? newType)
         {
             if (index < 0 || index >= _backupJobs.Count)
@@ -146,11 +130,11 @@ namespace EasySaveApp
                 job._backupStrategy = BackupStrategyFactory.GetStrategy(newType.Value);
             }
 
-            SaveBackupJobs();
+            SaveChanges();
             Console.WriteLine($"Job '{job.Name}' updated successfully.");
         }
 
-        // NEW: Lister les jobs
+        // Lister les jobs
         public void ListBackupJobs()
         {
             if (_backupJobs.Count == 0)
@@ -191,7 +175,6 @@ namespace EasySaveApp
 
                 var files = Directory.GetFiles(job.SourceDirectory, "*.*", SearchOption.AllDirectories);
 
-                // Calculer la taille totale et le nombre total de fichiers
                 long totalSize = files.Sum(f => new FileInfo(f).Length);
                 int totalFiles = files.Length;
 
@@ -223,7 +206,6 @@ namespace EasySaveApp
                     catch (UnauthorizedAccessException)
                     {
                         Console.WriteLine($"Error: accès refusé pour le fichier : {file}");
-                        // Log erreur
                         _logger.LogAction(new LogEntry
                         {
                             Timestamp = DateTime.Now,
@@ -239,7 +221,6 @@ namespace EasySaveApp
                     catch (IOException ioEx)
                     {
                         Console.WriteLine($"Erreur lors de la copie du fichier {file}: {ioEx.Message}");
-                        // Log erreur
                         _logger.LogAction(new LogEntry
                         {
                             Timestamp = DateTime.Now,
@@ -272,7 +253,6 @@ namespace EasySaveApp
 
                     Console.WriteLine($"Copied: {file} -> {targetFilePath}");
 
-                    // Créer un nouvel état à chaque fichier copié
                     var state = new BackupState
                     {
                         JobId = job.Id,
@@ -287,12 +267,11 @@ namespace EasySaveApp
                         CurrentTargetFile = targetFilePath
                     };
 
-                    // Notifier tous les observers
                     NotifyObservers(state);
                 }
 
                 Console.WriteLine($"Backup '{job.Name}' completed successfully.");
-                SaveBackupJobs();
+                SaveChanges();  // Sauvegarde des modifications si besoin
             }
             catch (Exception ex)
             {

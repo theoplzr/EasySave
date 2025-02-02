@@ -2,7 +2,8 @@
 using EasySaveApp.Models;
 using EasySaveApp.Utils;
 using EasySaveApp.Observers;
-using EasySaveApp.Commands; 
+using EasySaveApp.Commands;
+using EasySaveApp.Repositories; 
 
 namespace EasySaveApp
 {
@@ -21,8 +22,13 @@ namespace EasySaveApp
             string language = configuration["Language"] ?? "en";
             string logDirectory = configuration["Logging:LogDirectory"] ?? "Logs";
 
-            // Instanciation du BackupManager
-            var backupManager = new BackupManager(logDirectory);
+            // REPOSITORY : On instancie le repository JSON
+            // (Chemin du fichier où sont sauvegardés les BackupJobs)
+            string repositoryPath = "backup_jobs.json";
+            IBackupJobRepository jobRepository = new JsonBackupJobRepository(repositoryPath);
+
+            // REPOSITORY : On injecte ce repository dans le BackupManager
+            var backupManager = new BackupManager(jobRepository, logDirectory);
 
             // Instancier et enregistrer l'observer de fichier d'état
             string stateFilePath = "state.json"; 
@@ -184,7 +190,7 @@ namespace EasySaveApp
         }
 
         /// <summary>
-        /// Crée un BackupJob via la console (demande les informations au user).
+        /// Crée un BackupJob via la console (demande les informations à l'utilisateur).
         /// Renvoie null si des champs obligatoires sont vides.
         /// </summary>
         private static BackupJob? CreateJobFromConsole(string language)
