@@ -1,31 +1,34 @@
 # **README : EasySave Application (Version 1.0)**
 
+> **Projet FISA A3 Informatique – CESI École d’ingénieurs, bloc Génie Logiciel**  
+> Réalisé par **Théo PELLIZZARI**, **Basile ROSIER** et **Axel Mourot**.
+
 Bienvenue dans la **version 1.0** d’**EasySave**, une application console en C# pour gérer des **travaux de sauvegarde** (complets ou différentiels). Voici un aperçu global de l’architecture, des fonctionnalités, et des **design patterns** utilisés.
 
 ---
 
 ## **Sommaire**
 
-1. **Présentation Générale**
-2. **Fonctionnalités Clés**
-3. **Organisation des Projets et Fichiers**
-4. **Architecture et Design Patterns**
+1. **Présentation Générale**  
+2. **Fonctionnalités Clés**  
+3. **Organisation des Projets et Fichiers**  
+4. **Architecture et Design Patterns**  
    1. **Repository Pattern**  
    2. **Command Pattern**  
    3. **Observer Pattern**  
    4. **Template Method Pattern**  
    5. **Strategy Pattern**  
    6. **Singleton Pattern (Logger)**  
-   7. **Facade Pattern**
-5. **Fichiers Importants**
+   7. **Facade Pattern**  
+5. **Fichiers Importants**  
    1. `backup_jobs.json` (Liste des jobs)  
    2. `state.json` (État en temps réel)  
    3. `Logs/*.json` (Logs journaliers)  
-6. **Démarrage de l’Application**
+6. **Démarrage de l’Application**  
    1. **Exécution via Console**  
    2. **Exécution via Arguments (ligne de commande)**  
-7. **Internationalisation (fr/en)**
-8. **Fonctionnalités Futures**
+7. **Internationalisation (fr/en)**  
+8. **Fonctionnalités Futures**  
 
 ---
 
@@ -33,11 +36,11 @@ Bienvenue dans la **version 1.0** d’**EasySave**, une application console en C
 
 **EasySave** est une application console .NET (C#) qui permet de :
 
-- **Créer jusqu’à 5 travaux de sauvegarde** (jobs).
-- **Exécuter** ces travaux (sauvegarde complète ou différentielle).
-- **Consigner** toutes les actions dans un fichier log (au format JSON).
-- **Mettre à jour** un fichier `state.json` indiquant l’état des sauvegardes (progression, nombre de fichiers restants, etc.).
-- **Persister** la liste des jobs dans `backup_jobs.json` afin de les recharger entre deux utilisations.
+- **Créer jusqu’à 5 travaux de sauvegarde** (jobs).  
+- **Exécuter** ces travaux (sauvegarde complète ou différentielle).  
+- **Consigner** toutes les actions dans un fichier log (au format JSON).  
+- **Mettre à jour** un fichier `state.json` indiquant l’état des sauvegardes (progression, nombre de fichiers restants, etc.).  
+- **Persister** la liste des jobs dans `backup_jobs.json` afin de les recharger entre deux utilisations.  
 - **Afficher** les messages en français ou en anglais.
 
 Cette version 1.0 se base sur une **architecture modulaire** et applique plusieurs design patterns pour faciliter la maintenance et l’évolution future (notamment la V2 avec interface graphique).
@@ -46,12 +49,12 @@ Cette version 1.0 se base sur une **architecture modulaire** et applique plusieu
 
 ## 2. **Fonctionnalités Clés**
 
-1. **Création de jobs** de sauvegarde (choix du nom, répertoire source, répertoire cible, type de sauvegarde).
-2. **Listing** et **mise à jour** de ces jobs (changer le nom, les répertoires, ou le type de sauvegarde).
-3. **Exécution complète** (copie inconditionnelle) ou **différentielle** (copie conditionnée par la date de modification).
-4. **Journalisation** en temps réel dans un fichier JSON journalier (un fichier par jour, format `yyyy-MM-dd.json`).
-5. **Mise à jour** en continu du fichier `state.json`, qui indique l’avancement de chaque job actif.
-6. **Chargement/sauvegarde** de la liste de jobs dans `backup_jobs.json`.
+1. **Création de jobs** de sauvegarde (choix du nom, répertoire source, répertoire cible, type de sauvegarde).  
+2. **Listing** et **mise à jour** de ces jobs (changer le nom, les répertoires, ou le type de sauvegarde).  
+3. **Exécution complète** (copie inconditionnelle) ou **différentielle** (copie conditionnée par la date de modification).  
+4. **Journalisation** en temps réel dans un fichier JSON journalier (un fichier par jour, format `yyyy-MM-dd.json`).  
+5. **Mise à jour** en continu du fichier `state.json`, qui indique l’avancement de chaque job actif.  
+6. **Chargement/sauvegarde** de la liste de jobs dans `backup_jobs.json`.  
 7. **Internationalisation** : L’application demande ou lit la langue souhaitée (fr/en), pour tous les messages affichés.
 
 ---
@@ -63,6 +66,7 @@ La solution Visual Studio contient **deux projets** :
 1. **EasySaveApp**  
    - L’application console principale (C# .NET 8).  
    - Contient toutes les classes métiers (BackupManager, Commands, Repositories, Observers, Template, etc.).
+
 2. **EasySaveLogs**  
    - Gère le **Logger** (classe `Logger`), chargé d’écrire les **LogEntry** dans des fichiers journaliers.  
    - Implémenté en **Singleton** pour garantir une instance unique.
@@ -78,7 +82,7 @@ La solution Visual Studio contient **deux projets** :
 - **`Utils`** : `LanguageHelper` (internationalisation fr/en).  
 - **`Facade`** : `EasySaveFacade` masque la complexité de `BackupManager` pour simplifier l’usage.  
 - **`BackupManager.cs`** : Point central pour la gestion des jobs et l’exécution (utilise Template Method et Strategy).  
-- **`Program.cs`** : Point d’entrée console (menu, lecture de la config, etc.).  
+- **`Program.cs`** : Point d’entrée console (menu, lecture de la config, etc.).
 
 ---
 
@@ -192,13 +196,18 @@ La solution Visual Studio contient **deux projets** :
 
 # **Conclusion**
 
-Cette **version 1.0** d’**EasySave** offre déjà une **architecture robuste** et modulaire, suivant les **exigences** :
+Cette **version 1.0** d’**EasySave** offre déjà une **architecture robuste** et modulaire, répondant aux **exigences** :
 
-- **Application console** en C# (.NET 8).  
-- **Gestion** de 1 à 5 jobs.  
-- **Exécution** Complète ou Différentielle.  
-- **Logs** JSON et **fichier d’état**.  
-- **Internationalisation** en français/anglais.  
-- **Pérennité** et **évolutivité** grâce à plusieurs **Design Patterns** (Command, Repository, Observer, Template Method, Strategy, Singleton, Facade).
+- **Application console** en C# (.NET 8)  
+- **Gestion** de 1 à 5 jobs  
+- **Exécution** Complète ou Différentielle  
+- **Logs** JSON et **fichier d’état**  
+- **Internationalisation** en français/anglais  
+- **Pérennité** et **évolutivité** grâce à plusieurs **Design Patterns** (Command, Repository, Observer, Template Method, Strategy, Singleton, Facade)
 
 Vous pouvez désormais **tester**, **packager** et livrer cette version 1.0. Les prochaines versions ajouteront des **interfaces graphiques** et d’autres fonctionnalités avancées.
+
+---
+
+Projet réalisé dans le cadre du **FISA A3 Informatique – CESI École d’ingénieurs, bloc Génie Logiciel**, par  
+**Théo PELLIZZARI**, **Basile ROSIER** et **Axel Mourot**.
