@@ -1,0 +1,26 @@
+[
+  {
+    "BackupName": "Backup1",
+    "LastActionTime": "2025-02-02T13:42:47.074052+01:00",
+    "Status": "Actif",
+    "TotalFiles": 1,
+    "TotalSize": 15,
+    "RemainingFiles": 0,
+    "RemainingSize": 0,
+    "CurrentSourceFile": "/Users/tpellizzari/Documents/Source1/test.txt",
+    "CurrentTargetFile": "/Users/tpellizzari/Documents/Target1/test.txt",
+    "JobId": "271b0baf-fdbe-47e1-a9d7-9a5efb0dd2da"
+  },
+  {
+    "BackupName": "Backuppp1",
+    "LastActionTime": "2025-02-02T13:45:54.766314+01:00",
+    "Status": "Actif",
+    "TotalFiles": 1,
+    "TotalSize": 15,
+    "RemainingFiles": 0,
+    "RemainingSize": 0,
+    "CurrentSourceFile": "/Users/tpellizzari/Documents/Source1/test.txt",
+    "CurrentTargetFile": "/Users/tpellizzari/Documents/Target1/test.txt",
+    "JobId": "6a2deea8-d9d8-49bb-971e-d849f9dad30c"
+  }
+]

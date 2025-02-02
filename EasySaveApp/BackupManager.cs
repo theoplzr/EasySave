@@ -18,7 +18,7 @@ namespace EasySaveApp
         public BackupManager(IBackupJobRepository jobRepository, string logDirectory)
         {
             _jobRepository = jobRepository;
-            _logger = Logger.GetInstance(logDirectory)
+            _logger = Logger.GetInstance(logDirectory);
 
             // Charger les jobs depuis le repository
             _backupJobs = _jobRepository.Load();

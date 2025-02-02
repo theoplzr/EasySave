@@ -1,0 +1,16 @@
+[
+  {
+    "Id": "6a2deea8-d9d8-49bb-971e-d849f9dad30c",
+    "Name": "Backuppp1",
+    "SourceDirectory": "/Users/tpellizzari/Documents/Source1",
+    "TargetDirectory": "/Users/tpellizzari/Documents/Target1",
+    "BackupType": 0
+  },
+  {
+    "Id": "7c9d660f-373d-42c7-93e7-a75f9b058af6",
+    "Name": "Backup2",
+    "SourceDirectory": "/Users/tpellizzari/Documents/Source2",
+    "TargetDirectory": "/Users/tpellizzari/Documents/Target2",
+    "BackupType": 0
+  }
+]

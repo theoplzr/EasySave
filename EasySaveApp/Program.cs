@@ -3,7 +3,8 @@ using EasySaveApp.Facade;
 using EasySaveApp.Models;
 using EasySaveApp.Utils;
 using EasySaveApp.Observers;
-using EasySaveApp.Repositories; 
+using EasySaveApp.Repositories;
+
 namespace EasySaveApp
 {
     class Program
@@ -35,11 +36,11 @@ namespace EasySaveApp
             // 6) Vérifier si des arguments en ligne de commande sont passés
             if (args.Length > 0)
             {
-                ExecuteBackupFromArgs(facade, args); 
+                ExecuteBackupFromArgs(facade, args);
                 return;
             }
 
-            // 7) Demander à l’utilisateur de choisir la langue
+            // 7) Demander à l’utilisateur de choisir la langue (en/fr)
             Console.Write("Choose language (en/fr): ");
             var userInput = Console.ReadLine();
             if (!string.IsNullOrEmpty(userInput) && (userInput == "fr" || userInput == "en"))
@@ -51,12 +52,12 @@ namespace EasySaveApp
             while (true)
             {
                 Console.WriteLine("\n--- " + LanguageHelper.GetMessage("MenuTitle", language) + " ---");
-                Console.WriteLine("1) Add a backup job");
-                Console.WriteLine("2) Execute all jobs");
-                Console.WriteLine("3) List all jobs");
-                Console.WriteLine("4) Remove a job");
-                Console.WriteLine("5) Update a job");
-                Console.WriteLine("6) Exit");
+                Console.WriteLine(LanguageHelper.GetMessage("OptionAddJob", language));
+                Console.WriteLine(LanguageHelper.GetMessage("OptionExecuteAll", language));
+                Console.WriteLine(LanguageHelper.GetMessage("OptionListJobs", language));
+                Console.WriteLine(LanguageHelper.GetMessage("OptionRemoveJob", language));
+                Console.WriteLine(LanguageHelper.GetMessage("OptionUpdateJob", language));
+                Console.WriteLine(LanguageHelper.GetMessage("OptionExit", language));
                 Console.Write("> ");
 
                 var choice = Console.ReadLine();
@@ -69,7 +70,6 @@ namespace EasySaveApp
                             var job = CreateJobFromConsole(language);
                             if (job != null)
                             {
-                                // Appel direct à la façade
                                 facade.AddJob(job);
                             }
                             break;
@@ -89,7 +89,7 @@ namespace EasySaveApp
                     case "4":
                         {
                             // Supprimer un job
-                            Console.Write("Enter the index of the job to remove: ");
+                            Console.Write(LanguageHelper.GetMessage("EnterIndexRemove", language));
                             if (int.TryParse(Console.ReadLine(), out int removeIndex))
                             {
                                 removeIndex -= 1; // Conversion en zero-based
@@ -97,29 +97,29 @@ namespace EasySaveApp
                             }
                             else
                             {
-                                Console.WriteLine("Invalid index.");
+                                Console.WriteLine(LanguageHelper.GetMessage("InvalidIndex", language));
                             }
                             break;
                         }
                     case "5":
                         {
                             // Mettre à jour un job
-                            Console.Write("Enter the index of the job to update: ");
+                            Console.Write(LanguageHelper.GetMessage("EnterIndexUpdate", language));
                             if (int.TryParse(Console.ReadLine(), out int updateIndex))
                             {
                                 updateIndex -= 1; // zéro-based
 
                                 // Paramètres de mise à jour
-                                Console.WriteLine("Enter new name (leave blank to keep existing): ");
+                                Console.Write(LanguageHelper.GetMessage("EnterNewName", language));
                                 string? newName = Console.ReadLine();
 
-                                Console.WriteLine("Enter new source dir (leave blank to keep existing): ");
+                                Console.Write(LanguageHelper.GetMessage("EnterNewSourceDir", language));
                                 string? newSource = Console.ReadLine();
 
-                                Console.WriteLine("Enter new target dir (leave blank to keep existing): ");
+                                Console.Write(LanguageHelper.GetMessage("EnterNewTargetDir", language));
                                 string? newTarget = Console.ReadLine();
 
-                                Console.WriteLine("Enter new backup type (1: Complete, 2: Differential), leave blank to keep existing: ");
+                                Console.Write(LanguageHelper.GetMessage("EnterNewBackupType", language));
                                 string? typeInput = Console.ReadLine();
                                 BackupType? newType = null;
                                 if (typeInput == "1") newType = BackupType.Complete;
@@ -129,7 +129,7 @@ namespace EasySaveApp
                             }
                             else
                             {
-                                Console.WriteLine("Invalid index.");
+                                Console.WriteLine(LanguageHelper.GetMessage("InvalidIndex", language));
                             }
                             break;
                         }
