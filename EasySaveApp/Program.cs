@@ -1,9 +1,8 @@
-﻿//classe entry point for the application 
-
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using EasySaveApp.Models;
 using EasySaveApp.Utils;
 using EasySaveApp.Observers;
+using EasySaveApp.Commands; 
 
 namespace EasySaveApp
 {
@@ -18,7 +17,7 @@ namespace EasySaveApp
 
             var configuration = builder.Build();
 
-            // Lire la configuration pour obtenir la langue et le répertoire des logs
+            // Lire la configuration pour la langue et le répertoire des logs
             string language = configuration["Language"] ?? "en";
             string logDirectory = configuration["Logging:LogDirectory"] ?? "Logs";
 
@@ -26,8 +25,7 @@ namespace EasySaveApp
             var backupManager = new BackupManager(logDirectory);
 
             // Instancier et enregistrer l'observer de fichier d'état
-            // ettre à jour le fichier "state.json"
-            string stateFilePath = "state.json"; // ou un chemin récupéré depuis la config si besoin
+            string stateFilePath = "state.json"; 
             var fileStateObserver = new FileStateObserver(stateFilePath);
             backupManager.AddObserver(fileStateObserver);
 
@@ -50,9 +48,12 @@ namespace EasySaveApp
             while (true)
             {
                 Console.WriteLine("\n--- " + LanguageHelper.GetMessage("MenuTitle", language) + " ---");
-                Console.WriteLine(LanguageHelper.GetMessage("OptionAddJob", language));
-                Console.WriteLine(LanguageHelper.GetMessage("OptionExecuteJobs", language));
-                Console.WriteLine(LanguageHelper.GetMessage("OptionExit", language));
+                Console.WriteLine("1) Add a backup job");
+                Console.WriteLine("2) Execute all jobs");
+                Console.WriteLine("3) List all jobs");
+                Console.WriteLine("4) Remove a job");
+                Console.WriteLine("5) Update a job");
+                Console.WriteLine("6) Exit");
                 Console.Write("> ");
 
                 var choice = Console.ReadLine();
@@ -60,14 +61,85 @@ namespace EasySaveApp
                 switch (choice)
                 {
                     case "1":
-                        AddBackupJob(backupManager, language);
-                        break;
+                        {
+                            // On crée un nouveau job depuis la console
+                            var job = CreateJobFromConsole(language);
+                            if (job != null)
+                            {
+                                // On exécute la commande AddJobCommand
+                                var addCmd = new AddJobCommand(backupManager, job);
+                                addCmd.Execute();
+                            }
+                            break;
+                        }
                     case "2":
-                        backupManager.ExecuteAllJobs();
-                        break;
+                        {
+                            // Commande pour exécuter tous les jobs
+                            var executeAllCmd = new ExecuteAllJobsCommand(backupManager);
+                            executeAllCmd.Execute();
+                            break;
+                        }
                     case "3":
-                        Console.WriteLine(LanguageHelper.GetMessage("Goodbye", language));
-                        return;
+                        {
+                            // Commande pour lister tous les jobs
+                            var listCmd = new ListJobsCommand(backupManager);
+                            listCmd.Execute();
+                            break;
+                        }
+                    case "4":
+                        {
+                            // Commande pour supprimer un job
+                            Console.Write("Enter the index of the job to remove: ");
+                            if (int.TryParse(Console.ReadLine(), out int removeIndex))
+                            {
+                                removeIndex -= 1; // Conversion en zéro-based
+                                var removeCmd = new RemoveJobCommand(backupManager, removeIndex);
+                                removeCmd.Execute();
+                            }
+                            else
+                            {
+                                Console.WriteLine("Invalid index.");
+                            }
+                            break;
+                        }
+                    case "5":
+                        {
+                            // Commande pour mettre à jour un job
+                            Console.Write("Enter the index of the job to update: ");
+                            if (int.TryParse(Console.ReadLine(), out int updateIndex))
+                            {
+                                updateIndex -= 1; // zéro-based
+
+                                // Paramètres de mise à jour
+                                Console.WriteLine("Enter new name (leave blank to keep existing): ");
+                                string? newName = Console.ReadLine();
+
+                                Console.WriteLine("Enter new source dir (leave blank to keep existing): ");
+                                string? newSource = Console.ReadLine();
+
+                                Console.WriteLine("Enter new target dir (leave blank to keep existing): ");
+                                string? newTarget = Console.ReadLine();
+
+                                Console.WriteLine("Enter new backup type (1: Complete, 2: Differential), leave blank to keep existing: ");
+                                string? typeInput = Console.ReadLine();
+                                BackupType? newType = null;
+                                if (typeInput == "1") newType = BackupType.Complete;
+                                else if (typeInput == "2") newType = BackupType.Differential;
+
+                                var updateCmd = new UpdateJobCommand(backupManager, updateIndex, newName, newSource, newTarget, newType);
+                                updateCmd.Execute();
+                            }
+                            else
+                            {
+                                Console.WriteLine("Invalid index.");
+                            }
+                            break;
+                        }
+                    case "6":
+                        {
+                            Console.WriteLine(LanguageHelper.GetMessage("Goodbye", language));
+                            return;
+                        }
                     default:
                         Console.WriteLine(LanguageHelper.GetMessage("InvalidChoice", language));
                         break;
@@ -82,16 +154,13 @@ namespace EasySaveApp
         /// - "1-3"  : exécuter les jobs 1, 2 et 3
         /// - "1;3"  : exécuter les jobs 1 et 3
         /// </summary>
-        /// <param name="backupManager">Instance de BackupManager.</param>
-        /// <param name="args">Les arguments de la ligne de commande.</param>
         private static void ExecuteBackupFromArgs(BackupManager backupManager, string[] args)
         {
-            // On suppose que l'argument est fourni dans args[0]
             var jobIndices = args[0]
-                             .Split(new char[] { '-', ';' }, StringSplitOptions.RemoveEmptyEntries)
-                             .Select(s => int.TryParse(s, out int index) ? index - 1 : -1)
-                             .Where(index => index >= 0)
-                             .ToList();
+                .Split(new char[] { '-', ';' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => int.TryParse(s, out int index) ? index - 1 : -1)
+                .Where(index => index >= 0)
+                .ToList();
 
             if (jobIndices.Count == 0)
             {
@@ -99,11 +168,13 @@ namespace EasySaveApp
                 return;
             }
 
+            // Pour chaque index validé, on exécute un ExecuteJobCommand
             foreach (var index in jobIndices)
             {
                 if (index < backupManager.GetBackupJobCount())
                 {
-                    backupManager.ExecuteBackupByIndex(index);
+                    var cmd = new ExecuteJobCommand(backupManager, index);
+                    cmd.Execute();
                 }
                 else
                 {
@@ -113,11 +184,10 @@ namespace EasySaveApp
         }
 
         /// <summary>
-        /// Permet à l'utilisateur d'ajouter un travail de sauvegarde via l'interface console.
+        /// Crée un BackupJob via la console (demande les informations au user).
+        /// Renvoie null si des champs obligatoires sont vides.
         /// </summary>
-        /// <param name="backupManager">Instance de BackupManager.</param>
-        /// <param name="language">Langue sélectionnée (en/fr).</param>
-        private static void AddBackupJob(BackupManager backupManager, string language)
+        private static BackupJob? CreateJobFromConsole(string language)
         {
             Console.WriteLine("\n" + LanguageHelper.GetMessage("AddJobTitle", language));
 
@@ -133,7 +203,7 @@ namespace EasySaveApp
             if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(sourceDirectory) || string.IsNullOrEmpty(targetDirectory))
             {
                 Console.WriteLine(LanguageHelper.GetMessage("ErrorFieldsRequired", language));
-                return;
+                return null;
             }
 
             Console.WriteLine(LanguageHelper.GetMessage("SelectBackupType", language));
@@ -143,16 +213,7 @@ namespace EasySaveApp
             var backupTypeInput = Console.ReadLine();
             BackupType backupType = backupTypeInput == "1" ? BackupType.Complete : BackupType.Differential;
 
-            var job = new BackupJob(name, sourceDirectory, targetDirectory, backupType);
-            try
-            {
-                backupManager.AddBackupJob(job);
-                Console.WriteLine(string.Format(LanguageHelper.GetMessage("JobAdded", language), name));
-            }
-            catch (InvalidOperationException ex)
-            {
-                Console.WriteLine($"⚠ Erreur : {ex.Message}");
-            }
+            return new BackupJob(name, sourceDirectory, targetDirectory, backupType);
         }
     }
 }

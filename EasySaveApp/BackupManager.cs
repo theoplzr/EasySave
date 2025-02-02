@@ -1,5 +1,3 @@
-//classe pour gérer les sauvegardes complètes et différentielles.
-
 using System.Diagnostics;
 using EasySaveApp.Models;
 using EasySaveLogs;
@@ -109,6 +107,62 @@ namespace EasySaveApp
             else
             {
                 Console.WriteLine($"⚠ Erreur : Index {index + 1} hors de portée.");
+            }
+        }
+
+        // NEW: Supprimer un job par son index (zéro-based)
+        public void RemoveBackupJob(int index)
+        {
+            if (index < 0 || index >= _backupJobs.Count)
+                throw new IndexOutOfRangeException($"No job at index {index}.");
+
+            var jobToRemove = _backupJobs[index];
+            _backupJobs.RemoveAt(index);
+            SaveBackupJobs();
+            Console.WriteLine($"Backup job '{jobToRemove.Name}' removed.");
+        }
+
+        // NEW: Mettre à jour un job
+        // Les paramètres non null ou non vides sont pris en compte, sinon on garde l'ancienne valeur.
+        public void UpdateBackupJob(int index, string? newName, string? newSource, string? newTarget, BackupType? newType)
+        {
+            if (index < 0 || index >= _backupJobs.Count)
+                throw new IndexOutOfRangeException($"No job at index {index}.");
+
+            var job = _backupJobs[index];
+
+            if (!string.IsNullOrEmpty(newName))
+                job.Name = newName;
+
+            if (!string.IsNullOrEmpty(newSource))
+                job.SourceDirectory = newSource;
+
+            if (!string.IsNullOrEmpty(newTarget))
+                job.TargetDirectory = newTarget;
+
+            if (newType.HasValue)
+            {
+                job.BackupType = newType.Value;
+                job._backupStrategy = BackupStrategyFactory.GetStrategy(newType.Value);
+            }
+
+            SaveBackupJobs();
+            Console.WriteLine($"Job '{job.Name}' updated successfully.");
+        }
+
+        // NEW: Lister les jobs
+        public void ListBackupJobs()
+        {
+            if (_backupJobs.Count == 0)
+            {
+                Console.WriteLine("No backup jobs configured.");
+                return;
+            }
+
+            for (int i = 0; i < _backupJobs.Count; i++)
+            {
+                var job = _backupJobs[i];
+                Console.WriteLine($"[{i + 1}] Name: {job.Name}, Source: {job.SourceDirectory}, Target: {job.TargetDirectory}, Type: {job.BackupType}");
             }
         }
 
