@@ -3,6 +3,7 @@
 using Microsoft.Extensions.Configuration;
 using EasySaveApp.Models;
 using EasySaveApp.Utils;
+using EasySaveApp.Observers;
 
 namespace EasySaveApp
 {
@@ -13,7 +14,7 @@ namespace EasySaveApp
             // Charger la configuration depuis le fichier appsettings.json
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json");
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             var configuration = builder.Build();
 
@@ -21,7 +22,14 @@ namespace EasySaveApp
             string language = configuration["Language"] ?? "en";
             string logDirectory = configuration["Logging:LogDirectory"] ?? "Logs";
 
+            // Instanciation du BackupManager
             var backupManager = new BackupManager(logDirectory);
+
+            // Instancier et enregistrer l'observer de fichier d'état
+            // ettre à jour le fichier "state.json"
+            string stateFilePath = "state.json"; // ou un chemin récupéré depuis la config si besoin
+            var fileStateObserver = new FileStateObserver(stateFilePath);
+            backupManager.AddObserver(fileStateObserver);
 
             // Vérifier si des arguments en ligne de commande sont passés
             if (args.Length > 0)
@@ -38,6 +46,7 @@ namespace EasySaveApp
                 language = userInput;
             }
 
+            // Boucle principale de l'application
             while (true)
             {
                 Console.WriteLine("\n--- " + LanguageHelper.GetMessage("MenuTitle", language) + " ---");
@@ -67,14 +76,22 @@ namespace EasySaveApp
         }
 
         /// <summary>
-        /// Permet d'exécuter des sauvegardes via la ligne de commande.
+        /// Exécute des sauvegardes via la ligne de commande en interprétant l'argument.
+        /// Les formats acceptés sont :
+        /// - "1"    : exécuter le job numéro 1
+        /// - "1-3"  : exécuter les jobs 1, 2 et 3
+        /// - "1;3"  : exécuter les jobs 1 et 3
         /// </summary>
+        /// <param name="backupManager">Instance de BackupManager.</param>
+        /// <param name="args">Les arguments de la ligne de commande.</param>
         private static void ExecuteBackupFromArgs(BackupManager backupManager, string[] args)
         {
-            var jobIndices = args[0].Split(new char[] { '-', ';' }, StringSplitOptions.RemoveEmptyEntries)
-                                     .Select(s => int.TryParse(s, out int index) ? index - 1 : -1)
-                                     .Where(index => index >= 0)
-                                     .ToList();
+            // On suppose que l'argument est fourni dans args[0]
+            var jobIndices = args[0]
+                             .Split(new char[] { '-', ';' }, StringSplitOptions.RemoveEmptyEntries)
+                             .Select(s => int.TryParse(s, out int index) ? index - 1 : -1)
+                             .Where(index => index >= 0)
+                             .ToList();
 
             if (jobIndices.Count == 0)
             {
@@ -96,8 +113,10 @@ namespace EasySaveApp
         }
 
         /// <summary>
-        /// Permet à l'utilisateur d'ajouter un travail de sauvegarde.
+        /// Permet à l'utilisateur d'ajouter un travail de sauvegarde via l'interface console.
         /// </summary>
+        /// <param name="backupManager">Instance de BackupManager.</param>
+        /// <param name="language">Langue sélectionnée (en/fr).</param>
         private static void AddBackupJob(BackupManager backupManager, string language)
         {
             Console.WriteLine("\n" + LanguageHelper.GetMessage("AddJobTitle", language));
