@@ -23,3 +23,4 @@
 /Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySaveLogs/obj/Debug/net8.0/refint/EasySaveLogs.dll
 /Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySaveLogs/obj/Debug/net8.0/EasySaveLogs.pdb
 /Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySaveLogs/obj/Debug/net8.0/ref/EasySaveLogs.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySaveLogs/obj/Debug/net8.0/EasySaveLogs.sourcelink.json

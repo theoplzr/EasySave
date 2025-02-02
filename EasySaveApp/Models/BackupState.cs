@@ -1,3 +1,5 @@
+//classe pour gérer l'état de la sauvegarde
+
 using Newtonsoft.Json;
 
 namespace EasySaveApp.Models

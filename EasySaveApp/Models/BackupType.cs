@@ -1,3 +1,5 @@
+//classe pour gérer le type de sauvegarde
+
 namespace EasySaveApp.Models
 {
     /// <summary>

@@ -1,3 +1,5 @@
+//classe pour gérer les stratégies de sauvegarde
+
 using EasySaveApp.Models.BackupStrategies;
 using Newtonsoft.Json;
 

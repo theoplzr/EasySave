@@ -3,19 +3,25 @@ using Newtonsoft.Json;
 namespace EasySaveLogs
 {
     /// <summary>
-    /// Gère l'enregistrement des logs dans un fichier.
-    /// Les logs sont stockés sous forme de liste dans un fichier JSON,
-    /// chaque entrée de log représentant une action ou une erreur liée à la sauvegarde.
+    /// Logger géré en Singleton.
     /// </summary>
-    public class Logger
+    public sealed class Logger
     {
+        // L’instance unique
+        private static Logger? _instance;
+
+        // Objet lock pour la thread-safety
+        private static readonly object _lock = new object();
+
         private readonly string _logDirectory;
 
-        public Logger(string logDirectory)
+        /// <summary>
+        /// Constructeur privé pour empêcher l’instanciation directe.
+        /// </summary>
+        private Logger(string logDirectory)
         {
             _logDirectory = logDirectory;
 
-            // Crée le répertoire des logs si nécessaire
             if (!Directory.Exists(_logDirectory))
             {
                 Directory.CreateDirectory(_logDirectory);
@@ -23,16 +29,33 @@ namespace EasySaveLogs
         }
 
         /// <summary>
-        /// Enregistre une action dans le fichier de log journalier.
+        /// Propriété statique pour récupérer l’instance unique du logger.
+        /// On peut prévoir un paramètre logDirectory si besoin.
         /// </summary>
-        /// <param name="logEntry">Les données de l'action à enregistrer.</param>
+        public static Logger GetInstance(string logDirectory = "Logs")
+        {
+            // Double-checked locking pour limiter les lock en lecture
+            if (_instance == null)
+            {
+                lock (_lock)
+                {
+                    if (_instance == null)
+                    {
+                        _instance = new Logger(logDirectory);
+                    }
+                }
+            }
+            return _instance;
+        }
+
+        /// <summary>
+        /// Méthode pour écrire une action dans le fichier log journalier.
+        /// </summary>
         public void LogAction(LogEntry logEntry)
         {
             var logFilePath = Path.Combine(_logDirectory, $"{DateTime.Now:yyyy-MM-dd}.json");
 
             List<LogEntry> logEntries;
-
-            // Si le fichier existe déjà, on charge les logs existants
             if (File.Exists(logFilePath))
             {
                 var existingLogs = File.ReadAllText(logFilePath);
@@ -43,25 +66,23 @@ namespace EasySaveLogs
                 logEntries = new List<LogEntry>();
             }
 
-            // Ajoute la nouvelle entrée de log
             logEntries.Add(logEntry);
 
-            // Sauvegarde les logs dans le fichier
             File.WriteAllText(logFilePath, JsonConvert.SerializeObject(logEntries, Formatting.Indented));
         }
     }
 
     /// <summary>
-    /// Représente une entrée de log, contenant les informations relatives à une action de sauvegarde.
+    /// Représente une entrée de log, contient les infos sur une action de sauvegarde.
     /// </summary>
     public class LogEntry
     {
         public DateTime Timestamp { get; set; }
-        public string BackupName { get; set; } = string.Empty; // Valeur par défaut
-        public string SourceFilePath { get; set; } = string.Empty; // Valeur par défaut
-        public string TargetFilePath { get; set; } = string.Empty; // Valeur par défaut
+        public string BackupName { get; set; } = string.Empty;
+        public string SourceFilePath { get; set; } = string.Empty;
+        public string TargetFilePath { get; set; } = string.Empty;
         public long FileSize { get; set; }
         public long TransferTimeMs { get; set; }
-        public string Status { get; set; } = string.Empty;  // Valeur par défaut
+        public string Status { get; set; } = string.Empty;
     }
 }
