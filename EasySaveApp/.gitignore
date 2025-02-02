@@ -88,3 +88,5 @@ bin/
 obj/
 
 Logs/
+backup_jobs.json
+state.json

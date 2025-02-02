@@ -1,16 +1,23 @@
 [
   {
-    "Id": "6a2deea8-d9d8-49bb-971e-d849f9dad30c",
-    "Name": "Backuppp1",
+    "Id": "603a6bb1-d2fe-44b6-a25d-27683ba241f3",
+    "Name": "Backup1",
     "SourceDirectory": "/Users/tpellizzari/Documents/Source1",
     "TargetDirectory": "/Users/tpellizzari/Documents/Target1",
     "BackupType": 0
   },
   {
-    "Id": "7c9d660f-373d-42c7-93e7-a75f9b058af6",
+    "Id": "e282c9d2-6c28-443a-a3a6-4df86b510b28",
     "Name": "Backup2",
     "SourceDirectory": "/Users/tpellizzari/Documents/Source2",
     "TargetDirectory": "/Users/tpellizzari/Documents/Target2",
+    "BackupType": 1
+  },
+  {
+    "Id": "a0ab2b62-e60f-49ab-b0cb-e96c0f1e2fd7",
+    "Name": "Backup3",
+    "SourceDirectory": "/Users/tpellizzari/Documents/Source3",
+    "TargetDirectory": "/Users/tpellizzari/Documents/Target3",
     "BackupType": 0
   }
 ]

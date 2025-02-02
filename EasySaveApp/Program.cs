@@ -151,18 +151,51 @@ namespace EasySaveApp
         /// </summary>
         private static void ExecuteBackupFromArgs(EasySaveFacade facade, string[] args)
         {
-            var jobIndices = args[0]
-                .Split(new char[] { '-', ';' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(s => int.TryParse(s, out int index) ? index - 1 : -1)
-                .Where(index => index >= 0)
-                .ToList();
-
+            string param = args[0];
+            List<int> jobIndices = new List<int>();
+            
+            // Vérifier si l'argument contient un tiret pour une plage
+            if (param.Contains("-"))
+            {
+                var parts = param.Split('-');
+                if (parts.Length == 2 &&
+                int.TryParse(parts[0], out int start) &&
+                int.TryParse(parts[1], out int end))
+                {
+                    for (int i = start; i <= end; i++)
+                    {
+                        jobIndices.Add(i - 1); // Convertir en index 0-based
+                    }
+                }
+            else
+                {
+                    Console.WriteLine("⚠ Erreur : Format de plage invalide.");
+                    return;
+                }
+            }
+            // Sinon, si l'argument contient un point-virgule pour plusieurs indices individuels
+            else if (param.Contains(";"))
+            {
+                jobIndices = param.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+                          .Select(s => int.TryParse(s, out int index) ? index - 1 : -1)
+                          .Where(index => index >= 0)
+                          .ToList();
+            }
+            // Sinon, il s'agit d'un seul indice
+            else
+            {
+                if (int.TryParse(param, out int singleIndex))
+                {
+                    jobIndices.Add(singleIndex - 1);
+                }
+            }
+            
             if (jobIndices.Count == 0)
             {
                 Console.WriteLine("⚠ Erreur : Aucun numéro de sauvegarde valide fourni.");
                 return;
             }
-
+            
             foreach (var index in jobIndices)
             {
                 if (index < facade.GetJobCount())
