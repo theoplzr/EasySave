@@ -6,6 +6,6 @@ namespace EasySaveApp.Commands
     /// </summary>
     public interface ICommand
     {
-        void Execute();
+        void Execute(); // Method to execute the command
     }
 }
