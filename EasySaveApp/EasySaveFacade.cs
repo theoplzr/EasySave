@@ -6,28 +6,32 @@ using EasySaveApp.Repositories;
 namespace EasySaveApp.Facade
 {
     /// <summary>
-    /// Fournit une interface simplifiée (façade) pour effectuer
-    /// les opérations principales d'EasySave sans exposer les détails internes.
+    /// Provides a simplified interface (facade) for performing the main operations of EasySave
+    /// without exposing internal implementation details.
+    /// Implements the **Facade Design Pattern** to streamline interactions with the backup system.
     /// </summary>
     public class EasySaveFacade
     {
+        /// <summary>
+        /// Instance of the <see cref="BackupManager"/> that handles backup jobs.
+        /// </summary>
         private readonly BackupManager _backupManager;
 
         /// <summary>
-        /// Construit la façade EasySave en injectant les dépendances nécessaires :
-        /// - Un repository (pour la persistance des BackupJobs)
-        /// - Un chemin de logs (pour le logger)
-        /// - Un observer (facultatif) pour le fichier d'état.
+        /// Initializes the EasySave facade with the required dependencies:
+        /// - A repository for backup job persistence.
+        /// - A log directory for logging backup activities.
+        /// - An optional observer for tracking backup state.
         /// </summary>
-        /// <param name="jobRepository">Le repository pour gérer la persistance des BackupJobs.</param>
-        /// <param name="logDirectory">Le répertoire pour enregistrer les logs.</param>
-        /// <param name="stateObserver">Observer pour la mise à jour de l'état (fichier JSON), peut être null.</param>
+        /// <param name="jobRepository">The repository for managing backup job persistence.</param>
+        /// <param name="logDirectory">The directory where logs will be stored.</param>
+        /// <param name="stateObserver">An optional observer to update backup state (e.g., JSON file).</param>
         public EasySaveFacade(IBackupJobRepository jobRepository, string logDirectory, IBackupObserver? stateObserver = null)
         {
-            // Création du BackupManager avec le repository et le répertoire de logs
+            // Create BackupManager with the repository and log directory
             _backupManager = new BackupManager(jobRepository, logDirectory);
 
-            // Si un observer d'état est fourni, on l'ajoute
+            // Add the state observer if provided
             if (stateObserver != null)
             {
                 _backupManager.AddObserver(stateObserver);
@@ -35,9 +39,9 @@ namespace EasySaveApp.Facade
         }
 
         /// <summary>
-        /// Ajoute un nouveau job de sauvegarde.
+        /// Adds a new backup job.
         /// </summary>
-        /// <param name="job">Le BackupJob à ajouter.</param>
+        /// <param name="job">The backup job to be added.</param>
         public void AddJob(BackupJob job)
         {
             var cmd = new AddJobCommand(_backupManager, job);
@@ -45,9 +49,9 @@ namespace EasySaveApp.Facade
         }
 
         /// <summary>
-        /// Supprime un job existant, identifié par son index (zéro-based).
+        /// Removes an existing backup job identified by its index.
         /// </summary>
-        /// <param name="index">L'index du job à supprimer.</param>
+        /// <param name="index">The zero-based index of the job to remove.</param>
         public void RemoveJob(int index)
         {
             var cmd = new RemoveJobCommand(_backupManager, index);
@@ -55,15 +59,14 @@ namespace EasySaveApp.Facade
         }
 
         /// <summary>
-        /// Met à jour un job existant, en fournissant éventuellement
-        /// de nouvelles valeurs pour le nom, la source, la cible et le type.
-        /// Les paramètres null ou vides ne seront pas mis à jour.
+        /// Updates an existing backup job by providing new values for its attributes.
+        /// Parameters that are null or empty will not be updated.
         /// </summary>
-        /// <param name="index">Index du job (zéro-based).</param>
-        /// <param name="newName">Nouveau nom (ou null pour garder l'ancien).</param>
-        /// <param name="newSource">Nouveau répertoire source (ou null).</param>
-        /// <param name="newTarget">Nouveau répertoire cible (ou null).</param>
-        /// <param name="newType">Nouveau type de sauvegarde (ou null).</param>
+        /// <param name="index">The zero-based index of the job to update.</param>
+        /// <param name="newName">New name for the backup job (or null to keep the existing name).</param>
+        /// <param name="newSource">New source directory (or null).</param>
+        /// <param name="newTarget">New target directory (or null).</param>
+        /// <param name="newType">New backup type (or null).</param>
         public void UpdateJob(int index, string? newName, string? newSource, string? newTarget, BackupType? newType)
         {
             var cmd = new UpdateJobCommand(_backupManager, index, newName, newSource, newTarget, newType);
@@ -71,7 +74,7 @@ namespace EasySaveApp.Facade
         }
 
         /// <summary>
-        /// Exécute tous les jobs de sauvegarde.
+        /// Executes all configured backup jobs.
         /// </summary>
         public void ExecuteAllJobs()
         {
@@ -80,9 +83,9 @@ namespace EasySaveApp.Facade
         }
 
         /// <summary>
-        /// Exécute un job de sauvegarde précis, identifié par son index (zéro-based).
+        /// Executes a specific backup job identified by its index.
         /// </summary>
-        /// <param name="index">Index du job à exécuter.</param>
+        /// <param name="index">The zero-based index of the job to execute.</param>
         public void ExecuteJobByIndex(int index)
         {
             var cmd = new ExecuteJobCommand(_backupManager, index);
@@ -90,7 +93,7 @@ namespace EasySaveApp.Facade
         }
 
         /// <summary>
-        /// Affiche la liste des jobs existants (nom, source, cible, type).
+        /// Displays the list of existing backup jobs, including name, source, target, and type.
         /// </summary>
         public void ListJobs()
         {
@@ -99,9 +102,9 @@ namespace EasySaveApp.Facade
         }
 
         /// <summary>
-        /// Retourne le nombre de jobs configurés.
+        /// Returns the total number of configured backup jobs.
         /// </summary>
-        /// <returns>Le nombre de BackupJobs configurés.</returns>
+        /// <returns>The number of configured backup jobs.</returns>
         public int GetJobCount()
         {
             return _backupManager.GetBackupJobCount();

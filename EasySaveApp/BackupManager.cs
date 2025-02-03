@@ -7,27 +7,56 @@ using EasySaveApp.Template;
 
 namespace EasySaveApp
 {
+    /// <summary>
+    /// Manages backup jobs, including execution, addition, removal, and updates.
+    /// Uses the Observer pattern to notify registered observers of state changes.
+    /// Implements the Template Method pattern to execute backups with different strategies.
+    /// </summary>
     public class BackupManager
     {
-        private readonly IBackupJobRepository _jobRepository; 
+        /// <summary>
+        /// Repository interface for storing and retrieving backup jobs.
+        /// </summary>
+        private readonly IBackupJobRepository _jobRepository;
+
+        /// <summary>
+        /// List of backup jobs managed by this instance.
+        /// </summary>
         private readonly List<BackupJob> _backupJobs;
+
+        /// <summary>
+        /// Logger instance for recording backup activities.
+        /// </summary>
         private readonly Logger _logger;
 
+        /// <summary>
+        /// List of registered observers monitoring backup state changes.
+        /// </summary>
         private readonly List<IBackupObserver> _observers;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BackupManager"/> class.
+        /// </summary>
+        /// <param name="jobRepository">Repository instance for loading and saving backup jobs.</param>
+        /// <param name="logDirectory">Path to the directory where logs will be stored.</param>
         public BackupManager(IBackupJobRepository jobRepository, string logDirectory)
         {
             _jobRepository = jobRepository;
             _logger = Logger.GetInstance(logDirectory);
 
-            // Charger les jobs depuis le repository
+            // Load backup jobs from the repository
             _backupJobs = _jobRepository.Load();
 
-            // Initialiser la liste d'observers
+            // Initialize the list of observers
             _observers = new List<IBackupObserver>();
         }
 
-        // Méthodes d'observers
+        // ------------------------- Observer Methods -------------------------
+
+        /// <summary>
+        /// Adds an observer to monitor backup job state changes.
+        /// </summary>
+        /// <param name="observer">Observer instance to be added.</param>
         public void AddObserver(IBackupObserver observer)
         {
             if (!_observers.Contains(observer))
@@ -36,6 +65,10 @@ namespace EasySaveApp
             }
         }
 
+        /// <summary>
+        /// Removes an observer from the list of registered observers.
+        /// </summary>
+        /// <param name="observer">Observer instance to be removed.</param>
         public void RemoveObserver(IBackupObserver observer)
         {
             if (_observers.Contains(observer))
@@ -44,6 +77,10 @@ namespace EasySaveApp
             }
         }
 
+        /// <summary>
+        /// Notifies all registered observers of a backup state change.
+        /// </summary>
+        /// <param name="state">The current state of the backup process.</param>
         private void NotifyObservers(BackupState state)
         {
             foreach (var obs in _observers)
@@ -52,11 +89,21 @@ namespace EasySaveApp
             }
         }
 
+        /// <summary>
+        /// Saves the current state of backup jobs to persistent storage.
+        /// </summary>
         private void SaveChanges()
         {
             _jobRepository.Save(_backupJobs);
         }
 
+        // ------------------------- Backup Job Management -------------------------
+
+        /// <summary>
+        /// Adds a new backup job to the list.
+        /// </summary>
+        /// <param name="job">The backup job to add.</param>
+        /// <exception cref="InvalidOperationException">Thrown if the maximum number of jobs (5) is exceeded.</exception>
         public void AddBackupJob(BackupJob job)
         {
             if (_backupJobs.Count >= 5)
@@ -69,6 +116,9 @@ namespace EasySaveApp
             Console.WriteLine($"Backup job '{job.Name}' added.");
         }
 
+        /// <summary>
+        /// Executes all configured backup jobs.
+        /// </summary>
         public void ExecuteAllJobs()
         {
             foreach (var job in _backupJobs)
@@ -77,11 +127,19 @@ namespace EasySaveApp
             }
         }
 
+        /// <summary>
+        /// Gets the total number of configured backup jobs.
+        /// </summary>
+        /// <returns>The number of backup jobs.</returns>
         public int GetBackupJobCount()
         {
             return _backupJobs.Count;
         }
 
+        /// <summary>
+        /// Executes a specific backup job by its index.
+        /// </summary>
+        /// <param name="index">Index of the backup job in the list.</param>
         public void ExecuteBackupByIndex(int index)
         {
             if (index >= 0 && index < _backupJobs.Count)
@@ -90,10 +148,15 @@ namespace EasySaveApp
             }
             else
             {
-                Console.WriteLine($"⚠ Erreur : Index {index + 1} hors de portée.");
+                Console.WriteLine($"⚠ Error: Index {index + 1} is out of range.");
             }
         }
 
+        /// <summary>
+        /// Removes a backup job from the list.
+        /// </summary>
+        /// <param name="index">Index of the job to be removed.</param>
+        /// <exception cref="IndexOutOfRangeException">Thrown if the provided index is invalid.</exception>
         public void RemoveBackupJob(int index)
         {
             if (index < 0 || index >= _backupJobs.Count)
@@ -105,6 +168,16 @@ namespace EasySaveApp
             Console.WriteLine($"Backup job '{jobToRemove.Name}' removed.");
         }
 
+        /// <summary>
+        /// Updates an existing backup job with new details.
+        /// Only non-null values will be updated.
+        /// </summary>
+        /// <param name="index">Index of the job to be updated.</param>
+        /// <param name="newName">New name for the job (nullable).</param>
+        /// <param name="newSource">New source directory (nullable).</param>
+        /// <param name="newTarget">New target directory (nullable).</param>
+        /// <param name="newType">New backup type (nullable).</param>
+        /// <exception cref="IndexOutOfRangeException">Thrown if the provided index is invalid.</exception>
         public void UpdateBackupJob(int index, string? newName, string? newSource, string? newTarget, BackupType? newType)
         {
             if (index < 0 || index >= _backupJobs.Count)
@@ -131,6 +204,9 @@ namespace EasySaveApp
             Console.WriteLine($"Job '{job.Name}' updated successfully.");
         }
 
+        /// <summary>
+        /// Lists all configured backup jobs.
+        /// </summary>
         public void ListBackupJobs()
         {
             if (_backupJobs.Count == 0)
@@ -146,34 +222,21 @@ namespace EasySaveApp
             }
         }
 
+        // ------------------------- Backup Execution -------------------------
+
         /// <summary>
-        /// Méthode refactorisée pour utiliser le Template Method :
-        /// On instancie la sous-classe adaptée (Full vs Differential),
-        /// puis on appelle algorithm.Execute(job).
+        /// Executes a backup job using the appropriate backup strategy.
+        /// Implements the Template Method pattern.
         /// </summary>
+        /// <param name="job">The backup job to execute.</param>
         private void ExecuteBackup(BackupJob job)
         {
-            // Choix de l'implémentation du Template Method en fonction du type de sauvegarde
-            AbstractBackupAlgorithm algorithm;
-            if (job.BackupType == BackupType.Complete)
-            {
-                algorithm = new FullBackupAlgorithm(
-                    _logger,
-                    state => NotifyObservers(state),  
-                    () => SaveChanges()               
-                );
-            }
-            else
-            {
-                algorithm = new DifferentialBackupAlgorithm
-                (
-                    _logger,
-                    state => NotifyObservers(state),
-                    () => SaveChanges()
-                );
-            }
+            // Choose the appropriate backup strategy based on the backup type
+            AbstractBackupAlgorithm algorithm = job.BackupType == BackupType.Complete
+                ? new FullBackupAlgorithm(_logger, state => NotifyObservers(state), () => SaveChanges())
+                : new DifferentialBackupAlgorithm(_logger, state => NotifyObservers(state), () => SaveChanges());
 
-            // Appel de la méthode template
+            // Execute the backup process
             algorithm.Execute(job);
         }
     }
