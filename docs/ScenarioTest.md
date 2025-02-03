@@ -1,4 +1,3 @@
-```markdown
 # Scénarios de Test EasySave – Version 1.0
 
 Ce document recense plusieurs **scénarios de test** que vous pouvez exécuter **en direct** pour démontrer que l’application **EasySave** répond à toutes les exigences du **Livrable 1**. Ils couvrent la **création** de jobs, leur **exécution** (complète/différentielle), la **journalisation** (logs), l’**état** en temps réel (`state.json`), et la **multi-langue** (fr/en).
