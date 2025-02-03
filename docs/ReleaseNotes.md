@@ -1,7 +1,7 @@
 # EasySave – Version 1.0 Release Notes
 
-**Date** : * 5 Février 2025  
-**Version** : 1.0*  
+**Date** : 5 Février 2025  
+**Version** : 1.0 
 
 ## Nouvelles Fonctionnalités
 
