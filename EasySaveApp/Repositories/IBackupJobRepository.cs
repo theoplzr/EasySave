@@ -3,19 +3,20 @@ using EasySaveApp.Models;
 namespace EasySaveApp.Repositories
 {
     /// <summary>
-    /// Interface définissant les méthodes de persistance pour les BackupJobs.
+    /// Interface defining persistence methods for backup jobs.
     /// </summary>
     public interface IBackupJobRepository
     {
         /// <summary>
-        /// Charge la liste des BackupJobs.
+        /// Loads the list of backup jobs from storage.
         /// </summary>
+        /// <returns>A list of <see cref="BackupJob"/> instances.</returns>
         List<BackupJob> Load();
 
         /// <summary>
-        /// Sauvegarde la liste des BackupJobs.
+        /// Saves the list of backup jobs to storage.
         /// </summary>
-        /// <param name="jobs">La liste des jobs à sauvegarder.</param>
+        /// <param name="jobs">The list of backup jobs to be saved.</param>
         void Save(List<BackupJob> jobs);
     }
 }

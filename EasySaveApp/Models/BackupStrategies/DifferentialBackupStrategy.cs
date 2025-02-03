@@ -1,10 +1,17 @@
-// classe qui permet de créer une stratégie de sauvegarde en fonction du type de sauvegarde
-
 namespace EasySaveApp.Models.BackupStrategies
 {
+    /// <summary>
+    /// Implements a differential backup strategy.
+    /// In a differential backup, only files that have changed since the last full backup are copied.
+    /// </summary>
     public class DifferentialBackupStrategy : IBackupStrategy
     {
-        // Method to determine if a file should be copied based on its last modified time
+        /// <summary>
+        /// Determines whether a file should be copied based on its last modified time.
+        /// </summary>
+        /// <param name="sourceFilePath">The path of the source file.</param>
+        /// <param name="targetFilePath">The path of the target file.</param>
+        /// <returns>Returns true if the file has been modified since the last backup, otherwise false.</returns>
         public bool ShouldCopyFile(string sourceFilePath, string targetFilePath)
         {
             // If the target file does not exist, the file should be copied

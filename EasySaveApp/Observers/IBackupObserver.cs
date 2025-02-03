@@ -3,9 +3,9 @@ namespace EasySaveApp.Observers
     public interface IBackupObserver
     {
         /// <summary>
-        /// Méthode appelée pour notifier un changement d’état du backup.
+        /// Method used to notify a change in the state of the backup.
         /// </summary>
-        /// <param name="state">L’état mis à jour du backup.</param>
+        /// <param name="state">The updated status of the backup.</param>
         void Update(Models.BackupState state);
     }
 }

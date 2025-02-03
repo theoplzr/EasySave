@@ -3,20 +3,30 @@ using EasySaveApp.Models;
 namespace EasySaveApp.Commands
 {
     /// <summary>
-    /// Commande pour supprimer un job de sauvegarde à un index donné.
+    /// Command to remove a backup job at a specified index.
+    /// Implements <see cref="BackupCommand"/>.
     /// </summary>
     public class RemoveJobCommand : BackupCommand
     {
-        private int _indexToRemove; // Index of the job to be removed
+        /// <summary>
+        /// Index of the backup job to be removed.
+        /// </summary>
+        private int _indexToRemove;
 
-        // Constructor to initialize the RemoveJobCommand with the backup manager and index to remove
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RemoveJobCommand"/> class.
+        /// </summary>
+        /// <param name="backupManager">Reference to the backup manager handling jobs.</param>
+        /// <param name="indexToRemove">Index of the backup job to be removed.</param>
         public RemoveJobCommand(BackupManager backupManager, int indexToRemove)
             : base(backupManager)
         {
             _indexToRemove = indexToRemove;
         }
 
-        // Method to execute the command to remove the specified backup job
+        /// <summary>
+        /// Executes the command to remove the specified backup job.
+        /// </summary>
         public override void Execute()
         {
             _backupManager.RemoveBackupJob(_indexToRemove);

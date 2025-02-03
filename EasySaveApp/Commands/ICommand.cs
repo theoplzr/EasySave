@@ -1,11 +1,14 @@
 namespace EasySaveApp.Commands
 {
     /// <summary>
-    /// Interface pour définir la structure d'une commande.
-    /// Chaque commande doit implémenter la méthode Execute().
+    /// Defines the structure of a command in the application.
+    /// Each command must implement the <see cref="Execute"/> method.
     /// </summary>
     public interface ICommand
     {
-        void Execute(); // Method to execute the command
+        /// <summary>
+        /// Executes the command.
+        /// </summary>
+        void Execute();
     }
 }

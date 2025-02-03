@@ -4,13 +4,25 @@ using Newtonsoft.Json;
 namespace EasySaveApp.Observers
 {
     /// <summary>
-    /// Observateur chargé d'écrire l'état actuel des sauvegardes dans un fichier JSON unique.
+    /// Observer responsible for writing the current state of backup jobs to a single JSON file.
+    /// Implements <see cref="IBackupObserver"/> to track backup progress.
     /// </summary>
     public class FileStateObserver : IBackupObserver
     {
+        /// <summary>
+        /// The file path where backup states are stored.
+        /// </summary>
         private readonly string _stateFilePath;
+
+        /// <summary>
+        /// Dictionary storing the state of each backup job, indexed by its unique identifier.
+        /// </summary>
         private readonly Dictionary<Guid, BackupState> _states;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileStateObserver"/> class.
+        /// </summary>
+        /// <param name="stateFilePath">The path of the JSON file used for state storage.</param>
         public FileStateObserver(string stateFilePath)
         {
             _stateFilePath = stateFilePath;
@@ -18,16 +30,16 @@ namespace EasySaveApp.Observers
         }
 
         /// <summary>
-        /// Méthode appelée à chaque mise à jour de l'état.
-        /// Met à jour le dictionnaire local et écrit l'ensemble des états dans le fichier.
+        /// Method called each time a backup state is updated.
+        /// Updates the local dictionary and writes all states to the JSON file.
         /// </summary>
-        /// <param name="state">L'état actuel pour un job donné.</param>
+        /// <param name="state">The current state of a given backup job.</param>
         public void Update(BackupState state)
         {
-            // Mettre à jour l'état dans le dictionnaire
+            // Update the state in the dictionary
             _states[state.JobId] = state;
 
-            // Écrire l'ensemble des états dans le fichier JSON
+            // Write all states to the JSON file
             var allStates = _states.Values.ToList();
             File.WriteAllText(_stateFilePath, JsonConvert.SerializeObject(allStates, Formatting.Indented));
         }

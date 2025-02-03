@@ -1,42 +1,67 @@
-//classe pour gérer l'état de la sauvegarde
-
 using Newtonsoft.Json;
 
 namespace EasySaveApp.Models
 {
+    /// <summary>
+    /// Represents the state of a backup job at a given moment.
+    /// </summary>
     public class BackupState
     {
-        // Name of the backup
+        /// <summary>
+        /// Name of the backup job.
+        /// </summary>
         public required string BackupName { get; set; }
         
-        // Time of the last action performed
+        /// <summary>
+        /// Timestamp of the last action performed during the backup process.
+        /// </summary>
         public DateTime LastActionTime { get; set; }
         
-        // Current status of the backup
+        /// <summary>
+        /// Current status of the backup job (e.g., "Active", "Completed", "Error").
+        /// </summary>
         public required string Status { get; set; } 
         
-        // Total number of files to be backed up
+        /// <summary>
+        /// Total number of files to be backed up.
+        /// </summary>
         public int TotalFiles { get; set; }
         
-        // Total size of files to be backed up
+        /// <summary>
+        /// Total size (in bytes) of all files to be backed up.
+        /// </summary>
         public long TotalSize { get; set; }
         
-        // Number of files remaining to be backed up
+        /// <summary>
+        /// Number of files remaining to be backed up.
+        /// </summary>
         public int RemainingFiles { get; set; }
         
-        // Size of files remaining to be backed up
+        /// <summary>
+        /// Size (in bytes) of files remaining to be backed up.
+        /// </summary>
         public long RemainingSize { get; set; }
         
-        // Current source file being backed up
+        /// <summary>
+        /// Path of the current source file being backed up.
+        /// </summary>
         public required string CurrentSourceFile { get; set; }
         
-        // Current target file being backed up
+        /// <summary>
+        /// Path of the current target file being backed up.
+        /// </summary>
         public required string CurrentTargetFile { get; set; }
         
-        // Unique identifier for the backup job
+        /// <summary>
+        /// Unique identifier for the backup job.
+        /// </summary>
         public Guid JobId { get; set; }
 
-        // Method to save the state of backups to a file
+        /// <summary>
+        /// Saves the current state of all backup jobs to a JSON file.
+        /// </summary>
+        /// <param name="states">List of <see cref="BackupState"/> instances to be saved.</param>
+        /// <param name="filePath">The path of the JSON file where the state is stored.</param>
         public static void SaveState(List<BackupState> states, string filePath)
         {
             File.WriteAllText(filePath, JsonConvert.SerializeObject(states, Formatting.Indented));

@@ -1,17 +1,23 @@
 namespace EasySaveApp.Commands
 {
     /// <summary>
-    /// Commande pour lister tous les jobs de sauvegarde configurés.
+    /// Command to list all configured backup jobs.
+    /// Implements <see cref="BackupCommand"/>.
     /// </summary>
     public class ListJobsCommand : BackupCommand
     {
-        // Constructor to initialize the ListJobsCommand with the backup manager
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ListJobsCommand"/> class.
+        /// </summary>
+        /// <param name="backupManager">Reference to the backup manager handling jobs.</param>
         public ListJobsCommand(BackupManager backupManager)
             : base(backupManager)
         {
         }
 
-        // Method to execute the command to list all backup jobs
+        /// <summary>
+        /// Executes the command to list all backup jobs.
+        /// </summary>
         public override void Execute()
         {
             _backupManager.ListBackupJobs();

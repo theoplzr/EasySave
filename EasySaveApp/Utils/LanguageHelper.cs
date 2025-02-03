@@ -1,11 +1,17 @@
 namespace EasySaveApp.Utils
 {
+    /// <summary>
+    /// Provides language translation support for UI messages.
+    /// Supports English ("en") and French ("fr").
+    /// </summary>
     public static class LanguageHelper
     {
-        // Dictionnaire pour l'anglais
+        /// <summary>
+        /// Dictionary containing English translations of messages.
+        /// </summary>
         private static readonly Dictionary<string, string> enDictionary = new Dictionary<string, string>
         {
-            // Menu principal
+            // Main menu options
             { "MenuTitle", "Backup Manager" },
             { "OptionAddJob", "1) Add a backup job" },
             { "OptionExecuteAll", "2) Execute all jobs" },
@@ -14,7 +20,7 @@ namespace EasySaveApp.Utils
             { "OptionUpdateJob", "5) Update a job" },
             { "OptionExit", "6) Exit" },
 
-            // Messages liés à l'ajout d'un job
+            // Messages related to adding a backup job
             { "AddJobTitle", "--- Add a Backup Job ---" },
             { "EnterJobName", "Enter a name for the backup job: " },
             { "EnterSourceDir", "Enter the source directory: " },
@@ -25,22 +31,24 @@ namespace EasySaveApp.Utils
             { "ErrorFieldsRequired", "Error: All fields are required." },
             { "JobAdded", "Backup job '{0}' added successfully." },
 
-            // Messages pour la mise à jour d'un job
-            { "EnterNewName", "Enter new name (leave blank to keep existing): " },
-            { "EnterNewSourceDir", "Enter new source dir (leave blank to keep existing): " },
-            { "EnterNewTargetDir", "Enter new target dir (leave blank to keep existing): " },
+            // Messages for updating a backup job
+            { "EnterNewName", "Enter a new name (leave blank to keep existing): " },
+            { "EnterNewSourceDir", "Enter a new source directory (leave blank to keep existing): " },
+            { "EnterNewTargetDir", "Enter a new target directory (leave blank to keep existing): " },
             { "EnterNewBackupType", "Enter new backup type (1: Complete, 2: Differential), leave blank to keep existing: " },
 
-            // Divers
+            // Miscellaneous
             { "InvalidChoice", "Invalid choice. Please try again." },
             { "InvalidIndex", "Invalid index." },
             { "Goodbye", "Goodbye!" },
         };
 
-        // Dictionnaire pour le français
+        /// <summary>
+        /// Dictionary containing French translations of messages.
+        /// </summary>
         private static readonly Dictionary<string, string> frDictionary = new Dictionary<string, string>
         {
-            // Menu principal
+            // Main menu options
             { "MenuTitle", "Gestionnaire de Sauvegarde" },
             { "OptionAddJob", "1) Ajouter un travail de sauvegarde" },
             { "OptionExecuteAll", "2) Exécuter tous les travaux de sauvegarde" },
@@ -49,7 +57,7 @@ namespace EasySaveApp.Utils
             { "OptionUpdateJob", "5) Mettre à jour un travail" },
             { "OptionExit", "6) Quitter" },
 
-            // Messages liés à l'ajout d'un job
+            // Messages related to adding a backup job
             { "AddJobTitle", "--- Ajouter un travail de sauvegarde ---" },
             { "EnterJobName", "Entrez un nom pour le travail de sauvegarde : " },
             { "EnterSourceDir", "Entrez le répertoire source : " },
@@ -60,24 +68,24 @@ namespace EasySaveApp.Utils
             { "ErrorFieldsRequired", "Erreur : Tous les champs sont requis." },
             { "JobAdded", "Le travail de sauvegarde '{0}' a été ajouté avec succès." },
 
-            // Messages pour la mise à jour d'un job
+            // Messages for updating a backup job
             { "EnterNewName", "Entrez un nouveau nom (laisser vide pour conserver l'existant) : " },
             { "EnterNewSourceDir", "Entrez un nouveau répertoire source (laisser vide pour conserver l'existant) : " },
             { "EnterNewTargetDir", "Entrez un nouveau répertoire cible (laisser vide pour conserver l'existant) : " },
             { "EnterNewBackupType", "Entrez le nouveau type de sauvegarde (1 : Complète, 2 : Différentielle), laisser vide pour conserver l'existant : " },
 
-            // Divers
+            // Miscellaneous
             { "InvalidChoice", "Choix invalide. Veuillez réessayer." },
             { "InvalidIndex", "Index invalide." },
             { "Goodbye", "Au revoir !" },
         };
 
         /// <summary>
-        /// Récupère la chaîne de caractères correspondant à la clé, en fonction de la langue ("en" ou "fr").
+        /// Retrieves the translated message for a given key based on the selected language.
         /// </summary>
-        /// <param name="key">La clé du message (ex: "MenuTitle", "OptionAddJob").</param>
-        /// <param name="language">Code de la langue ("en" ou "fr").</param>
-        /// <returns>Le message traduit.</returns>
+        /// <param name="key">The key identifying the message (e.g., "MenuTitle", "OptionAddJob").</param>
+        /// <param name="language">The language code ("en" for English, "fr" for French).</param>
+        /// <returns>The translated message if found; otherwise, returns the key enclosed in brackets.</returns>
         public static string GetMessage(string key, string language)
         {
             var dictionary = (language == "fr") ? frDictionary : enDictionary;
@@ -85,7 +93,7 @@ namespace EasySaveApp.Utils
             if (dictionary.ContainsKey(key))
                 return dictionary[key];
 
-            // Fallback : renvoyer la clé si elle n'existe pas
+            // Fallback: return the key if no translation exists
             return $"[{key}]";
         }
     }
