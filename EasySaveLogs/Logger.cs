@@ -44,7 +44,7 @@ namespace EasySaveLogs
         /// </summary>
         /// <param name="logDirectory">The directory where logs will be stored (default: "Logs").</param>
         /// <returns>The singleton instance of <see cref="Logger"/>.</returns>
-        public static Logger GetInstance(string logDirectory = "Logs")
+        public static Logger GetInstance(string logDirectory)
         {
             // Double-checked locking to minimize unnecessary locks in read scenarios
             if (_instance == null)

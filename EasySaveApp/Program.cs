@@ -20,7 +20,18 @@ namespace EasySaveApp
 
             // 2) Lire la config pour la langue et le répertoire de logs
             string language = configuration["Language"] ?? "en";
-            string logDirectory = configuration["Logging:LogDirectory"] ?? "Logs";
+            string logDirectory;
+            if (OperatingSystem.IsWindows())
+            {
+                logDirectory = @"C:\Logs";
+            }
+            else
+            {
+                //logDirectory = "/Logs";
+                logDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Logs");
+            }
+
+            Console.WriteLine($"Log directory: {logDirectory}");
 
             // 3) Créer le repository pour la persistance (JSON)
             string repositoryPath = "backup_jobs.json";
