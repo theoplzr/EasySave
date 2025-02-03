@@ -8,12 +8,13 @@ namespace EasySaveApp.Commands
     /// </summary>
     public class UpdateJobCommand : BackupCommand
     {
-        private int _indexToUpdate;
-        private string? _newName;
-        private string? _newSource;
-        private string? _newTarget;
-        private BackupType? _newType;
+        private int _indexToUpdate; // Index of the job to be updated
+        private string? _newName; // New name for the job
+        private string? _newSource; // New source path for the job
+        private string? _newTarget; // New target path for the job
+        private BackupType? _newType; // New type for the job
 
+        // Constructor to initialize the UpdateJobCommand with the backup manager and new job details
         public UpdateJobCommand(
             BackupManager backupManager,
             int indexToUpdate,
