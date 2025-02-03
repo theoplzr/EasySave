@@ -1,4 +1,4 @@
 # .gitignore
-/EasySaveLogs/bin/
-/EasySaveLogs/obj/
+/EasySaveLogs/bin/*
+/EasySaveLogs/obj/*
 ...
