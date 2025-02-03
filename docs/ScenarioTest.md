@@ -21,10 +21,6 @@ Ce document recense plusieurs **scénarios de test** que vous pouvez exécuter *
    ```bash
    dotnet run
    ```
-   ou  
-   ```bash
-   EasySaveApp.exe
-   ```
 2. L’application **demande** : « Choose language (en/fr) ».  
 3. **Taper** `fr`.  
    - **Attendu** : Le menu doit s’afficher en **français** avec les options (1) Ajouter un travail, (2) Exécuter tous les travaux, etc.  
@@ -125,11 +121,11 @@ Ce document recense plusieurs **scénarios de test** que vous pouvez exécuter *
 
 ## **Scénario 7 : Lancer l’application avec arguments** (ex. `"1;3"`)
 
-**Objectif** : Vérifier la ligne de commande (ex. `EasySaveApp.exe "1;3"`).
+**Objectif** : Vérifier la ligne de commande (ex. `dotner run -- "1;3"`).
 
 1. **Terminal** :  
    ```bash
-   EasySaveApp.exe "1;3"
+   dotnet run -- "1;3"
    ```
 2. **Attendu** :  
    - L’appli parse `"1;3"`, exécute les jobs #1 et #3 l’un après l’autre, puis se ferme.  
