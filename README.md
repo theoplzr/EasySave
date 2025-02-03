@@ -196,7 +196,7 @@ La solution Visual Studio contient **deux projets** :
 
 # **Conclusion**
 
-Cette **version 1.0** d’**EasySave** offre actuellement une **architecture robuste** et modulaire, répondant aux **exigences** suivantes :
+Notre **version 1.0** d’**EasySave** offre actuellement une **architecture robuste** et modulaire, répondant aux **exigences** suivantes :
 
 - **Application console** en C# (.NET 8)  
 - **Gestion** de 1 à 5 jobs  
