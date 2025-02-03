@@ -87,6 +87,6 @@ project.fragment.lock.json
 bin/
 obj/
 
-Logs/
-backup_jobs.json
-state.json
+Logs/*
+/backup_jobs.json
+/state.json
