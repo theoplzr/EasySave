@@ -41,7 +41,24 @@ namespace EasySaveApp.Observers
 
             // Write all states to the JSON file
             var allStates = _states.Values.ToList();
-            File.WriteAllText(_stateFilePath, JsonConvert.SerializeObject(allStates, Formatting.Indented));
+
+            // Générer un JSON avec la progression incluse
+            var formattedStates = allStates.Select(s => new
+            {
+                s.BackupName,
+                s.LastActionTime,
+                s.Status,
+                s.TotalFiles,
+                s.TotalSize,
+                s.RemainingFiles,
+                s.RemainingSize,
+                s.Progress,  
+                s.CurrentSourceFile,
+                s.CurrentTargetFile,
+                s.JobId
+            }).ToList();
+
+            File.WriteAllText(_stateFilePath, JsonConvert.SerializeObject(formattedStates, Formatting.Indented));
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using System.Runtime.InteropServices;
 using EasySaveApp.Facade;
 using EasySaveApp.Models;
 using EasySaveApp.Utils;
@@ -15,19 +16,34 @@ namespace EasySaveApp
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-
             var configuration = builder.Build();
 
-            // 2) Lire la config pour la langue et le répertoire de logs
+            // 2) Lire la config pour la langue
             string language = configuration["Language"] ?? "en";
-            string logDirectory;
-            if (OperatingSystem.IsWindows())
+
+            // Définir le répertoire de logs selon la configuration et l'OS
+            string? logDirectory = configuration["Logging:LogDirectory"];
+
+            if (string.IsNullOrEmpty(logDirectory))
             {
-                logDirectory = @"C:\Logs";
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    logDirectory = @"C:\Logs";
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) || RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    logDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/Logs";
+                }
+                else
+                {
+                    logDirectory = "Logs";
+                }
             }
-            else
+
+            // Créer le dossier de logs s'il n'existe pas
+            if (!Directory.Exists(logDirectory))
             {
-                logDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Logs");
+                Directory.CreateDirectory(logDirectory);
             }
 
             // 3) Créer le repository pour la persistance (JSON)
@@ -38,7 +54,7 @@ namespace EasySaveApp
             string stateFilePath = "state.json";
             var fileStateObserver = new FileStateObserver(stateFilePath);
 
-            // 5) Instancier la Façade en lui injectant le repository, le logDirectory, et l’observer
+            // 5) Instancier la Façade en lui injectant le repository, le logDirectory et l’observer
             var facade = new EasySaveFacade(jobRepository, logDirectory, fileStateObserver);
 
             // 6) Vérifier si des arguments en ligne de commande sont passés

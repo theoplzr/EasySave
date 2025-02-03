@@ -58,6 +58,11 @@ namespace EasySaveApp.Models
         public Guid JobId { get; set; }
 
         /// <summary>
+        /// Progress of the backup job in percentage (0 to 100).
+        /// </summary>
+        public int Progress => TotalFiles == 0 ? 100 : (int)(((TotalFiles - RemainingFiles) / (double)TotalFiles) * 100);
+
+        /// <summary>
         /// Saves the current state of all backup jobs to a JSON file.
         /// </summary>
         /// <param name="states">List of <see cref="BackupState"/> instances to be saved.</param>
