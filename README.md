@@ -171,9 +171,9 @@ La solution Visual Studio contient **deux projets** :
 ### 6.2 **Exécution via Arguments (ligne de commande)**
 
 - On peut lancer l’application avec des **arguments** pour exécuter certains jobs.  
-  - Ex : `EasySaveApp.exe "1"` => exécuter le job numéro 1.  
-  - Ex : `EasySaveApp.exe "1-3"` => exécuter les jobs 1, 2 et 3.  
-  - Ex : `EasySaveApp.exe "1;3"` => exécuter les jobs 1 et 3.  
+  - Ex : `dotnet run -- "1"` => exécuter le job numéro 1.  
+  - Ex : `dotnet run -- "1-3"` => exécuter les jobs 1, 2 et 3.  
+  - Ex : `dotnet run -- "1;3"` => exécuter les jobs 1 et 3.  
 - Le code parse la chaîne et appelle `facade.ExecuteJobByIndex(...)` ou `facade.ExecuteAllJobs()` selon le format.
 
 ---
