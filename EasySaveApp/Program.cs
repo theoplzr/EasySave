@@ -31,8 +31,6 @@ namespace EasySaveApp
                 logDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Logs");
             }
 
-            Console.WriteLine($"Log directory: {logDirectory}");
-
             // 3) Créer le repository pour la persistance (JSON)
             string repositoryPath = "backup_jobs.json";
             IBackupJobRepository jobRepository = new JsonBackupJobRepository(repositoryPath);
