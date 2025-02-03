@@ -13,20 +13,20 @@ Bienvenue dans la **version 1.0** d’**EasySave**, une application console en C
 2. **Fonctionnalités Clés**  
 3. **Organisation des Projets et Fichiers**  
 4. **Architecture et Design Patterns**  
-   1. **Repository Pattern**  
-   2. **Command Pattern**  
-   3. **Observer Pattern**  
-   4. **Template Method Pattern**  
-   5. **Strategy Pattern**  
-   6. **Singleton Pattern (Logger)**  
-   7. **Facade Pattern**  
+   I. **Repository Pattern**  
+   II. **Command Pattern**  
+   III. **Observer Pattern**  
+   IV. **Template Method Pattern**  
+   V. **Strategy Pattern**  
+   VI. **Singleton Pattern (Logger)**  
+   VII. **Facade Pattern**  
 5. **Fichiers Importants**  
-   1. `backup_jobs.json` (Liste des jobs)  
-   2. `state.json` (État en temps réel)  
-   3. `Logs/*.json` (Logs journaliers)  
+   I. `backup_jobs.json` (Liste des jobs)  
+   II. `state.json` (État en temps réel)  
+   III. `Logs/*.json` (Logs journaliers)  
 6. **Démarrage de l’Application**  
-   1. **Exécution via Console**  
-   2. **Exécution via Arguments (ligne de commande)**  
+   I. **Exécution via Console**  
+   II. **Exécution via Arguments (ligne de commande)**  
 7. **Internationalisation (fr/en)**  
 8. **Fonctionnalités Futures**  
 
