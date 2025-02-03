@@ -196,7 +196,7 @@ La solution Visual Studio contient **deux projets** :
 
 # **Conclusion**
 
-Cette **version 1.0** d’**EasySave** offre déjà une **architecture robuste** et modulaire, répondant aux **exigences** :
+Cette **version 1.0** d’**EasySave** offre actuellement une **architecture robuste** et modulaire, répondant aux **exigences** suivantes :
 
 - **Application console** en C# (.NET 8)  
 - **Gestion** de 1 à 5 jobs  
@@ -205,7 +205,7 @@ Cette **version 1.0** d’**EasySave** offre déjà une **architecture robuste**
 - **Internationalisation** en français/anglais  
 - **Pérennité** et **évolutivité** grâce à plusieurs **Design Patterns** (Command, Repository, Observer, Template Method, Strategy, Singleton, Facade)
 
-Vous pouvez désormais **tester**, **packager** et livrer cette version 1.0. Les prochaines versions ajouteront des **interfaces graphiques** et d’autres fonctionnalités avancées.
+Les prochaines versions ajouteront des **interfaces graphiques** et d’autres fonctionnalités avancées.
 
 ---
 
