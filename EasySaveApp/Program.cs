@@ -27,7 +27,6 @@ namespace EasySaveApp
             }
             else
             {
-                //logDirectory = "/Logs";
                 logDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Logs");
             }
 
