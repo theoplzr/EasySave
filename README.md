@@ -190,7 +190,7 @@ La solution Visual Studio contient **deux projets** :
 
 - **Version 2.0** : Implémentation d’une **interface graphique** (WPF) avec **MVVM**, réutilisant la logique déjà codée (BackupManager, Repositories, Observers…).  
 - **Version 3.0** : Possibilité de gestion **asynchrone** des copies, gestion de planification (scheduler), etc.  
-- **Optimisations** : Ajout de **tests unitaires**, conteneur **DI** officiel, etc.
+- **Optimisations** : Ajout de **tests unitaires**...
 
 ---
 
