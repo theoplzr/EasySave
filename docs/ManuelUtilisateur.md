@@ -23,8 +23,8 @@ Ce document décrit **rapidement** l’installation et l’utilisation de l’ap
 
 - **Via Ligne de Commande** :
   - Exemple : 
-    - `EasySaveApp.exe "1-3"` => exécuter les jobs 1, 2, et 3.
-    - `EasySaveApp.exe "1;3"` => exécuter les jobs 1 et 3.
+    - `dotnet run -- "1-3"` => exécuter les jobs 1, 2, et 3.
+    - `dotnet run -- "1;3"` => exécuter les jobs 1 et 3.
 
 ## Fonctions Principales
 
