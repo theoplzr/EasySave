@@ -61,17 +61,21 @@ Cette version 1.0 se base sur une **architecture modulaire** et applique plusieu
 
 ## 3. **Organisation des Projets et Fichiers**
 
-La solution Visual Studio contient **deux projets** :
+Notre solution est divisée en **trois projets indépendants** :
 
-1. **EasySaveApp**  
-   - L’application console principale (C# .NET 8).  
-   - Contient toutes les classes métiers (BackupManager, Commands, Repositories, Observers, Template, etc.).
+1. **EasySaveApp** 🖥  
+   - Application console principale (interaction avec l’utilisateur).  
+   - Utilise `EasySave.Core` pour la gestion des sauvegardes.  
 
-2. **EasySaveLogs**  
-   - Gère le **Logger** (classe `Logger`), chargé d’écrire les **LogEntry** dans des fichiers journaliers.  
-   - Implémenté en **Singleton** pour garantir une instance unique.
+2. **EasySave.Core** 🏗  
+   - Contient la logique métier (`BackupManager`, exécution des sauvegardes).  
+   - Implémente plusieurs **design patterns** (Command, Observer, Repository, Template Method).  
 
-### Principaux dossiers du projet `EasySaveApp` :
+3. **EasySaveLogs** 📜  
+   - Projet dédié à la journalisation (`Logger`), écrivant les logs dans des fichiers JSON.  
+   - Implémenté en **Singleton** pour assurer une instance unique. 
+
+### Principaux dossiers/fichiers du projet :
 
 - **`Commands`** : Contient les commandes (AddJobCommand, ExecuteJobCommand, etc.) – **Command Pattern**.  
 - **`Models`** : Contient les entités et énumérations (BackupJob, BackupType, BackupState, etc.).  
@@ -158,6 +162,7 @@ La solution Visual Studio contient **deux projets** :
 
 ### 6.1 **Exécution via Console**
 
+- se placer dans le dossier /EasySaveApp
 - **Compiler** le projet : `dotnet build`.  
 - **Lancer** : `dotnet run` (dans le dossier du projet **EasySaveApp**).  
 - L’application lit la configuration (`appsettings.json`), initialise la façade (`EasySaveFacade`), puis présente un **menu** :  
