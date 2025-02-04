@@ -65,12 +65,14 @@ namespace EasySaveApp
             }
 
             // 7) Demander à l’utilisateur de choisir la langue (en/fr)
-            Console.Write("Choose language (en/fr): ");
-            var userInput = Console.ReadLine();
-            if (!string.IsNullOrEmpty(userInput) && (userInput == "fr" || userInput == "en"))
+            do
             {
-                language = userInput;
-            }
+                Console.WriteLine("Choose language (en/fr): ");
+                language = Console.ReadLine();
+            } while (language != "fr" && language != "en");
+
+            Console.WriteLine($"Language selected: {language}");
+
 
             // 8) Boucle principale de l’application (menu)
             while (true)
