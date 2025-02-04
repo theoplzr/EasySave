@@ -179,61 +179,66 @@ namespace EasySaveApp
         {
             string param = args[0];
             List<int> jobIndices = new List<int>();
-            
-            // Vérifier si l'argument contient un tiret pour une plage
-            if (param.Contains("-"))
+
+            // Séparez d'abord la chaîne en segments individuels en utilisant ';' comme séparateur
+            var segments = param.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+
+        foreach (var segment in segments)
+        {
+            // Si le segment contient un tiret, il s'agit d'une plage d'indices
+            if (segment.Contains("-"))
             {
-                var parts = param.Split('-');
-                if (parts.Length == 2 &&
-                int.TryParse(parts[0], out int start) &&
-                int.TryParse(parts[1], out int end))
+                var rangeParts = segment.Split('-');
+                if (rangeParts.Length == 2 && 
+                    int.TryParse(rangeParts[0], out int start) && 
+                    int.TryParse(rangeParts[1], out int end))
                 {
                     for (int i = start; i <= end; i++)
                     {
-                        jobIndices.Add(i - 1); // Convertir en index 0-based
+                        jobIndices.Add(i - 1); // Convertit en index 0-based
                     }
-                }
-            else
-                {
-                    Console.WriteLine("⚠ Erreur : Format de plage invalide.");
-                    return;
-                }
-            }
-            // Sinon, si l'argument contient un point-virgule pour plusieurs indices individuels
-            else if (param.Contains(";"))
-            {
-                jobIndices = param.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
-                          .Select(s => int.TryParse(s, out int index) ? index - 1 : -1)
-                          .Where(index => index >= 0)
-                          .ToList();
-            }
-            // Sinon, il s'agit d'un seul indice
-            else
-            {
-                if (int.TryParse(param, out int singleIndex))
-                {
-                    jobIndices.Add(singleIndex - 1);
-                }
-            }
-            
-            if (jobIndices.Count == 0)
-            {
-                Console.WriteLine("⚠ Erreur : Aucun numéro de sauvegarde valide fourni.");
-                return;
-            }
-            
-            foreach (var index in jobIndices)
-            {
-                if (index < facade.GetJobCount())
-                {
-                    facade.ExecuteJobByIndex(index);
                 }
                 else
                 {
-                    Console.WriteLine($"⚠ Erreur : Index {index + 1} hors de portée.");
+                    Console.WriteLine($"⚠ Erreur : Format de plage invalide dans '{segment}'.");
+                }
+            }
+            // Sinon, le segment doit être un indice unique
+            else
+            {
+                if (int.TryParse(segment, out int singleIndex))
+                {
+                    jobIndices.Add(singleIndex - 1);
+                }
+                else
+                {
+                    Console.WriteLine($"⚠ Erreur : Format invalide pour '{segment}'.");
                 }
             }
         }
+
+        if (jobIndices.Count == 0)
+        {
+            Console.WriteLine("⚠ Erreur : Aucun numéro de sauvegarde valide fourni.");
+            return;
+        }
+
+        // Éliminer les doublons et trier les indices
+        jobIndices = jobIndices.Distinct().OrderBy(x => x).ToList();
+
+        foreach (var index in jobIndices)
+            {
+            if (index < facade.GetJobCount())
+            {
+                facade.ExecuteJobByIndex(index);
+            }
+            else
+            {
+                Console.WriteLine($"⚠ Erreur : Index {index + 1} hors de portée.");
+            }
+            }
+        }
+
 
         /// <summary>
         /// Crée un BackupJob via la console (en demandant les infos à l’utilisateur).

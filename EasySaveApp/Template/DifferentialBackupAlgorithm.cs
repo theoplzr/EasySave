@@ -35,6 +35,12 @@ namespace EasySaveApp.Template
             {
                 var relativePath = Path.GetRelativePath(job.SourceDirectory, filePath);
                 var targetFilePath = Path.Combine(job.TargetDirectory, relativePath);
+
+                var targetDirectory = Path.GetDirectoryName(targetFilePath);
+                if (!string.IsNullOrEmpty(targetDirectory) && !Directory.Exists(targetDirectory))
+                    {
+                        Directory.CreateDirectory(targetDirectory);
+                    }
                 
                 // Delegate the decision to the strategy
                 return diffStrategy.ShouldCopyFile(filePath, targetFilePath);
