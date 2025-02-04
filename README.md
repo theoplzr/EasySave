@@ -168,6 +168,5 @@ Our solution is divided into **three independent projects**:
 
 ---
 
-Project completed for **FISA A3 Computer Science – CESI Engineering School** by  
-**Théo PELLIZZARI**, **Basile ROSIER**, and **Axel Mourot**.
+Project completed for **FISA A3 Computer Science – CESI Engineering School** by **Théo PELLIZZARI**, **Basile ROSIER**, and **Axel Mourot**.
 
