@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EasySaveLogs\EasySaveLogs.csproj" />
+    <ProjectReference Include="..\EasySave.Core\EasySave.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
