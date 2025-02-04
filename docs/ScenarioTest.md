@@ -1,157 +1,158 @@
-# Scénarios de Test EasySave – Version 1.0
+# EasySave Test Scenarios – Version 1.0
 
-Ce document recense plusieurs **scénarios de test** que vous pouvez exécuter **en direct** pour démontrer que l’application **EasySave** répond à toutes les exigences du **Livrable 1**. Ils couvrent la **création** de jobs, leur **exécution** (complète/différentielle), la **journalisation** (logs), l’**état** en temps réel (`state.json`), et la **multi-langue** (fr/en).
-
----
-
-## **Pré-requis**
-
-1. Avoir **.NET 8** (ou supérieur) installé.  
-2. S’assurer d’avoir la **solution** (dossier `EasySaveApp` + `EasySaveLogs`) correctement compilée (`dotnet build` ou équivalent).  
-3. Disposer du fichier **`backup_jobs.json`** (peut être vide ou non), du dossier **`Logs/`** (même vide), et d’un **`state.json`** initial (peut être vide).  
-4. (Optionnel) Éditer **`appsettings.json`** si vous souhaitez tester la langue par défaut ou le répertoire de logs.
+This document outlines several **test scenarios** that can be executed **live** to demonstrate that the **EasySave** application meets all the requirements of **Deliverable 1**. These scenarios cover **job creation**, **execution** (full/differential), **logging**, **real-time state updates** (`state.json`), and **multi-language support** (fr/en).
 
 ---
 
-## **Scénario 1 : Démarrer l’application et choisir la langue**
+## **Prerequisites**
 
-**Objectif** : Vérifier la **multi-langue** (fr/en) et la bonne initialisation de l’appli.
+1. Have **.NET 8** (or later) installed.  
+2. Ensure the **solution** (`EasySaveApp` + `EasySaveLogs` folder) is correctly built (`dotnet build` or equivalent).  
+3. Have the **`backup_jobs.json`** file (can be empty or not), the **`Logs/`** folder (even empty), and an initial **`state.json`** file (can be empty).  
+4. (Optional) Edit **`appsettings.json`** if you want to test the default language or log directory.
 
-1. **Lancer** l’application via la console :  
+---
+
+## **Scenario 1: Start the application and choose the language**
+
+**Objective**: Verify **multi-language support** (fr/en) and correct application initialization.
+
+1. **Run** the application via the console:
    ```bash
    dotnet run
    ```
-2. L’application **demande** : « Choose language (en/fr) ».  
-3. **Taper** `fr`.  
-   - **Attendu** : Le menu doit s’afficher en **français** avec les options (1) Ajouter un travail, (2) Exécuter tous les travaux, etc.  
-4. **Quitter** l’application pour relancer. Taper `en` cette fois.  
-   - **Attendu** : Le menu doit être en **anglais** (1) Add a backup job, etc.
+2. The application **prompts**: "Choose language (en/fr)".  
+3. **Enter** `fr`.  
+   - **Expected**: The menu should display in **French** with options (1) Ajouter un travail, (2) Exécuter tous les travaux, etc.  
+4. **Exit** the application and restart. Enter `en` this time.  
+   - **Expected**: The menu should now be in **English** (1) Add a backup job, etc.
 
-**Validation** : L’application propose bien 2 langues, et le menu s’adapte.  
-
----
-
-## **Scénario 2 : Créer un job et vérifier `backup_jobs.json`**
-
-**Objectif** : Prouver qu’on peut créer un travail de sauvegarde (jusqu’à 5 max) et le stocker dans `backup_jobs.json`.
-
-1. **Lancer** l’application (choix de langue indifférent).  
-2. Sélectionner l’**Option 1** : « Add a backup job ».  
-3. **Saisir** :  
-   - Nom : `Backup1`  
-   - Source directory : `(chemin source existant)`  
-   - Target directory : `(chemin cible existant)`  
-   - Type : `1` (Complete)  
-4. **Attendu** : L’appli affiche « Backup job 'Backup1' added. » (ou la traduction fr).  
-5. **Quitter** l’application et **ouvrir** le fichier `backup_jobs.json`.  
-   - **Attendu** : Y voir un objet JSON représentant `Backup1`, avec `SourceDirectory`, `TargetDirectory`, `BackupType` (Complete), etc.
-
-**Validation** : Le job est bien créé, persistant dans le JSON.
+**Validation**: The application correctly supports two languages, and the menu adapts accordingly.
 
 ---
 
-## **Scénario 3 : Lister et Mettre à jour un job**
+## **Scenario 2: Create a job and verify `backup_jobs.json`**
 
-**Objectif** : Prouver qu’on peut afficher les jobs existants et en modifier certains champs.
+**Objective**: Confirm that a backup job can be created (up to 5 max) and stored in `backup_jobs.json`.
 
-1. **Relancer** l’application.  
-2. Sélectionner l’**Option 3** : « List all jobs ».  
-   - **Attendu** : Voir `[1] Name: Backup1, Source: …, Target: …, Type: Complete`.  
-3. Sélectionner l’**Option 5** : « Update a job ».  
-   - **Indice** demandé ? Taper `1` (moins 1 si l’index est zero-based selon ton code).  
-   - **Nom** : saisir un nouveau nom, ex. `BackupRenamed`.  
-   - **Source dir** : laisser vide (juste `Entrée`) pour garder l’existant.  
-   - **Target dir** : laisser vide aussi.  
-   - **BackupType** : taper `2` pour différentiel.  
-4. **Attendu** : Message « Job ‘BackupRenamed’ updated successfully. »  
-5. **Lister** à nouveau (Option 3).  
-   - **Attendu** : `[1] Name: BackupRenamed, Source: (ancien chemin), Target: (ancien chemin), Type: Differential`.
+1. **Start** the application (language choice does not matter).  
+2. Select **Option 1**: "Add a backup job".  
+3. **Enter**:  
+   - Name: `Backup1`  
+   - Source directory: `(existing source path)`  
+   - Target directory: `(existing target path)`  
+   - Type: `1` (Complete)  
+4. **Expected**: The app displays "Backup job 'Backup1' added." (or translated version).  
+5. **Exit** the application and **open** `backup_jobs.json`.  
+   - **Expected**: It contains a JSON object representing `Backup1`, with `SourceDirectory`, `TargetDirectory`, `BackupType` (Complete), etc.
 
-**Validation** : La mise à jour d’un job et l’énumération fonctionne.
+**Validation**: The job is successfully created and persists in the JSON file.
 
 ---
 
-## **Scénario 4 : Exécuter un job (Sauvegarde Complète)**
+## **Scenario 3: List and Update a Job**
 
-**Objectif** : Vérifier la copie des fichiers, la journalisation (`Logs/*.json`), et l’état (`state.json`) en mode complet.
+**Objective**: Verify that existing jobs can be listed and modified.
 
-1. **Créer** (ou avoir déjà) un job de type `Complete` (Scénario 2).  
-2. **Option 2** : « Execute all jobs » **ou** Option 2 (in English).  
-   - Si tu n’as qu’un job, ça lancera `BackupRenamed`.  
-3. **Observation** :  
-   - L’appli peut afficher « Copied: … -> … » pour chaque fichier, ou mentionner un log.  
-   - À la fin : « Backup 'BackupRenamed' completed. » (ou version FR).  
-4. **Aller** dans le dossier `Logs/`.  
-   - **Attendu** : Un fichier nommé `yyyy-MM-dd.json` (date du jour).  
-   - L’ouvrir : on doit y voir **plusieurs entrées** (`LogEntry`), chaque action de copie avec `Timestamp`, `BackupName`, `SourceFilePath`, `TargetFilePath`, `FileSize`, `TransferTimeMs`, `Status`.  
-5. **Vérifier** `state.json`.  
-   - Il devrait indiquer un état final (Nombre de fichiers restants = 0, etc.).
+1. **Restart** the application.  
+2. Select **Option 3**: "List all jobs".  
+   - **Expected**: See `[1] Name: Backup1, Source: …, Target: …, Type: Complete`.  
+3. Select **Option 5**: "Update a job".  
+   - When prompted for **Index**, enter `1`.  
+   - **Name**: Enter a new name, e.g., `BackupRenamed`.  
+   - **Source dir**: Leave blank (just press `Enter`) to keep existing.  
+   - **Target dir**: Leave blank as well.  
+   - **BackupType**: Enter `2` for Differential.  
+4. **Expected**: Message "Job ‘BackupRenamed’ updated successfully."  
+5. **List** jobs again (Option 3).  
+   - **Expected**: `[1] Name: BackupRenamed, Source: (old path), Target: (old path), Type: Differential`.
 
-**Validation** : Copie inconditionnelle de tous les fichiers, logs journaliers, `state.json` mis à jour.
-
----
-
-## **Scénario 5 : Exécuter un job Différentiel**
-
-**Objectif** : Vérifier que seules les modifications sont recopiées, journalisation OK.
-
-1. **Créer** ou **mettre à jour** un job en `Differential`.  
-2. **Modifier** un seul fichier dans le dossier source pour changer sa date.  
-3. Sélectionner l’**Option 2** : « Execute all jobs » (ou exécuter par index).  
-4. **Regarder** la console :  
-   - Si c’est la première exécution du job, tout sera copié.  
-   - Si c’est la **deuxième** exécution, seuls les fichiers modifiés sont recopiés (ex. 1 fichier).  
-5. **Aller** dans `Logs/…` :  
-   - **Attendu** : Les nouvelles entrées ne concernent que les fichiers modifiés.
-
-**Validation** : La logique différentielle agit sur la date de modification, on voit moins de fichiers recopiés lors de la deuxième exécution.
+**Validation**: Updating a job and listing works as expected.
 
 ---
 
-## **Scénario 6 : Supprimer un job et vérifier**
+## **Scenario 4: Execute a Job (Full Backup)**
 
-1. **Lister** d’abord les jobs (Option 3).  
-2. **Option 4** : « Remove a job ». Taper l’index correspondant (ex. `1`).  
-3. **Attendu** : « Backup job 'X' removed. »  
-4. **Lister** à nouveau :  
-   - Le job ne doit plus apparaître.  
-5. **Ouvrir** `backup_jobs.json` : le job supprimé doit avoir disparu.
+**Objective**: Verify file copying, logging (`Logs/*.json`), and state tracking (`state.json`) in full mode.
+
+1. **Create** (or have) a `Complete` job (Scenario 2).  
+2. **Option 2**: "Execute all jobs".  
+3. **Observations**:
+   - The application may display "Copied: … -> …" for each file or mention a log entry.  
+   - At completion: "Backup 'BackupRenamed' completed." (or FR version).  
+4. **Go to** the `Logs/` folder.  
+   - **Expected**: A file named `yyyy-MM-dd.json` (today's date).  
+   - Open it: it should contain **multiple entries** (`LogEntry`), each copy action with `Timestamp`, `BackupName`, `SourceFilePath`, `TargetFilePath`, `FileSize`, `TransferTimeMs`, `Status`.  
+5. **Check** `state.json`.  
+   - It should indicate a final state (Remaining files = 0, etc.).
+
+**Validation**: Full copy, logging, and state update are working correctly.
 
 ---
 
-## **Scénario 7 : Lancer l’application avec arguments** (ex. `"1;3"`)
+## **Scenario 5: Execute a Differential Job**
 
-**Objectif** : Vérifier la ligne de commande (ex. `dotner run -- "1;3"`).
+**Objective**: Confirm that only modified files are copied and logged correctly.
 
-1. **Terminal** :  
+1. **Create** or **update** a job to `Differential`.  
+2. **Modify** a single file in the source directory to change its date.  
+3. **Option 2**: "Execute all jobs".  
+4. **Observations**:
+   - If this is the first execution, all files are copied.  
+   - On a **second execution**, only modified files are copied (e.g., one file).  
+5. **Check** `Logs/…`:  
+   - **Expected**: New entries should only include modified files.
+
+**Validation**: Differential logic works based on the modification date.
+
+---
+
+## **Scenario 6: Remove a Job and Verify**
+
+1. **List** jobs first (Option 3).  
+2. **Option 4**: "Remove a job". Enter the corresponding index (e.g., `1`).  
+3. **Expected**: "Backup job 'X' removed."  
+4. **List** jobs again:
+   - The job should no longer appear.  
+5. **Open** `backup_jobs.json`: the deleted job should be removed.
+
+---
+
+## **Scenario 7: Run the Application with Arguments** (e.g., `"1;3"`)
+
+**Objective**: Verify command-line execution (e.g., `dotnet run -- "1;3"`).
+
+1. **Terminal**:
    ```bash
    dotnet run -- "1;3"
    ```
-2. **Attendu** :  
-   - L’appli parse `"1;3"`, exécute les jobs #1 et #3 l’un après l’autre, puis se ferme.  
-   - Vérifier le log `Logs/` et `state.json`.  
-   - Pas d’interaction console (sauf affichage du résultat).
+2. **Expected**:
+   - The app parses `"1;3"`, executes jobs #1 and #3 sequentially, then exits.  
+   - Check `Logs/` and `state.json`.  
+   - No interactive menu (only output display).
 
-**Validation** : Permet d’automatiser les sauvegardes sans passer par le menu interactif.
+**Validation**: Allows automation without interactive input.
 
 ---
 
-## **Scénario 8 : (Optionnel) Vérifier la limite de 5 jobs**
+## **Scenario 8: (Optional) Verify the 5-Job Limit**
 
-1. **Tenter** de créer 6 jobs (Option 1 → Add job).  
-2. Au 6ᵉ job, l’application doit afficher une **erreur** ou lever une **exception** :  
+1. **Attempt** to create 6 jobs (Option 1 → Add job).  
+2. On the 6th job, the application should show an **error** or raise an **exception**:
    - "Maximum of 5 backup jobs allowed."  
-3. **Validation** : La contrainte du cahier des charges est respectée.
+
+**Validation**: The application enforces the job limit.
 
 ---
 
 ## **Conclusion**
 
-En exécutant ces **huit scénarios** de démonstration, on montre :
+Executing these **eight test scenarios** confirms:
 
-- **Création**, **mise à jour**, **suppression**, **exécution** de jobs (complète / différentielle).  
-- La **journalisation** dans `Logs/`.  
-- La **mise à jour de l’état** dans `state.json`.  
-- La prise en charge **multi-langues**.  
-- L’**utilisation** en **ligne de commande** (arguments).  
-- La **gestion** d’une limite à 5 jobs.
+- **Job creation, update, deletion, execution** (full/differential).
+- **Logging in `Logs/`**.
+- **State updates in `state.json`**.
+- **Multi-language support**.
+- **Command-line usage (arguments)**.
+- **Enforcing a 5-job limit**.
+
