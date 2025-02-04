@@ -4,6 +4,7 @@ using EasySave.Core.Models.BackupStrategies;
 using EasySave.Core.Observers;
 using EasySave.Core.Repositories;
 using EasySave.Core.Template;
+using Microsoft.Extensions.Configuration;
 
 namespace EasySave.Core
 {
@@ -34,21 +35,22 @@ namespace EasySave.Core
         /// </summary>
         private readonly List<IBackupObserver> _observers;
 
+        private readonly int _maxJobs;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BackupManager"/> class.
         /// </summary>
         /// <param name="jobRepository">Repository instance for loading and saving backup jobs.</param>
         /// <param name="logDirectory">Path to the directory where logs will be stored.</param>
-        public BackupManager(IBackupJobRepository jobRepository, string logDirectory)
+        public BackupManager(IBackupJobRepository jobRepository, string logDirectory, IConfiguration configuration)
         {
             _jobRepository = jobRepository;
             _logger = Logger.GetInstance(logDirectory);
-
-            // Load backup jobs from the repository
             _backupJobs = _jobRepository.Load();
-
-            // Initialize the list of observers
             _observers = new List<IBackupObserver>();
+
+            // Charger MaxBackupJobs depuis appsettings.json (valeur par défaut : 5)
+            _maxJobs = int.TryParse(configuration["MaxBackupJobs"], out int maxJobs) ? maxJobs : 5;
         }
 
         // ------------------------- Observer Methods -------------------------
@@ -106,14 +108,14 @@ namespace EasySave.Core
         /// <exception cref="InvalidOperationException">Thrown if the maximum number of jobs (5) is exceeded.</exception>
         public void AddBackupJob(BackupJob job)
         {
-            if (_backupJobs.Count >= 5)
+            if (_backupJobs.Count >= _maxJobs) 
             {
-                throw new InvalidOperationException("Maximum of 5 backup jobs allowed.");
+                throw new InvalidOperationException($"Maximum of {_maxJobs} backup jobs allowed.");
             }
 
             _backupJobs.Add(job);
             SaveChanges();
-            Console.WriteLine($"Backup job '{job.Name}' added.");
+            Console.WriteLine($"✅ Backup job '{job.Name}' added successfully.");
         }
 
         /// <summary>
@@ -142,14 +144,8 @@ namespace EasySave.Core
         /// <param name="index">Index of the backup job in the list.</param>
         public void ExecuteBackupByIndex(int index)
         {
-            if (index >= 0 && index < _backupJobs.Count)
-            {
-                ExecuteBackup(_backupJobs[index]);
-            }
-            else
-            {
-                Console.WriteLine($"⚠ Error: Index {index + 1} is out of range.");
-            }
+            if (index < 0 || index >= _backupJobs.Count)
+            throw new ArgumentOutOfRangeException(nameof(index), $"Index {index} is out of range.");
         }
 
         /// <summary>
@@ -235,9 +231,12 @@ namespace EasySave.Core
             AbstractBackupAlgorithm algorithm = job.BackupType == BackupType.Complete
                 ? new FullBackupAlgorithm(_logger, state => NotifyObservers(state), () => SaveChanges())
                 : new DifferentialBackupAlgorithm(_logger, state => NotifyObservers(state), () => SaveChanges());
-
-            // Execute the backup process
-            algorithm.Execute(job);
+            try{
+                 algorithm.Execute(job);
+            }
+            catch (Exception ex){
+                Console.WriteLine($"Error executing backup job '{job.Name}': {ex.Message}");
+            }
         }
 
         public List<BackupJob> GetAllJobs()

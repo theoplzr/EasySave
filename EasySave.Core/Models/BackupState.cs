@@ -69,7 +69,13 @@ namespace EasySave.Core.Models
         /// <param name="filePath">The path of the JSON file where the state is stored.</param>
         public static void SaveState(List<BackupState> states, string filePath)
         {
-            File.WriteAllText(filePath, JsonConvert.SerializeObject(states, Formatting.Indented));
+            try{
+                File.WriteAllText(filePath, JsonConvert.SerializeObject(states, Formatting.Indented));
+                }
+            catch (IOException ex)
+            {
+                Console.WriteLine($"Error saving backup state: {ex.Message}");
+            }
         }
     }
 }
