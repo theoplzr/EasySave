@@ -19,7 +19,7 @@ namespace EasySaveApp
             var configuration = builder.Build();
 
             // Lire la config pour la langue avec une valeur par défaut "en"
-            string language = configuration["Language"];
+            string? language = configuration["Language"];
 
             // Vérification pour éviter de passer un `null` à `SetLanguage()`
             if (string.IsNullOrWhiteSpace(language) || (language != "en" && language != "fr"))
@@ -36,7 +36,7 @@ namespace EasySaveApp
             Console.WriteLine($"Language selected: {language}");
 
             // Définir le répertoire de logs selon la configuration et l'OS
-            string logDirectory = configuration["Logging:LogDirectory"];
+            string logDirectory = configuration["Logging:LogDirectory"] ?? string.Empty;
             if (string.IsNullOrWhiteSpace(logDirectory))
             {
                 logDirectory = GetDefaultLogDirectory();
@@ -57,8 +57,8 @@ namespace EasySaveApp
             var fileStateObserver = new FileStateObserver(stateFilePath);
 
             // Instancier la Façade avec les dépendances
-            var facade = new EasySaveFacade(jobRepository, logDirectory, fileStateObserver);
-
+            var facade = new EasySaveFacade(jobRepository, logDirectory, fileStateObserver, configuration);
+            
             // Vérifier si des arguments en ligne de commande sont passés
             if (args.Length > 0)
             {
@@ -91,30 +91,34 @@ namespace EasySaveApp
                         break;
                     case "2":
                         facade.ExecuteAllJobs();
+                        Console.WriteLine("🚀  All jobs executed successfully.");
                         break;
                     case "3":
                         facade.ListJobs();
+                        Console.WriteLine("✅  List of jobs completed.");
                         break;
                     case "4":
                         Console.Write(LanguageHelper.Instance.GetMessage("EnterIndexRemove"));
-                        if (int.TryParse(Console.ReadLine(), out int removeIndex))
+                        if (!int.TryParse(Console.ReadLine(), out int removeIndex) || removeIndex < 1 || removeIndex > facade.GetJobCount())
                         {
-                            facade.RemoveJob(removeIndex - 1);
+                            Console.WriteLine("❌ Invalid job index. Please enter a valid number.");
                         }
                         else
                         {
-                            Console.WriteLine(LanguageHelper.Instance.GetMessage("InvalidIndex"));
+                            facade.RemoveJob(removeIndex - 1);
+                            Console.WriteLine($"✅ Job {removeIndex} removed successfully.");
                         }
                         break;
                     case "5":
                         Console.Write(LanguageHelper.Instance.GetMessage("EnterIndexUpdate"));
-                        if (int.TryParse(Console.ReadLine(), out int updateIndex))
+                        if (!int.TryParse(Console.ReadLine(), out int updateIndex) || updateIndex < 1 || updateIndex > facade.GetJobCount())
                         {
-                            UpdateJob(facade, updateIndex - 1);
+                            Console.WriteLine("❌ Invalid job index. Please enter a valid number.");
                         }
                         else
                         {
-                            Console.WriteLine(LanguageHelper.Instance.GetMessage("InvalidIndex"));
+                            UpdateJob(facade, updateIndex - 1);
+                            Console.WriteLine($"✅ Job {updateIndex} updated successfully.");
                         }
                         break;
                     case "6":
