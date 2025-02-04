@@ -60,11 +60,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySaveLogs/EasySaveLogs.csproj",
+      "projectUniqueName": "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySaveLogs/EasySaveLogs.csproj",
       "projectName": "EasySaveLogs",
-      "projectPath": "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySaveLogs/EasySaveLogs.csproj",
+      "projectPath": "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySaveLogs/EasySaveLogs.csproj",
       "packagesPath": "/Users/tpellizzari/.nuget/packages/",
-      "outputPath": "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySaveLogs/obj/",
+      "outputPath": "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySaveLogs/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/tpellizzari/.nuget/NuGet/NuGet.Config"

@@ -1,4 +1,87 @@
-# .gitignore
-/EasySaveLogs/bin/*
-/EasySaveLogs/obj/*
-...
+# Ignore les fichiers temporaires de Visual Studio, les résultats de compilation et les fichiers générés par les extensions populaires de Visual Studio, ou les fichier de compilation.
+
+# Répertoires de build
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio 2015/2017 cache/options directory
+.vs/
+
+# Répertoires pour les résultats de tests
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# Résultats de build .NET
+artifacts/
+
+# Fichiers binaires générés par MSBuild
+*.obj
+*.iobj
+*.pdb
+*.ipdb
+*.pgc
+*.pgd
+
+# Fichiers de logs générés
+*.log
+*.tlog
+
+# Répertoires contenant des données spécifiques à l'utilisateur
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Fichiers générés par Visual Studio
+*.userprefs
+*.userproj
+
+# Fichiers de résultats de tests NUnit
+*.VisualState.xml
+TestResult.xml
+nunit-*.xml
+
+# Répertoires de configuration pour les outils externes
+node_modules/
+.vscode/
+.idea/
+
+# Fichiers temporaires du système d'exploitation
+.DS_Store
+Thumbs.db
+
+# Ajouter des fichiers spécifiques si tu utilises des outils comme ReSharper, TeamCity, etc.
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+_TeamCity*
+
+# NuGet Packages et autres dépendances externes
+*.nupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+
+# Exclure les fichiers générés par .NET
+project.lock.json
+project.fragment.lock.json
+
+# Cache de .NET Core
+**/obj/
+**/bin/
+
+# bin and obj folders
+bin/
+obj/
