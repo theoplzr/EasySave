@@ -2,6 +2,7 @@ using EasySave.Core.Commands;
 using EasySave.Core.Models;
 using EasySave.Core.Observers;
 using EasySave.Core.Repositories;
+using Microsoft.Extensions.Configuration;
 
 namespace EasySave.Core.Facade
 {
@@ -26,18 +27,15 @@ namespace EasySave.Core.Facade
         /// <param name="jobRepository">The repository for managing backup job persistence.</param>
         /// <param name="logDirectory">The directory where logs will be stored.</param>
         /// <param name="stateObserver">An optional observer to update backup state (e.g., JSON file).</param>
-        public EasySaveFacade(IBackupJobRepository jobRepository, string logDirectory, IBackupObserver? stateObserver = null)
+        public EasySaveFacade(IBackupJobRepository jobRepository, string logDirectory, IBackupObserver? stateObserver, IConfiguration configuration)
         {
-            // Create BackupManager with the repository and log directory
-            _backupManager = new BackupManager(jobRepository, logDirectory);
+            _backupManager = new BackupManager(jobRepository, logDirectory, configuration);
 
-            // Add the state observer if provided
             if (stateObserver != null)
             {
                 _backupManager.AddObserver(stateObserver);
             }
         }
-
         /// <summary>
         /// Adds a new backup job.
         /// </summary>
