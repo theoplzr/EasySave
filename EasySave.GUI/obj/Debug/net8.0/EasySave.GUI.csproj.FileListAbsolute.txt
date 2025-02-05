@@ -1,0 +1,14 @@
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.GUI/obj/Debug/net8.0/EasySave.GUI.csproj.AssemblyReference.cache
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.GUI/obj/Debug/net8.0/Avalonia/Resources.Inputs.cache
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.GUI/obj/Debug/net8.0/Avalonia/resources
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.GUI/obj/Debug/net8.0/EasySave.GUI.GeneratedMSBuildEditorConfig.editorconfig
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.GUI/obj/Debug/net8.0/EasySave.GUI.AssemblyInfoInputs.cache
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.GUI/obj/Debug/net8.0/EasySave.GUI.AssemblyInfo.cs
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.GUI/obj/Debug/net8.0/EasySave.GUI.csproj.CoreCompileInputs.cache
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.GUI/obj/Debug/net8.0/EasySave.GUI.sourcelink.json
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.GUI/obj/Debug/net8.0/Avalonia/EasySave.GUI.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.GUI/obj/Debug/net8.0/Avalonia/EasySave.GUI.pdb
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.GUI/obj/Debug/net8.0/refint/Avalonia/EasySave.GUI.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.GUI/obj/Debug/net8.0/EasySave.GUI.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.GUI/obj/Debug/net8.0/refint/EasySave.GUI.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.GUI/obj/Debug/net8.0/EasySave.GUI.pdb
