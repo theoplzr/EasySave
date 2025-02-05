@@ -42,15 +42,19 @@ namespace EasySave.Core
         /// </summary>
         /// <param name="jobRepository">Repository instance for loading and saving backup jobs.</param>
         /// <param name="logDirectory">Path to the directory where logs will be stored.</param>
+        /// <param name="configuration">Application configuration instance.</param>
         public BackupManager(IBackupJobRepository jobRepository, string logDirectory, IConfiguration configuration)
         {
             _jobRepository = jobRepository;
-            _logger = Logger.GetInstance(logDirectory);
             _backupJobs = _jobRepository.Load();
             _observers = new List<IBackupObserver>();
 
-            // Charger MaxBackupJobs depuis appsettings.json (valeur par défaut : 5)
+            // Charger LogFormat et MaxBackupJobs depuis la configuration
+            string logFormat = configuration["Logging:LogFormat"] ?? "JSON";
             _maxJobs = int.TryParse(configuration["MaxBackupJobs"], out int maxJobs) ? maxJobs : 5;
+
+            // Initialiser le logger avec le format correct
+            _logger = Logger.GetInstance(logDirectory, logFormat);
         }
 
         // ------------------------- Observer Methods -------------------------
