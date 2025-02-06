@@ -10,7 +10,7 @@ namespace EasySave.GUI.ViewModels
 {
     public class ConfigurationViewModel : ViewModelBase
     {
-        private string _logFormat;
+        private string _logFormat = "";
         public string LogFormat
         {
             get => _logFormat;
@@ -19,14 +19,14 @@ namespace EasySave.GUI.ViewModels
 
         public ObservableCollection<string> LogFormatOptions { get; } = new ObservableCollection<string> { "XML", "JSON" };
 
-        private string _extensions;
+        private string _extensions = "";
         public string Extensions
         {
             get => _extensions;
             set => this.RaiseAndSetIfChanged(ref _extensions, value);
         }
 
-        private string _businessSoftware;
+        private string _businessSoftware = "";
         public string BusinessSoftware
         {
             get => _businessSoftware;

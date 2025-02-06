@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EasySave.GUI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+04d775054bcec452e72a8fdeee6b40aad0c542d7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1c6e3724f5a9b097c5aeadd1a0f1e0a462774b26")]
 [assembly: System.Reflection.AssemblyProductAttribute("EasySave.GUI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EasySave.GUI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

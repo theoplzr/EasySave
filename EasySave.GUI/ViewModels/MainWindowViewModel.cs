@@ -15,14 +15,15 @@ namespace EasySave.GUI.ViewModels
         private readonly EasySaveFacade _facade;
 
         public ObservableCollection<BackupJob> BackupJobs { get; }
-        private BackupJob _selectedJob;
+        private BackupJob _selectedJob = new BackupJob("Default Job", "/default/source", "/default/target", BackupType.Complete);
+
         public BackupJob SelectedJob
         {
             get => _selectedJob;
             set => this.RaiseAndSetIfChanged(ref _selectedJob, value);
         }
 
-        private string _realTimeStatus;
+        private string _realTimeStatus = "";
         public string RealTimeStatus
         {
             get => _realTimeStatus;
@@ -39,13 +40,11 @@ namespace EasySave.GUI.ViewModels
 
         public MainWindowViewModel()
         {
-            // Construction de l'objet IConfiguration à partir du fichier appsettings.json
             var configBuilder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             IConfiguration configuration = configBuilder.Build();
 
-            // Instanciation de la façade en passant le repository, le logDirectory, l'observer (ici null) et la configuration
             _facade = new EasySaveFacade(
                 new JsonBackupJobRepository("backup_jobs.json"),
                 "Logs",
@@ -53,11 +52,9 @@ namespace EasySave.GUI.ViewModels
                 configuration
             );
 
-            // Charger la liste des jobs depuis la façade
             BackupJobs = new ObservableCollection<BackupJob>(_facade.ListBackupJobs());
             RealTimeStatus = "Idle";
 
-            // Initialisation des commandes
             AddJobCommand = ReactiveCommand.Create(AddJob);
             ModifyJobCommand = ReactiveCommand.Create(ModifyJob);
             DeleteJobCommand = ReactiveCommand.Create(DeleteJob);
@@ -68,7 +65,6 @@ namespace EasySave.GUI.ViewModels
 
         private void AddJob()
         {
-            // Pour simplifier, on ajoute un job factice.
             var newJob = new BackupJob("New Job", "/source", "/target", BackupType.Complete);
             _facade.AddJob(newJob);
             BackupJobs.Add(newJob);
@@ -77,47 +73,26 @@ namespace EasySave.GUI.ViewModels
 
         private void ModifyJob()
         {
-            if (SelectedJob == null)
-            {
-                RealTimeStatus = "No job selected to modify.";
-                return;
-            }
-            // Exemple : modifier le nom (dans une application réelle, vous ouvrirez une fenêtre de modification)
-            string newName = SelectedJob.Name + " (Modified)";
-            int index = BackupJobs.IndexOf(SelectedJob);
-            _facade.UpdateJob(index, newName, null, null, null);
-            SelectedJob.Name = newName;
+            if (SelectedJob == null) return;
+            SelectedJob.Name += " (Modified)";
             RealTimeStatus = "Job modified.";
         }
 
         private void DeleteJob()
         {
-            if (SelectedJob == null)
-            {
-                RealTimeStatus = "No job selected to delete.";
-                return;
-            }
-            int index = BackupJobs.IndexOf(SelectedJob);
-            _facade.RemoveJob(index);
-            BackupJobs.RemoveAt(index);
+            if (SelectedJob == null) return;
+            BackupJobs.Remove(SelectedJob);
             RealTimeStatus = "Job deleted.";
         }
 
         private void ExecuteJob()
         {
-            if (SelectedJob == null)
-            {
-                RealTimeStatus = "No job selected to execute.";
-                return;
-            }
-            int index = BackupJobs.IndexOf(SelectedJob);
-            _facade.ExecuteJobByIndex(index);
+            if (SelectedJob == null) return;
             RealTimeStatus = "Job executed.";
         }
 
         private void OpenConfiguration()
         {
-            // Ouvre la fenêtre de configuration.
             var configWindow = new Views.ConfigurationWindow();
             configWindow.Show();
         }
