@@ -1,0 +1,51 @@
+[
+  {
+    "Id": "5ebaf0ba-f489-4f1c-9705-c38b59217d9a",
+    "Name": "Backup 1",
+    "SourceDirectory": "/source",
+    "TargetDirectory": "/target",
+    "BackupType": 0
+  },
+  {
+    "Id": "07f57de4-0b94-4018-ab62-168517eb39ea",
+    "Name": "Backup 2",
+    "SourceDirectory": "/source",
+    "TargetDirectory": "/target",
+    "BackupType": 0
+  },
+  {
+    "Id": "2acc4cb7-a809-4abc-b833-24798cb76297",
+    "Name": "Backup 3",
+    "SourceDirectory": "/source",
+    "TargetDirectory": "/target",
+    "BackupType": 0
+  },
+  {
+    "Id": "9e939a1d-7f71-40f7-9d8e-e49989424d50",
+    "Name": "Backup 4",
+    "SourceDirectory": "/source",
+    "TargetDirectory": "/target",
+    "BackupType": 0
+  },
+  {
+    "Id": "7ae119bb-7b76-4a21-aa9b-ae65a06d5e2a",
+    "Name": "Backup 5",
+    "SourceDirectory": "/source",
+    "TargetDirectory": "/target",
+    "BackupType": 0
+  },
+  {
+    "Id": "0112d1ed-6dfb-4678-a701-e8dbe3c7c108",
+    "Name": "Backup 6",
+    "SourceDirectory": "/source",
+    "TargetDirectory": "/target",
+    "BackupType": 0
+  },
+  {
+    "Id": "1392d078-28f9-4546-9aff-66b690e68b81",
+    "Name": "Backup 7",
+    "SourceDirectory": "/source",
+    "TargetDirectory": "/target",
+    "BackupType": 0
+  }
+]
