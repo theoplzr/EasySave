@@ -1,0 +1,61 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="https://github.com/avaloniaui/design"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:EasySave.GUI.ViewModels"
+        xmlns:models="clr-namespace:EasySave.Core.Models;assembly=EasySave.Core"
+        mc:Ignorable="d"
+        x:Class="EasySave.GUI.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="EasySave" Width="800" Height="600">
+  <DockPanel>
+    <!-- Menu en haut -->
+    <Menu DockPanel.Dock="Top">
+      <MenuItem Header="File">
+        <MenuItem Header="Configuration" Command="{Binding OpenConfigurationCommand}" />
+        <MenuItem Header="Exit" Command="{Binding ExitCommand}" />
+      </MenuItem>
+    </Menu>
+
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="Auto"/>
+      </Grid.RowDefinitions>
+
+      <!-- Boutons d'actions -->
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+        <Button Content="Add" Command="{Binding AddJobCommand}" Margin="5"/>
+        <Button Content="Modify" Command="{Binding ModifyJobCommand}" Margin="5"/>
+        <Button Content="Delete" Command="{Binding DeleteJobCommand}" Margin="5"/>
+        <Button Content="Execute" Command="{Binding ExecuteJobCommand}" Margin="5"/>
+      </StackPanel>
+
+      <!-- DataGrid listant les jobs -->
+      <DataGrid Grid.Row="1" ItemsSource="{Binding BackupJobs}" AutoGenerateColumns="False" Margin="10" 
+                SelectionMode="Single" Focusable="True"
+                SelectedItem="{Binding SelectedJob, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+        <DataGrid.Styles>
+          <Style Selector="DataGridRow:selected">
+            <Setter Property="Background" Value="LightBlue"/>
+          </Style>
+        </DataGrid.Styles>
+        <DataGrid.Columns>
+          <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
+          <DataGridTextColumn Header="Source" Binding="{Binding SourceDirectory}" />
+          <DataGridTextColumn Header="Target" Binding="{Binding TargetDirectory}" />
+          <DataGridTextColumn Header="Type" Binding="{Binding BackupType}" />
+        </DataGrid.Columns>
+      </DataGrid>
+
+      <!-- Zone d'affichage de l'état en temps réel -->
+    <Border Grid.Row="2" BorderBrush="Gray" BorderThickness="1" Padding="10" Margin="10">
+      <StackPanel>
+        <TextBlock Text="Real-Time Status" FontWeight="Bold" Margin="0,0,0,5"/>
+        <TextBlock Text="{Binding RealTimeStatus}" />
+      </StackPanel>
+    </Border>
+    </Grid>
+  </DockPanel>
+</Window>
