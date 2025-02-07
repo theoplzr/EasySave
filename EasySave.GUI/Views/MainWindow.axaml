@@ -34,7 +34,13 @@
 
       <!-- DataGrid listant les jobs -->
       <DataGrid Grid.Row="1" ItemsSource="{Binding BackupJobs}" AutoGenerateColumns="False" Margin="10" 
-                SelectionMode="Single" SelectedItem="{Binding SelectedJob}">
+                SelectionMode="Single" Focusable="True"
+                SelectedItem="{Binding SelectedJob, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+        <DataGrid.Styles>
+          <Style Selector="DataGridRow:selected">
+            <Setter Property="Background" Value="LightBlue"/>
+          </Style>
+        </DataGrid.Styles>
         <DataGrid.Columns>
           <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
           <DataGridTextColumn Header="Source" Binding="{Binding SourceDirectory}" />

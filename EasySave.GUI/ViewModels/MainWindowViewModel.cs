@@ -16,7 +16,9 @@ namespace EasySave.GUI.ViewModels
     public class MainWindowViewModel : ViewModelBase
     {
         private readonly EasySaveFacade _facade;
+
         public ObservableCollection<BackupJob> BackupJobs { get; }
+
         private BackupJob? _selectedJob;
         public BackupJob? SelectedJob
         {
@@ -24,7 +26,16 @@ namespace EasySave.GUI.ViewModels
             set
             {
                 this.RaiseAndSetIfChanged(ref _selectedJob, value);
-                Console.WriteLine($"SelectedJob changed: {_selectedJob?.Name ?? "None"}");
+                if (value != null)
+                {
+                    RealTimeStatus = $"Selected job: {value.Name}";
+                    Console.WriteLine($"Selected job: {value.Name}");
+                }
+                else
+                {
+                    RealTimeStatus = "No job selected";
+                    Console.WriteLine("No job selected.");
+                }
             }
         }
 
@@ -74,7 +85,7 @@ namespace EasySave.GUI.ViewModels
             Console.WriteLine("Facade initialized.");
 
             BackupJobs = new ObservableCollection<BackupJob>(_facade.ListBackupJobs());
-            Console.WriteLine($"Loaded {BackupJobs.Count} backup jobs.");
+            Console.WriteLine($"Loaded {BackupJobs.Count} backup jobs into the DataGrid.");
             RealTimeStatus = "Idle";
 
             // Création des commandes en précisant l'outputScheduler pour forcer l'exécution sur le thread UI
@@ -97,6 +108,8 @@ namespace EasySave.GUI.ViewModels
             Console.WriteLine($"✅ Backup job '{newJob.Name}' added successfully.");
 
             BackupJobs.Add(newJob);
+            SelectedJob = newJob; 
+
             RealTimeStatus = "Job added.";
             Console.WriteLine($"✅ Job successfully added to UI: {newJob.Name}");
 
@@ -124,8 +137,8 @@ namespace EasySave.GUI.ViewModels
                 SelectedJob.BackupType
             );
 
-            RealTimeStatus = "Job modified.";
-            Console.WriteLine("✅ Job successfully modified.");
+            RealTimeStatus = $"Job '{SelectedJob.Name}' modified successfully.";
+            Console.WriteLine($"✅ Job modified: {SelectedJob.Name}");
 
             await Task.CompletedTask;
         }
@@ -146,8 +159,8 @@ namespace EasySave.GUI.ViewModels
             _facade.RemoveJob(indexToRemove);
 
             BackupJobs.Remove(SelectedJob);
-            RealTimeStatus = "Job deleted.";
-            Console.WriteLine("✅ Job successfully deleted.");
+            RealTimeStatus = $"Job '{SelectedJob.Name}' deleted successfully.";
+            Console.WriteLine($"✅ Job deleted: {SelectedJob.Name}");
 
             await Task.CompletedTask;
         }
@@ -167,8 +180,8 @@ namespace EasySave.GUI.ViewModels
             Console.WriteLine($"Executing job: {SelectedJob.Name} at index {indexToExecute}");
             _facade.ExecuteJobByIndex(indexToExecute);
 
-            RealTimeStatus = "Job executed.";
-            Console.WriteLine("✅ Job successfully executed.");
+            RealTimeStatus = $"Job '{SelectedJob.Name}' executed successfully.";
+            Console.WriteLine($"✅ Job executed: {SelectedJob.Name}");
 
             await Task.CompletedTask;
         }
