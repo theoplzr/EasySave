@@ -1,133 +1,14 @@
 [
   {
-    "Id": "2a27e57d-c38b-4301-b9ef-6ff2bdd2244c",
-    "Name": "Backup 1",
+    "Id": "ddada238-db1f-4a33-8cfd-19a9d19d3688",
+    "Name": "Backup 1 (Modified)",
     "SourceDirectory": "/source",
     "TargetDirectory": "/target",
     "BackupType": 0
   },
   {
-    "Id": "8d1a60d7-73bf-4863-82d5-82ec0092dc28",
-    "Name": "Backup 2",
-    "SourceDirectory": "/source",
-    "TargetDirectory": "/target",
-    "BackupType": 0
-  },
-  {
-    "Id": "0ee3f40c-a9b2-4a59-bdb2-4d4418649ce8",
-    "Name": "Backup 3",
-    "SourceDirectory": "/source",
-    "TargetDirectory": "/target",
-    "BackupType": 0
-  },
-  {
-    "Id": "cfbf4e55-57c9-435c-a513-a03cc06abe60",
-    "Name": "Backup 4",
-    "SourceDirectory": "/source",
-    "TargetDirectory": "/target",
-    "BackupType": 0
-  },
-  {
-    "Id": "56213405-2a73-41bf-8194-32555af61ef5",
-    "Name": "Backup 5",
-    "SourceDirectory": "/source",
-    "TargetDirectory": "/target",
-    "BackupType": 0
-  },
-  {
-    "Id": "a2b12f3c-a42e-4d2a-941f-cd1e4a62f6fe",
-    "Name": "Backup 6",
-    "SourceDirectory": "/source",
-    "TargetDirectory": "/target",
-    "BackupType": 0
-  },
-  {
-    "Id": "32f2d6fa-ed16-4e3b-813a-9daabec3b8c6",
-    "Name": "Backup 7",
-    "SourceDirectory": "/source",
-    "TargetDirectory": "/target",
-    "BackupType": 0
-  },
-  {
-    "Id": "480953e2-5ef7-4860-b361-b069d23a695c",
-    "Name": "Backup 8",
-    "SourceDirectory": "/source",
-    "TargetDirectory": "/target",
-    "BackupType": 0
-  },
-  {
-    "Id": "aed97a92-3191-45fe-a507-c99b4a4f8e4f",
-    "Name": "Backup 9",
-    "SourceDirectory": "/source",
-    "TargetDirectory": "/target",
-    "BackupType": 0
-  },
-  {
-    "Id": "c7eee3c4-ac7e-40b1-b796-23793b07b410",
-    "Name": "Backup 10",
-    "SourceDirectory": "/source",
-    "TargetDirectory": "/target",
-    "BackupType": 0
-  },
-  {
-    "Id": "17b4c29d-0b5b-4279-9c94-99f13aed48b8",
-    "Name": "Backup 11",
-    "SourceDirectory": "/source",
-    "TargetDirectory": "/target",
-    "BackupType": 0
-  },
-  {
-    "Id": "e243b551-3efa-4e8a-a6e2-9076ccee587d",
-    "Name": "Backup 12",
-    "SourceDirectory": "/source",
-    "TargetDirectory": "/target",
-    "BackupType": 0
-  },
-  {
-    "Id": "e6348617-ed6b-443c-b128-b0493124f42a",
-    "Name": "Backup 13",
-    "SourceDirectory": "/source",
-    "TargetDirectory": "/target",
-    "BackupType": 0
-  },
-  {
-    "Id": "57c87f3a-cc6f-4f9f-bfc5-ebcc74648b55",
-    "Name": "Backup 14",
-    "SourceDirectory": "/source",
-    "TargetDirectory": "/target",
-    "BackupType": 0
-  },
-  {
-    "Id": "8506c563-2104-4591-8737-a2ad769ef17d",
-    "Name": "Backup 15",
-    "SourceDirectory": "/source",
-    "TargetDirectory": "/target",
-    "BackupType": 0
-  },
-  {
-    "Id": "9384a6bd-f5a4-412e-85ef-b98c7be45d42",
-    "Name": "Backup 16",
-    "SourceDirectory": "/source",
-    "TargetDirectory": "/target",
-    "BackupType": 0
-  },
-  {
-    "Id": "cf266e12-5de7-460b-81e9-8065e73c65cd",
-    "Name": "Backup 17",
-    "SourceDirectory": "/source",
-    "TargetDirectory": "/target",
-    "BackupType": 0
-  },
-  {
-    "Id": "4cdb1e79-8294-445d-9310-058db01a8c07",
-    "Name": "Backup 18",
-    "SourceDirectory": "/source",
-    "TargetDirectory": "/target",
-    "BackupType": 0
-  },
-  {
-    "Id": "b6a87517-0bef-4776-8950-8a40bb91901b",
-    "Name": "Backup 19",
+    "Id": "a8cf34e6-dbb6-4d83-a106-cd2b713f4a8f",
+    "Name": "Backup 2 (Modified)",
     "SourceDirectory": "/source",
     "TargetDirectory": "/target",
     "BackupType": 0
