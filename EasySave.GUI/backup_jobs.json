@@ -1,13 +1,13 @@
 [
   {
-    "Id": "ddada238-db1f-4a33-8cfd-19a9d19d3688",
+    "Id": "776d3194-1bf4-43ca-bbba-ada0a45c5975",
     "Name": "Backup 1 (Modified)",
     "SourceDirectory": "/source",
     "TargetDirectory": "/target",
     "BackupType": 0
   },
   {
-    "Id": "a8cf34e6-dbb6-4d83-a106-cd2b713f4a8f",
+    "Id": "734f8f8b-bfe1-4362-b17a-464b376f614c",
     "Name": "Backup 2 (Modified)",
     "SourceDirectory": "/source",
     "TargetDirectory": "/target",

@@ -68,15 +68,23 @@ namespace EasySave.Core.Template
             long totalSize
         )
         {
+            // Calcul du chemin relatif et détermination du chemin de destination
             var relativePath = Path.GetRelativePath(job.SourceDirectory, filePath);
             var targetFilePath = Path.Combine(job.TargetDirectory, relativePath);
+
+            // Création du répertoire cible s'il n'existe pas
+            var targetDirectory = Path.GetDirectoryName(targetFilePath);
+            if (!string.IsNullOrEmpty(targetDirectory) && !Directory.Exists(targetDirectory))
+            {
+                Directory.CreateDirectory(targetDirectory);
+            }
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
             try
             {
-                // Perform the file copy operation
+                // Effectue la copie du fichier
                 File.Copy(filePath, targetFilePath, true);
                 stopwatch.Stop();
 
@@ -84,7 +92,17 @@ namespace EasySave.Core.Template
                 filesProcessed++;
                 bytesProcessed += fileSize;
 
-                // Log the file transfer details
+                // Vérifier si le fichier doit être crypté en fonction de son extension
+                int encryptionTime = 0;
+                var fileExtension = Path.GetExtension(filePath);
+                var encryptionExtensions = ConfigurationProvider.EncryptionExtensions; // ex: [".txt", ".docx", ...]
+                if (encryptionExtensions.Contains(fileExtension, StringComparer.OrdinalIgnoreCase))
+                {
+                    // Appel au service de cryptage et récupération du temps de cryptage (en ms)
+                    encryptionTime = Services.EncryptionService.EncryptFile(filePath);
+                }
+
+                // Enregistrement des informations de transfert dans le log incluant le temps de cryptage
                 LogAction(new LogEntry
                 {
                     Timestamp = DateTime.Now,
@@ -93,12 +111,13 @@ namespace EasySave.Core.Template
                     TargetFilePath = targetFilePath,
                     FileSize = fileSize,
                     TransferTimeMs = stopwatch.ElapsedMilliseconds,
+                    EncryptionTimeMs = encryptionTime,
                     Status = "Success"
                 });
 
                 Console.WriteLine($"[Diff] Copied {filePath} -> {targetFilePath}");
 
-                // Notify observers about the backup state update
+                // Notifie les observateurs de l'état actuel de la sauvegarde
                 Notify(new BackupState
                 {
                     JobId = job.Id,
@@ -117,7 +136,7 @@ namespace EasySave.Core.Template
             {
                 stopwatch.Stop();
 
-                // Log the error if file copying fails
+                // En cas d'erreur, on loggue avec des valeurs négatives pour les temps
                 LogAction(new LogEntry
                 {
                     Timestamp = DateTime.Now,
@@ -126,6 +145,7 @@ namespace EasySave.Core.Template
                     TargetFilePath = targetFilePath,
                     FileSize = 0,
                     TransferTimeMs = -1,
+                    EncryptionTimeMs = -1,
                     Status = "Error: " + ex.Message
                 });
 
