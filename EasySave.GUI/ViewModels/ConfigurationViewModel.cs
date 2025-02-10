@@ -1,64 +1,116 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Reactive;
+using System.IO;
+using System.Text.Json;
 using ReactiveUI;
-using EasySave.Core;            // Vous aurez accès aux propriétés statiques de ConfigurationProvider
-using EasySave.Core.Models;
-using EasySave.Core.Facade;
+using System.Reactive;
+using System.Linq;
 
 namespace EasySave.GUI.ViewModels
 {
-    public class ConfigurationViewModel : ViewModelBase
+    public class ConfigurationViewModel : ReactiveObject
     {
-        private string _logFormat = "";
+        private string _logFormat = "JSON";
+        private string _businessSoftware = "Calculator";
+        private ObservableCollection<string> _encryptionExtensions = new();
+
         public string LogFormat
         {
             get => _logFormat;
             set => this.RaiseAndSetIfChanged(ref _logFormat, value);
         }
 
-        public ObservableCollection<string> LogFormatOptions { get; } = new ObservableCollection<string> { "XML", "JSON" };
+        public List<string> LogFormatOptions { get; } = new() { "JSON", "XML" };
 
-        private string _extensions = "";
-        public string Extensions
-        {
-            get => _extensions;
-            set => this.RaiseAndSetIfChanged(ref _extensions, value);
-        }
-
-        private string _businessSoftware = "";
         public string BusinessSoftware
         {
             get => _businessSoftware;
             set => this.RaiseAndSetIfChanged(ref _businessSoftware, value);
         }
 
+        public ObservableCollection<string> EncryptionExtensions
+        {
+            get => _encryptionExtensions;
+            set => this.RaiseAndSetIfChanged(ref _encryptionExtensions, value);
+        }
+
+        public ReactiveCommand<string, Unit> AddExtensionCommand { get; }
+        public ReactiveCommand<string, Unit> RemoveExtensionCommand { get; }
         public ReactiveCommand<Unit, Unit> SaveCommand { get; }
-        public ReactiveCommand<Unit, Unit> CancelCommand { get; }
 
         public ConfigurationViewModel()
         {
-            // Charger les valeurs initiales depuis la configuration via ConfigurationProvider (accès direct aux propriétés statiques)
-            LogFormat = ConfigurationProvider.LogFormat;
-            Extensions = string.Join(",", ConfigurationProvider.EncryptionExtensions);
-            BusinessSoftware = ConfigurationProvider.BusinessSoftware;
-
-            SaveCommand = ReactiveCommand.Create(Save);
-            CancelCommand = ReactiveCommand.Create(Cancel);
+            LoadSettings();
+            AddExtensionCommand = ReactiveCommand.Create<string>(AddExtension);
+            RemoveExtensionCommand = ReactiveCommand.Create<string>(RemoveExtension);
+            SaveCommand = ReactiveCommand.Create(SaveSettings);
         }
 
-        private void Save()
+        public void LoadSettings()
         {
-            Console.WriteLine("Configuration saved:");
-            Console.WriteLine($"Log Format: {LogFormat}");
-            Console.WriteLine($"Extensions: {Extensions}");
-            Console.WriteLine($"Business Software: {BusinessSoftware}");
-            // Vous pouvez ajouter ici la logique pour mettre à jour appsettings.json si nécessaire.
+            try
+            {
+                string configPath = "appsettings.json";
+                if (File.Exists(configPath))
+                {
+                    string json = File.ReadAllText(configPath);
+                    var config = JsonSerializer.Deserialize<ConfigurationData>(json);
+
+                    LogFormat = config?.LogFormat ?? "JSON";
+                    BusinessSoftware = config?.BusinessSoftware ?? "Calculator";
+                    EncryptionExtensions = new ObservableCollection<string>(
+                        config?.EncryptionExtensions ?? new List<string> { ".txt", ".docx" }
+                    );
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading configuration: {ex.Message}");
+            }
         }
 
-        private void Cancel()
+        public void SaveSettings()
         {
-            Console.WriteLine("Configuration cancelled.");
+            try
+            {
+                var config = new ConfigurationData
+                {
+                    LogFormat = LogFormat,
+                    BusinessSoftware = BusinessSoftware,
+                    EncryptionExtensions = EncryptionExtensions.ToList() // Utilisé uniquement ici pour la sérialisation
+                };
+
+                string json = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText("appsettings.json", json);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error saving configuration: {ex.Message}");
+            }
         }
+
+        public void AddExtension(string extension)
+        {
+            if (!string.IsNullOrWhiteSpace(extension) && !EncryptionExtensions.Contains(extension))
+            {
+                EncryptionExtensions.Add(extension);
+            }
+        }
+
+        public void RemoveExtension(string extension)
+        {
+            if (!string.IsNullOrWhiteSpace(extension) && EncryptionExtensions.Contains(extension))
+            {
+                EncryptionExtensions.Remove(extension);
+            }
+        }
+    }
+
+    public class ConfigurationData
+    {
+        public string LogFormat { get; set; } = "JSON";
+        public string BusinessSoftware { get; set; } = "Calculator";
+        public List<string> EncryptionExtensions { get; set; } = new();
     }
 }

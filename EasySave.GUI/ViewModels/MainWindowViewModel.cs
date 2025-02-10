@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using ReactiveUI;
 using EasySave.Core.Models;
 using EasySave.Core.Facade;
+using EasySave.GUI.Utils;
+using EasySave.GUI.Views;
 using EasySave.Core.Repositories;
 using Microsoft.Extensions.Configuration;
 using System.IO;
-using System.Reactive.Concurrency;
-using EasySave.GUI.Utils;
 
 namespace EasySave.GUI.ViewModels
 {
@@ -61,6 +61,7 @@ namespace EasySave.GUI.ViewModels
         // Constructeur statique pour configurer le scheduler global
         static MainWindowViewModel()
         {
+            // Scheduler configuré pour le thread principal
             RxApp.MainThreadScheduler = AvaloniaDispatcherScheduler.Instance;
         }
 
@@ -68,13 +69,15 @@ namespace EasySave.GUI.ViewModels
         {
             Console.WriteLine("Initializing MainWindowViewModel...");
 
-            var configBuilder = new ConfigurationBuilder()
+            // Charger la configuration depuis le fichier appsettings.json
+            IConfiguration configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-            IConfiguration configuration = configBuilder.Build();
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .Build();
 
             Console.WriteLine("Configuration loaded.");
 
+            // Initialisation du facade
             _facade = new EasySaveFacade(
                 new JsonBackupJobRepository("backup_jobs.json"),
                 "Logs",
@@ -84,17 +87,32 @@ namespace EasySave.GUI.ViewModels
 
             Console.WriteLine("Facade initialized.");
 
+            // Charger les travaux de sauvegarde
             BackupJobs = new ObservableCollection<BackupJob>(_facade.ListBackupJobs());
             Console.WriteLine($"Loaded {BackupJobs.Count} backup jobs into the DataGrid.");
             RealTimeStatus = "Idle";
 
-            // Création des commandes en précisant l'outputScheduler pour forcer l'exécution sur le thread UI
-            AddJobCommand = ReactiveCommand.CreateFromTask(AddJobAsync, outputScheduler: RxApp.MainThreadScheduler);
-            ModifyJobCommand = ReactiveCommand.CreateFromTask(ModifyJobAsync, outputScheduler: RxApp.MainThreadScheduler);
-            DeleteJobCommand = ReactiveCommand.CreateFromTask(DeleteJobAsync, outputScheduler: RxApp.MainThreadScheduler);
-            ExecuteJobCommand = ReactiveCommand.CreateFromTask(ExecuteJobAsync, outputScheduler: RxApp.MainThreadScheduler);
-            OpenConfigurationCommand = ReactiveCommand.Create(OpenConfiguration, outputScheduler: RxApp.MainThreadScheduler);
-            ExitCommand = ReactiveCommand.Create(() => Environment.Exit(0), outputScheduler: RxApp.MainThreadScheduler);
+            // Initialiser les commandes
+            AddJobCommand = ReactiveCommand.CreateFromTask(AddJobAsync);
+            ModifyJobCommand = ReactiveCommand.CreateFromTask(ModifyJobAsync);
+            DeleteJobCommand = ReactiveCommand.CreateFromTask(DeleteJobAsync);
+            ExecuteJobCommand = ReactiveCommand.CreateFromTask(ExecuteJobAsync);
+            OpenConfigurationCommand = ReactiveCommand.Create(OpenConfiguration);
+            ExitCommand = ReactiveCommand.Create(() => Environment.Exit(0));
+        }
+
+        private void OpenConfiguration()
+        {
+            try
+            {
+                // Vérifiez si ConfigurationWindow est défini correctement
+                var configWindow = new EasySave.GUI.Views.ConfigurationWindow();
+                configWindow.Show();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error opening ConfigurationWindow: {ex.Message}");
+            }
         }
 
         private async Task AddJobAsync()
@@ -108,7 +126,7 @@ namespace EasySave.GUI.ViewModels
             Console.WriteLine($"✅ Backup job '{newJob.Name}' added successfully.");
 
             BackupJobs.Add(newJob);
-            SelectedJob = newJob; 
+            SelectedJob = newJob;
 
             RealTimeStatus = "Job added.";
             Console.WriteLine($"✅ Job successfully added to UI: {newJob.Name}");
@@ -184,12 +202,6 @@ namespace EasySave.GUI.ViewModels
             Console.WriteLine($"✅ Job executed: {SelectedJob.Name}");
 
             await Task.CompletedTask;
-        }
-
-        private void OpenConfiguration()
-        {
-            Console.WriteLine("OpenConfiguration triggered.");
-            RealTimeStatus = "Configuration opened.";
         }
     }
 }

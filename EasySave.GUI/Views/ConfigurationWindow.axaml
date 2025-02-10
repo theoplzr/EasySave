@@ -4,16 +4,29 @@
         x:Class="EasySave.GUI.Views.ConfigurationWindow"
         x:DataType="vm:ConfigurationViewModel"
         Title="Configuration" Width="400" Height="300">
-  <StackPanel Margin="10">
-    <TextBlock Text="Log Format:"/>
-    <ComboBox SelectedItem="{Binding LogFormat}" ItemsSource="{Binding LogFormatOptions}" />
-    <TextBlock Text="Extensions to Encrypt (comma separated):" Margin="0,10,0,0"/>
-    <TextBox Text="{Binding Extensions}" />
-    <TextBlock Text="Business Software Name:" Margin="0,10,0,0"/>
-    <TextBox Text="{Binding BusinessSoftware}" />
-    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-      <Button Content="Save" Command="{Binding SaveCommand}" Margin="5"/>
-      <Button Content="Cancel" Command="{Binding CancelCommand}" Margin="5"/>
+
+    <Window.DataContext>
+        <vm:ConfigurationViewModel />
+    </Window.DataContext>
+
+    <StackPanel Margin="10">
+        <TextBlock Text="Log Format:"/>
+        <ComboBox SelectedItem="{Binding LogFormat}" ItemsSource="{Binding LogFormatOptions}" />
+
+        <TextBlock Text="Extensions to Encrypt:" Margin="0,10,0,0"/>
+        <ListBox x:Name="EncryptionExtensions" ItemsSource="{Binding EncryptionExtensions}" Width="200" Height="100"/>
+
+        <StackPanel Orientation="Horizontal">
+            <TextBox x:Name="NewExtension" Width="100"/>
+            <Button Content="Add" Command="{Binding AddExtensionCommand}" CommandParameter="{Binding Text, ElementName=NewExtension}"/>
+            <Button Content="Remove" Command="{Binding RemoveExtensionCommand}" CommandParameter="{Binding SelectedItem, ElementName=EncryptionExtensions}"/>
+        </StackPanel>
+
+        <TextBlock Text="Business Software Name:" Margin="0,10,0,0"/>
+        <TextBox Text="{Binding BusinessSoftware}" />
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+            <Button Content="Save" Command="{Binding SaveCommand}" Margin="5"/>
+        </StackPanel>
     </StackPanel>
-  </StackPanel>
 </Window>

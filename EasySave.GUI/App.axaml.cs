@@ -16,12 +16,8 @@ namespace EasySave.GUI
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                // Afficher la fenêtre de sélection de langue avant d'ouvrir MainWindow
-                var languageWindow = new LanguageSelectionWindow();
-                languageWindow.Show();
-
-                // Assurer que l'application ne se ferme pas immédiatement
-                desktop.MainWindow = languageWindow;
+                // Démarrer sur MainWindow
+                desktop.MainWindow = new MainWindow();
             }
 
             base.OnFrameworkInitializationCompleted();

@@ -1,16 +1,14 @@
 using System.Diagnostics;
+using EasySaveLogs;
+using EasySave.Core.Utils;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace EasySave.Core.Services
 {
     public class EncryptionService
     {
-        /// <summary>
-        /// Appelle CryptoSoft pour crypter un fichier.
-        /// Retourne le temps de cryptage en millisecondes.
-        /// En cas d’erreur, retourne un code négatif (par exemple -1).
-        /// </summary>
-        /// <param name="filePath">Chemin du fichier à crypter</param>
-        /// <returns>Temps de cryptage (ms) ou code négatif en cas d’erreur</returns>
         public static int EncryptFile(string filePath)
         {
             try
@@ -43,7 +41,9 @@ namespace EasySave.Core.Services
                 }
                 catch (Exception ex)
                 {
-                    Logger.GetInstance().LogAction(new LogEntry
+                    string logDirectory = Configuration.GetLogDirectory();
+                    string logFormat = Configuration.GetLogFormat();
+                    Logger.GetInstance(logDirectory, logFormat).LogAction(new LogEntry
                     {
                         Timestamp = DateTime.Now,
                         BackupName = "CryptoSoft",
@@ -62,7 +62,9 @@ namespace EasySave.Core.Services
                 stopwatch.Stop();
                 int encryptionTimeMs = (int)stopwatch.ElapsedMilliseconds;
 
-                Logger.GetInstance().LogAction(new LogEntry
+                string finalLogDirectory = Configuration.GetLogDirectory();
+                string finalLogFormat = Configuration.GetLogFormat();
+                Logger.GetInstance(finalLogDirectory, finalLogFormat).LogAction(new LogEntry
                 {
                     Timestamp = DateTime.Now,
                     BackupName = "Cryptage",
@@ -79,7 +81,9 @@ namespace EasySave.Core.Services
             }
             catch (Exception ex)
             {
-                Logger.GetInstance().LogAction(new LogEntry
+                string logDirectory = Configuration.GetLogDirectory();
+                string logFormat = Configuration.GetLogFormat();
+                Logger.GetInstance(logDirectory, logFormat).LogAction(new LogEntry
                 {
                     Timestamp = DateTime.Now,
                     BackupName = "Erreur Cryptage",
