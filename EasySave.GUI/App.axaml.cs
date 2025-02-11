@@ -5,7 +5,7 @@ using EasySave.GUI.Views;
 
 namespace EasySave.GUI
 {
-    public class App : Application
+    public partial class App : Application
     {
         public override void Initialize()
         {
@@ -16,10 +16,8 @@ namespace EasySave.GUI
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                // Démarrer sur MainWindow
-                desktop.MainWindow = new MainWindow();
+                desktop.MainWindow = new MainWindow(); // Définit MainWindow comme la fenêtre principale
             }
-
             base.OnFrameworkInitializationCompleted();
         }
     }

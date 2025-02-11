@@ -1,5 +1,5 @@
-using System;
-using System.Collections.Generic;
+using System;                         
+using System.Collections.Generic;     
 using System.ComponentModel;
 
 namespace EasySave.GUI.Helpers
@@ -10,13 +10,14 @@ namespace EasySave.GUI.Helpers
         public static LanguageHelper Instance => _instance.Value;
 
         private string _language = "en";
-
         public event PropertyChangedEventHandler? PropertyChanged;
 
         private static readonly Dictionary<string, Dictionary<string, string>> messages = new()
         {
-            { "en", new Dictionary<string, string>
+            {
+                "en", new Dictionary<string, string>
                 {
+                    // Clés déjà existantes
                     { "MainWindowTitle", "EasySave" },
                     { "FileMenuHeader", "File" },
                     { "MenuItemConfiguration", "Configuration" },
@@ -29,11 +30,33 @@ namespace EasySave.GUI.Helpers
                     { "ColumnSource", "Source" },
                     { "ColumnTarget", "Target" },
                     { "ColumnType", "Type" },
-                    { "RealTimeStatusHeader", "Real-Time Status" }
+                    { "RealTimeStatusHeader", "Real-Time Status" },
+                    { "JobsTabHeader", "Jobs" },
+                    { "ProgressTabHeader", "Progress" },
+
+                    // --- Nouveaux ajout ---
+                    { "ConfigurationWindowTitle", "Configuration" },
+                    { "LogFormatLabel", "Log Format:" },
+                    { "ExtensionsToEncryptLabel", "Extensions to Encrypt:" },
+                    { "BusinessSoftwareLabel", "Business Software Name:" },
+                    { "ButtonRemove", "Remove" },
+                    { "ButtonSave", "Save" },
+                    { "ButtonCancel", "Cancel" },
+                    { "JobFormWindowTitle", "Job Form" },
+                    { "JobNameLabel", "Job Name:" },
+                    { "SourceDirectoryLabel", "Source Directory:" },
+                    { "TargetDirectoryLabel", "Target Directory:" },
+                    { "BackupTypeLabel", "Backup Type:" },
+                    { "LanguageSelectionWindowTitle", "Select Language" },
+                    { "ChooseYourLanguage", "Choose your language:" },
+                    { "English", "English" },
+                    { "French", "French" },
                 }
             },
-            { "fr", new Dictionary<string, string>
+            {
+                "fr", new Dictionary<string, string>
                 {
+                    // Clés déjà existantes
                     { "MainWindowTitle", "EasySave" },
                     { "FileMenuHeader", "Fichier" },
                     { "MenuItemConfiguration", "Configuration" },
@@ -46,7 +69,27 @@ namespace EasySave.GUI.Helpers
                     { "ColumnSource", "Source" },
                     { "ColumnTarget", "Cible" },
                     { "ColumnType", "Type" },
-                    { "RealTimeStatusHeader", "État en temps réel" }
+                    { "RealTimeStatusHeader", "État en temps réel" },
+                    { "JobsTabHeader", "Travaux" },
+                    { "ProgressTabHeader", "Progression" },
+
+                    // --- Nouveaux ajout ---
+                    { "ConfigurationWindowTitle", "Configuration" },
+                    { "LogFormatLabel", "Format du Log :" },
+                    { "ExtensionsToEncryptLabel", "Extensions à Chiffrer :" },
+                    { "BusinessSoftwareLabel", "Logiciel métier :" },
+                    { "ButtonRemove", "Retirer" },
+                    { "ButtonSave", "Enregistrer" },
+                    { "ButtonCancel", "Annuler" },
+                    { "JobFormWindowTitle", "Formulaire de Job" },
+                    { "JobNameLabel", "Nom du Job :" },
+                    { "SourceDirectoryLabel", "Dossier Source :" },
+                    { "TargetDirectoryLabel", "Dossier Cible :" },
+                    { "BackupTypeLabel", "Type de Sauvegarde :" },
+                    { "LanguageSelectionWindowTitle", "Sélection de la Langue" },
+                    { "ChooseYourLanguage", "Choisissez votre langue :" },
+                    { "English", "Anglais" },
+                    { "French", "Français" },
                 }
             }
         };
@@ -56,6 +99,8 @@ namespace EasySave.GUI.Helpers
         public void SetLanguage(string language)
         {
             _language = language;
+
+            // Propriétés déjà existantes
             NotifyPropertyChanged(nameof(MainWindowTitle));
             NotifyPropertyChanged(nameof(FileMenuHeader));
             NotifyPropertyChanged(nameof(MenuItemConfiguration));
@@ -69,13 +114,32 @@ namespace EasySave.GUI.Helpers
             NotifyPropertyChanged(nameof(ColumnTarget));
             NotifyPropertyChanged(nameof(ColumnType));
             NotifyPropertyChanged(nameof(RealTimeStatusHeader));
+            NotifyPropertyChanged(nameof(JobsTabHeader));
+            NotifyPropertyChanged(nameof(ProgressTabHeader));
+
+            // Nouveaux
+            NotifyPropertyChanged(nameof(ConfigurationWindowTitle));
+            NotifyPropertyChanged(nameof(LogFormatLabel));
+            NotifyPropertyChanged(nameof(ExtensionsToEncryptLabel));
+            NotifyPropertyChanged(nameof(BusinessSoftwareLabel));
+            NotifyPropertyChanged(nameof(ButtonRemove));
+            NotifyPropertyChanged(nameof(ButtonSave));
+            NotifyPropertyChanged(nameof(ButtonCancel));
+            NotifyPropertyChanged(nameof(JobFormWindowTitle));
+            NotifyPropertyChanged(nameof(JobNameLabel));
+            NotifyPropertyChanged(nameof(SourceDirectoryLabel));
+            NotifyPropertyChanged(nameof(TargetDirectoryLabel));
+            NotifyPropertyChanged(nameof(BackupTypeLabel));
+            NotifyPropertyChanged(nameof(LanguageSelectionWindowTitle));
+            NotifyPropertyChanged(nameof(ChooseYourLanguage));
+            NotifyPropertyChanged(nameof(English));
+            NotifyPropertyChanged(nameof(French));
         }
 
         private void NotifyPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
+        // Propriétés existantes
         public string MainWindowTitle => GetMessage("MainWindowTitle");
         public string FileMenuHeader => GetMessage("FileMenuHeader");
         public string MenuItemConfiguration => GetMessage("MenuItemConfiguration");
@@ -89,12 +153,34 @@ namespace EasySave.GUI.Helpers
         public string ColumnTarget => GetMessage("ColumnTarget");
         public string ColumnType => GetMessage("ColumnType");
         public string RealTimeStatusHeader => GetMessage("RealTimeStatusHeader");
+        public string JobsTabHeader => GetMessage("JobsTabHeader");
+        public string ProgressTabHeader => GetMessage("ProgressTabHeader");
 
-        public string GetMessage(string key)
+        // Nouveaux
+        public string ConfigurationWindowTitle => GetMessage("ConfigurationWindowTitle");
+        public string LogFormatLabel => GetMessage("LogFormatLabel");
+        public string ExtensionsToEncryptLabel => GetMessage("ExtensionsToEncryptLabel");
+        public string BusinessSoftwareLabel => GetMessage("BusinessSoftwareLabel");
+        public string ButtonRemove => GetMessage("ButtonRemove");
+        public string ButtonSave => GetMessage("ButtonSave");
+        public string ButtonCancel => GetMessage("ButtonCancel");
+        public string JobFormWindowTitle => GetMessage("JobFormWindowTitle");
+        public string JobNameLabel => GetMessage("JobNameLabel");
+        public string SourceDirectoryLabel => GetMessage("SourceDirectoryLabel");
+        public string TargetDirectoryLabel => GetMessage("TargetDirectoryLabel");
+        public string BackupTypeLabel => GetMessage("BackupTypeLabel");
+        public string LanguageSelectionWindowTitle => GetMessage("LanguageSelectionWindowTitle");
+        public string ChooseYourLanguage => GetMessage("ChooseYourLanguage");
+        public string English => GetMessage("English");
+        public string French => GetMessage("French");
+
+        private string GetMessage(string key)
         {
-            return messages.ContainsKey(_language) && messages[_language].ContainsKey(key)
-                ? messages[_language][key]
-                : "Message not found";
+            if (messages.ContainsKey(_language) && messages[_language].ContainsKey(key))
+            {
+                return messages[_language][key];
+            }
+            return $"[MISSING: {key}]";
         }
     }
 }

@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using EasySave.Core.Models;
 using EasySaveLogs;
+using EasySave.Core.Services;
 
 namespace EasySave.Core.Template
 {
@@ -43,94 +44,115 @@ namespace EasySave.Core.Template
         /// <param name="totalFiles">Total number of files to be processed.</param>
         /// <param name="totalSize">Total size of files to be backed up.</param>
         protected override void CopyFile(
-            BackupJob job, 
-            string filePath, 
-            ref int filesProcessed, 
-            ref long bytesProcessed,
-            int totalFiles,
-            long totalSize
-        )
+        BackupJob job, 
+        string filePath, 
+        ref int filesProcessed, 
+        ref long bytesProcessed,
+        int totalFiles,
+        long totalSize
+    )
+    {
+        var relativePath = Path.GetRelativePath(job.SourceDirectory, filePath);
+        var targetFilePath = Path.Combine(job.TargetDirectory, relativePath);
+
+        // Crée le répertoire cible si nécessaire
+        var targetDirectory = Path.GetDirectoryName(targetFilePath);
+        if (!string.IsNullOrEmpty(targetDirectory) && !Directory.Exists(targetDirectory))
         {
-            var relativePath = Path.GetRelativePath(job.SourceDirectory, filePath);
-            var targetFilePath = Path.Combine(job.TargetDirectory, relativePath);
-
-            // Crée le répertoire cible si nécessaire
-            var targetDirectory = Path.GetDirectoryName(targetFilePath);
-            if (!string.IsNullOrEmpty(targetDirectory) && !Directory.Exists(targetDirectory))
-            {
-                Directory.CreateDirectory(targetDirectory);
-            }
-
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            try
-            {
-                File.Copy(filePath, targetFilePath, true);
-                stopwatch.Stop();
-
-                var fileSize = new FileInfo(filePath).Length;
-                filesProcessed++;
-                bytesProcessed += fileSize;
-
-                // Déterminer si le fichier doit être crypté
-                int encryptionTime = 0;
-                var fileExtension = Path.GetExtension(filePath);
-                // Par exemple, récupérez les extensions à crypter depuis la config :
-                var encryptionExtensions = ConfigurationProvider.EncryptionExtensions; // e.g. [".txt", ".docx"]
-                if (encryptionExtensions.Contains(fileExtension, StringComparer.OrdinalIgnoreCase))
-                {
-                    encryptionTime = Services.EncryptionService.EncryptFile(filePath);
-                }
-
-                // Log de la copie avec info sur le cryptage
-                LogAction(new LogEntry
-                {
-                    Timestamp = DateTime.Now,
-                    BackupName = job.Name,
-                    SourceFilePath = filePath,
-                    TargetFilePath = targetFilePath,
-                    FileSize = fileSize,
-                    TransferTimeMs = stopwatch.ElapsedMilliseconds,
-                    EncryptionTimeMs = encryptionTime,
-                    Status = "Success"
-                });
-
-                Console.WriteLine($"[Full] Copied {filePath} -> {targetFilePath}");
-
-                // Notifie les observateurs avec l’état mis à jour
-                Notify(new BackupState
-                {
-                    JobId = job.Id,
-                    BackupName = job.Name,
-                    LastActionTime = DateTime.Now,
-                    Status = "Active",
-                    TotalFiles = totalFiles,
-                    TotalSize = totalSize,
-                    RemainingFiles = totalFiles - filesProcessed,
-                    RemainingSize = totalSize - bytesProcessed,
-                    CurrentSourceFile = filePath,
-                    CurrentTargetFile = targetFilePath
-                });
-            }
-            catch (Exception ex)
-            {
-                stopwatch.Stop();
-                LogAction(new LogEntry
-                {
-                    Timestamp = DateTime.Now,
-                    BackupName = job.Name,
-                    SourceFilePath = filePath,
-                    TargetFilePath = targetFilePath,
-                    FileSize = 0,
-                    TransferTimeMs = -1,
-                    EncryptionTimeMs = -1,
-                    Status = "Error: " + ex.Message
-                });
-
-                Console.WriteLine($"[Full] Error copying {filePath}: {ex.Message}");
-            }
+            Directory.CreateDirectory(targetDirectory);
         }
+
+        var stopwatch = new Stopwatch();
+        stopwatch.Start();
+
+        try
+        {
+            File.Copy(filePath, targetFilePath, true);
+            stopwatch.Stop();
+
+            var fileSize = new FileInfo(filePath).Length;
+            filesProcessed++;
+            bytesProcessed += fileSize;
+
+            // Déterminer si le fichier doit être crypté
+            int encryptionTime = 0;
+            var fileExtension = Path.GetExtension(filePath);
+            var encryptionExtensions = ConfigurationProvider.EncryptionExtensions; // e.g. [".txt", ".docx"]
+            if (encryptionExtensions.Contains(fileExtension, StringComparer.OrdinalIgnoreCase))
+            {
+                encryptionTime = Services.EncryptionService.EncryptFile(filePath);
+            }
+
+            // Log de la copie avec info sur le cryptage
+            LogAction(new LogEntry
+            {
+                Timestamp = DateTime.Now,
+                BackupName = job.Name,
+                SourceFilePath = filePath,
+                TargetFilePath = targetFilePath,
+                FileSize = fileSize,
+                TransferTimeMs = stopwatch.ElapsedMilliseconds,
+                EncryptionTimeMs = encryptionTime,
+                Status = "Success"
+            });
+
+            Console.WriteLine($"[Full] Copied {filePath} -> {targetFilePath}");
+
+            // Notifie les observateurs avec l’état mis à jour
+            Notify(new BackupState
+            {
+                JobId = job.Id,
+                BackupName = job.Name,
+                LastActionTime = DateTime.Now,
+                Status = "Active",
+                TotalFiles = totalFiles,
+                TotalSize = totalSize,
+                RemainingFiles = totalFiles - filesProcessed,
+                RemainingSize = totalSize - bytesProcessed,
+                CurrentSourceFile = filePath,
+                CurrentTargetFile = targetFilePath
+            });
+
+            // ---- NOUVEAU: Vérifier le logiciel métier ici (après copie) ----
+            if (BusinessSoftwareChecker.IsBusinessSoftwareRunning(ConfigurationProvider.BusinessSoftware))
+            {
+                // Logguer l’arrêt partiel
+                LogAction(new LogEntry
+                {
+                    Timestamp = DateTime.Now,
+                    BackupName = job.Name,
+                    SourceFilePath = filePath,
+                    TargetFilePath = "N/A",
+                    FileSize = 0,
+                    TransferTimeMs = 0,
+                    EncryptionTimeMs = 0,
+                    Status = $"Stopped mid-backup: Business software '{ConfigurationProvider.BusinessSoftware}' detected",
+                    Level = Logger.LogLevel.Warning
+                });
+
+                // Lever une exception pour interrompre la sauvegarde
+                throw new OperationCanceledException($"Backup stopped: {ConfigurationProvider.BusinessSoftware} detected (Full).");
+            }
+            // ---------------------------------------------------------------
+        }
+        catch (Exception ex)
+        {
+            stopwatch.Stop();
+            LogAction(new LogEntry
+            {
+                Timestamp = DateTime.Now,
+                BackupName = job.Name,
+                SourceFilePath = filePath,
+                TargetFilePath = targetFilePath,
+                FileSize = 0,
+                TransferTimeMs = -1,
+                EncryptionTimeMs = -1,
+                Status = "Error: " + ex.Message
+            });
+
+            Console.WriteLine($"[Full] Error copying {filePath}: {ex.Message}");
+        }
+    }
 
     }
 }

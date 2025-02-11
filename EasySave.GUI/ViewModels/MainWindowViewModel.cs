@@ -7,13 +7,14 @@ using EasySave.Core.Models;
 using EasySave.Core.Facade;
 using EasySave.GUI.Views;
 using EasySave.Core.Repositories;
+using EasySave.GUI.Observers;
+using EasySave.GUI.Helpers;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 using Avalonia.Controls;
 using System.Diagnostics;
 using System.Linq;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 
 namespace EasySave.GUI.ViewModels
@@ -24,7 +25,16 @@ namespace EasySave.GUI.ViewModels
         private readonly IConfiguration _configuration;
         private string _businessSoftware;
 
+        public LanguageHelper LanguageHelperInstance => LanguageHelper.Instance;
+
         public ObservableCollection<BackupJob> BackupJobs { get; }
+
+        private ObservableCollection<BackupState> _backupStates;
+        public ObservableCollection<BackupState> BackupStates
+        {
+            get => _backupStates;
+            set => this.RaiseAndSetIfChanged(ref _backupStates, value);
+        }
 
         private BackupJob? _selectedJob;
         public BackupJob? SelectedJob
@@ -67,6 +77,11 @@ namespace EasySave.GUI.ViewModels
 
             BackupJobs = new ObservableCollection<BackupJob>(_facade.ListBackupJobs());
 
+            BackupStates = new ObservableCollection<BackupState>();
+
+            var uiObserver = new UIStateObserver(BackupStates);
+            _facade.AddObserver(uiObserver); 
+
             // Initialiser les commandes
             OpenAddJobWindowCommand = ReactiveCommand.Create(OpenAddJobWindow);
             OpenModifyJobWindowCommand = ReactiveCommand.Create(OpenModifyJobWindow);
@@ -90,9 +105,16 @@ namespace EasySave.GUI.ViewModels
                 {
                     _facade.AddJob(result);
                     BackupJobs.Add(result);
+
+                    RealTimeStatus = $"✅ Job '{result.Name}' ajouté avec succès.";
+                }
+                else
+                {
+                    RealTimeStatus = "⚠️ Ajout de job annulé.";
                 }
             }
         }
+
 
         private async void OpenModifyJobWindow()
         {

@@ -7,6 +7,7 @@ using EasySave.Core.Facade;
 using EasySave.Core.Repositories;
 using Microsoft.Extensions.Configuration;
 using System.IO;
+using EasySave.GUI.Helpers;
 
 namespace EasySave.GUI.ViewModels
 {

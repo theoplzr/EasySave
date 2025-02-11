@@ -3,24 +3,25 @@
         xmlns:vm="clr-namespace:EasySave.GUI.ViewModels"
         x:Class="EasySave.GUI.Views.JobFormWindow"
         x:DataType="vm:JobFormViewModel"
-        Title="Job Form" Width="400" Height="300">
+        Title="Add/Edit Job"
+        Width="400" Height="300">
 
-    <StackPanel Margin="10">
-        <TextBlock Text="Job Name:"/>
-        <TextBox Text="{Binding Name}" />
+    <StackPanel Margin="10" Spacing="10">
+        <TextBlock Text="Job Name"/>
+        <TextBox Text="{Binding Name}"/>
 
-        <TextBlock Text="Source Directory:"/>
-        <TextBox Text="{Binding SourceDirectory}" />
+        <TextBlock Text="Source Directory"/>
+        <TextBox Text="{Binding SourceDirectory}"/>
 
-        <TextBlock Text="Target Directory:"/>
-        <TextBox Text="{Binding TargetDirectory}" />
+        <TextBlock Text="Target Directory"/>
+        <TextBox Text="{Binding TargetDirectory}"/>
 
-        <TextBlock Text="Backup Type:"/>
-        <ComboBox SelectedItem="{Binding BackupType}" ItemsSource="{Binding BackupTypes}" />
+        <TextBlock Text="Backup Type"/>
+        <ComboBox SelectedItem="{Binding BackupType}" ItemsSource="{Binding BackupTypes}"/>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-            <Button Content="Save" Command="{Binding SaveCommand}" Margin="5"/>
-            <Button Content="Cancel" Command="{Binding CancelCommand}" Margin="5"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Command="{Binding SaveCommand}" Content="Save" Margin="5"/>
+            <Button Command="{Binding CancelCommand}" Content="Cancel" Margin="5"/>
         </StackPanel>
     </StackPanel>
 </Window>

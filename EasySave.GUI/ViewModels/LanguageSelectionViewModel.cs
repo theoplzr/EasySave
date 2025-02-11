@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using EasySave.GUI.Helpers;
 using EasySave.GUI.Views;
 
+
 namespace EasySave.GUI.ViewModels
 {
     public class LanguageSelectionViewModel : ViewModelBase
@@ -12,6 +13,7 @@ namespace EasySave.GUI.ViewModels
 
         public ReactiveCommand<Unit, Unit> SelectEnglishCommand { get; }
         public ReactiveCommand<Unit, Unit> SelectFrenchCommand { get; }
+        public LanguageHelper LanguageHelperInstance => LanguageHelper.Instance;
 
         public LanguageSelectionViewModel(Window window)
         {
