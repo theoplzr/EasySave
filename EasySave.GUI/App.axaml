@@ -1,6 +1,10 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:EasySave.GUI.Converters"
              x:Class="EasySave.GUI.App">
+  <Application.Resources>
+        <converters:StringToBoolConverter x:Key="StringToBoolConverter"/>
+  </Application.Resources>
   <Application.Styles>
     <FluentTheme />
   </Application.Styles>

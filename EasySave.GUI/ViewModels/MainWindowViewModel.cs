@@ -9,7 +9,6 @@ using EasySave.GUI.Views;
 using EasySave.Core.Repositories;
 using Microsoft.Extensions.Configuration;
 using System.IO;
-using Avalonia.Controls;
 using System.Diagnostics;
 using System.Linq;
 using Avalonia;

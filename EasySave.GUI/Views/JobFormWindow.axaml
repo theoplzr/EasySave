@@ -8,18 +8,21 @@
     <StackPanel Margin="10">
         <TextBlock Text="Job Name:"/>
         <TextBox Text="{Binding Name}" />
+        <TextBlock Text="{Binding NameError}" Foreground="Red" IsVisible="{Binding NameError, Converter={StaticResource StringToBoolConverter}}" />
 
         <TextBlock Text="Source Directory:"/>
         <TextBox Text="{Binding SourceDirectory}" />
+        <TextBlock Text="{Binding SourceDirectoryError}" Foreground="Red" IsVisible="{Binding SourceDirectoryError, Converter={StaticResource StringToBoolConverter}}" />
 
         <TextBlock Text="Target Directory:"/>
         <TextBox Text="{Binding TargetDirectory}" />
+        <TextBlock Text="{Binding TargetDirectoryError}" Foreground="Red" IsVisible="{Binding TargetDirectoryError, Converter={StaticResource StringToBoolConverter}}" />
 
         <TextBlock Text="Backup Type:"/>
         <ComboBox SelectedItem="{Binding BackupType}" ItemsSource="{Binding BackupTypes}" />
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-            <Button Content="Save" Command="{Binding SaveCommand}" IsEnabled="{Binding CanSave}" Margin="5"/>
+            <Button Content="Save" Command="{Binding SaveCommand}" Margin="5"/>
             <Button Content="Cancel" Command="{Binding CancelCommand}" Margin="5"/>
         </StackPanel>
     </StackPanel>
