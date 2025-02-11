@@ -19,19 +19,31 @@ namespace EasySave.GUI.ViewModels
         public string Name
         {
             get => _name;
-            set => this.RaiseAndSetIfChanged(ref _name, value);
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _name, value);
+                this.RaisePropertyChanged(nameof(CanSave)); // 🔥 MAJ CanSave
+            }
         }
 
         public string SourceDirectory
         {
             get => _sourceDirectory;
-            set => this.RaiseAndSetIfChanged(ref _sourceDirectory, value);
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _sourceDirectory, value);
+                this.RaisePropertyChanged(nameof(CanSave)); // 🔥 MAJ CanSave
+            }
         }
 
         public string TargetDirectory
         {
             get => _targetDirectory;
-            set => this.RaiseAndSetIfChanged(ref _targetDirectory, value);
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _targetDirectory, value);
+                this.RaisePropertyChanged(nameof(CanSave));
+            }
         }
 
         public BackupType BackupType
@@ -39,6 +51,10 @@ namespace EasySave.GUI.ViewModels
             get => _backupType;
             set => this.RaiseAndSetIfChanged(ref _backupType, value);
         }
+
+        public bool CanSave => !string.IsNullOrWhiteSpace(Name) &&
+                               !string.IsNullOrWhiteSpace(SourceDirectory) &&
+                               !string.IsNullOrWhiteSpace(TargetDirectory);
 
         public ReactiveCommand<Unit, BackupJob> SaveCommand { get; } 
         public ReactiveCommand<Unit, Unit> CancelCommand { get; }

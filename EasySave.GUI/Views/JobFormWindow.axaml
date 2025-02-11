@@ -19,7 +19,7 @@
         <ComboBox SelectedItem="{Binding BackupType}" ItemsSource="{Binding BackupTypes}" />
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-            <Button Content="Save" Command="{Binding SaveCommand}" Margin="5"/>
+            <Button Content="Save" Command="{Binding SaveCommand}" IsEnabled="{Binding CanSave}" Margin="5"/>
             <Button Content="Cancel" Command="{Binding CancelCommand}" Margin="5"/>
         </StackPanel>
     </StackPanel>
