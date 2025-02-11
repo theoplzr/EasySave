@@ -188,10 +188,27 @@ namespace EasySave.Core
                 {
                     algorithm.Execute(job);
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error executing backup job '{job.Name}': {ex.Message}");
-                }
+                catch (OperationCanceledException ex)
+    {
+        // Cas où on a détecté le logiciel métier en plein milieu
+        Console.WriteLine($"⚠️ Backup '{job.Name}' interrupted: {ex.Message}");
+        _logger.LogAction(new LogEntry
+        {
+            Timestamp = DateTime.Now,
+            BackupName = job.Name,
+            SourceFilePath = "",
+            TargetFilePath = "",
+            FileSize = 0,
+            TransferTimeMs = 0,
+            EncryptionTimeMs = 0,
+            Status = $"Interrupted in mid-backup: {ex.Message}",
+            Level = Logger.LogLevel.Warning
+        });
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error executing backup job '{job.Name}': {ex.Message}");
+    }
         }
 
         /// <summary>

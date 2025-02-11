@@ -2,6 +2,7 @@ using System.Diagnostics;
 using EasySave.Core.Models;
 using EasySave.Core.Models.BackupStrategies;
 using EasySaveLogs;
+using EasySave.Core.Services; 
 
 namespace EasySave.Core.Template
 {
@@ -38,10 +39,10 @@ namespace EasySave.Core.Template
 
                 var targetDirectory = Path.GetDirectoryName(targetFilePath);
                 if (!string.IsNullOrEmpty(targetDirectory) && !Directory.Exists(targetDirectory))
-                    {
-                        Directory.CreateDirectory(targetDirectory);
-                    }
-                
+                {
+                    Directory.CreateDirectory(targetDirectory);
+                }
+
                 // Delegate the decision to the strategy
                 return diffStrategy.ShouldCopyFile(filePath, targetFilePath);
             }
@@ -131,6 +132,25 @@ namespace EasySave.Core.Template
                     CurrentSourceFile = filePath,
                     CurrentTargetFile = targetFilePath
                 });
+
+                // ---- Vérification du logiciel métier après la copie ----
+                if (BusinessSoftwareChecker.IsBusinessSoftwareRunning(ConfigurationProvider.BusinessSoftware))
+                {
+                    LogAction(new LogEntry
+                    {
+                        Timestamp = DateTime.Now,
+                        BackupName = job.Name,
+                        SourceFilePath = filePath,
+                        TargetFilePath = "N/A",
+                        FileSize = 0,
+                        TransferTimeMs = 0,
+                        EncryptionTimeMs = 0,
+                        Status = $"Stopped mid-backup: Business software '{ConfigurationProvider.BusinessSoftware}' detected",
+                        Level = Logger.LogLevel.Warning
+                    });
+
+                    throw new OperationCanceledException($"Backup stopped: {ConfigurationProvider.BusinessSoftware} detected (Diff).");
+                }
             }
             catch (Exception ex)
             {

@@ -6,6 +6,7 @@ using System.Text.Json;
 using ReactiveUI;
 using System.Reactive;
 using System.Linq;
+using EasySave.GUI.Helpers;
 
 namespace EasySave.GUI.ViewModels
 {
@@ -20,6 +21,8 @@ namespace EasySave.GUI.ViewModels
             get => _logFormat;
             set => this.RaiseAndSetIfChanged(ref _logFormat, value);
         }
+
+        public LanguageHelper LanguageHelperInstance => LanguageHelper.Instance;
 
         public List<string> LogFormatOptions { get; } = new() { "JSON", "XML" };
 

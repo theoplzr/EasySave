@@ -117,5 +117,10 @@ namespace EasySave.Core.Facade
             return _backupManager.GetAllJobs(); // Assurez-vous que cette méthode existe dans BackupManager
         }
 
+        public void AddObserver(IBackupObserver observer)
+        {
+            _backupManager.AddObserver(observer);
+        }
+
     }
 }

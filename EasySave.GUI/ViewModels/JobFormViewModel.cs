@@ -5,6 +5,7 @@ using EasySave.Core.Models;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Avalonia.Controls;
+using EasySave.GUI.Helpers;
 
 namespace EasySave.GUI.ViewModels
 {
@@ -15,6 +16,8 @@ namespace EasySave.GUI.ViewModels
         private string _targetDirectory;
         private BackupType _backupType;
         public ObservableCollection<BackupType> BackupTypes { get; }
+
+        public LanguageHelper LanguageHelperInstance => LanguageHelper.Instance;
 
         public string Name
         {
