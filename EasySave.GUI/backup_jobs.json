@@ -1,16 +1,44 @@
 [
   {
-    "Id": "254d5588-870f-4a50-ac4c-59805200a98d",
+    "Id": "a2ba2b05-4a80-41de-aecd-8db26d8a7190",
     "Name": "Backup 1 (Modified)",
     "SourceDirectory": "/source",
     "TargetDirectory": "/target",
     "BackupType": 0
   },
   {
-    "Id": "9056216a-6fa6-45e9-a29b-66ea49079553",
+    "Id": "32dd65c5-f31b-4ab9-ae85-1b351aa0c503",
     "Name": "Backup 2 (Modified)",
     "SourceDirectory": "/source",
     "TargetDirectory": "/target",
     "BackupType": 0
+  },
+  {
+    "Id": "b7583158-8aef-40fc-801b-199bb744340a",
+    "Name": "Backup 3",
+    "SourceDirectory": "/source",
+    "TargetDirectory": "/target",
+    "BackupType": 0
+  },
+  {
+    "Id": "8a76ce50-6f25-42c9-8304-6776853cf125",
+    "Name": "jdjdjdj",
+    "SourceDirectory": "/Users/tpellizzari/Documents/Source1",
+    "TargetDirectory": "/Users/tpellizzari/Documents/Target1",
+    "BackupType": 0
+  },
+  {
+    "Id": "e552000d-9b4e-4435-b0c3-ce8013d9ed6e",
+    "Name": "",
+    "SourceDirectory": "",
+    "TargetDirectory": "",
+    "BackupType": 0
+  },
+  {
+    "Id": "ed3dbe6d-74c2-466d-92f5-733efb1f405f",
+    "Name": "jnrfjnfrjneferfjner",
+    "SourceDirectory": "/Users",
+    "TargetDirectory": "ssss",
+    "BackupType": 1
   }
 ]

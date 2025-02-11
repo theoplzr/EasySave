@@ -5,17 +5,24 @@ using System.Threading.Tasks;
 using ReactiveUI;
 using EasySave.Core.Models;
 using EasySave.Core.Facade;
-using EasySave.GUI.Utils;
 using EasySave.GUI.Views;
 using EasySave.Core.Repositories;
 using Microsoft.Extensions.Configuration;
 using System.IO;
+using Avalonia.Controls;
+using System.Diagnostics;
+using System.Linq;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 
 namespace EasySave.GUI.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
         private readonly EasySaveFacade _facade;
+        private readonly IConfiguration _configuration;
+        private string _businessSoftware;
 
         public ObservableCollection<BackupJob> BackupJobs { get; }
 
@@ -23,185 +30,161 @@ namespace EasySave.GUI.ViewModels
         public BackupJob? SelectedJob
         {
             get => _selectedJob;
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _selectedJob, value);
-                if (value != null)
-                {
-                    RealTimeStatus = $"Selected job: {value.Name}";
-                    Console.WriteLine($"Selected job: {value.Name}");
-                }
-                else
-                {
-                    RealTimeStatus = "No job selected";
-                    Console.WriteLine("No job selected.");
-                }
-            }
+            set => this.RaiseAndSetIfChanged(ref _selectedJob, value);
         }
 
         private string _realTimeStatus = "Idle";
         public string RealTimeStatus
         {
             get => _realTimeStatus;
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _realTimeStatus, value);
-                Console.WriteLine($"RealTimeStatus updated: {_realTimeStatus}");
-            }
+            set => this.RaiseAndSetIfChanged(ref _realTimeStatus, value);
         }
 
-        // Commandes
-        public ReactiveCommand<Unit, Unit> AddJobCommand { get; }
-        public ReactiveCommand<Unit, Unit> ModifyJobCommand { get; }
+        // Commandes mises à jour
+        public ReactiveCommand<Unit, Unit> OpenAddJobWindowCommand { get; }
+        public ReactiveCommand<Unit, Unit> OpenModifyJobWindowCommand { get; }
         public ReactiveCommand<Unit, Unit> DeleteJobCommand { get; }
-        public ReactiveCommand<Unit, Unit> ExecuteJobCommand { get; }
+        public ReactiveCommand<Unit, Unit> ExecuteAllJobsCommand { get; }
         public ReactiveCommand<Unit, Unit> OpenConfigurationCommand { get; }
         public ReactiveCommand<Unit, Unit> ExitCommand { get; }
 
-        // Constructeur statique pour configurer le scheduler global
-        static MainWindowViewModel()
-        {
-            // Scheduler configuré pour le thread principal
-            RxApp.MainThreadScheduler = AvaloniaDispatcherScheduler.Instance;
-        }
-
         public MainWindowViewModel()
         {
-            Console.WriteLine("Initializing MainWindowViewModel...");
-
-            // Charger la configuration depuis le fichier appsettings.json
-            IConfiguration configuration = new ConfigurationBuilder()
+            // Charger la configuration
+            _configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .Build();
 
-            Console.WriteLine("Configuration loaded.");
+            _businessSoftware = _configuration["BusinessSoftware"] ?? "TextEdit"; 
 
-            // Initialisation du facade
             _facade = new EasySaveFacade(
                 new JsonBackupJobRepository("backup_jobs.json"),
                 "Logs",
                 null,
-                configuration
+                _configuration
             );
 
-            Console.WriteLine("Facade initialized.");
-
-            // Charger les travaux de sauvegarde
             BackupJobs = new ObservableCollection<BackupJob>(_facade.ListBackupJobs());
-            Console.WriteLine($"Loaded {BackupJobs.Count} backup jobs into the DataGrid.");
-            RealTimeStatus = "Idle";
 
             // Initialiser les commandes
-            AddJobCommand = ReactiveCommand.CreateFromTask(AddJobAsync);
-            ModifyJobCommand = ReactiveCommand.CreateFromTask(ModifyJobAsync);
+            OpenAddJobWindowCommand = ReactiveCommand.Create(OpenAddJobWindow);
+            OpenModifyJobWindowCommand = ReactiveCommand.Create(OpenModifyJobWindow);
             DeleteJobCommand = ReactiveCommand.CreateFromTask(DeleteJobAsync);
-            ExecuteJobCommand = ReactiveCommand.CreateFromTask(ExecuteJobAsync);
+            ExecuteAllJobsCommand = ReactiveCommand.CreateFromTask(ExecuteAllJobsAsync);
             OpenConfigurationCommand = ReactiveCommand.Create(OpenConfiguration);
             ExitCommand = ReactiveCommand.Create(() => Environment.Exit(0));
         }
 
-        private void OpenConfiguration()
+        private async void OpenAddJobWindow()
         {
-            try
+            var jobWindow = new JobFormWindow();
+            var jobViewModel = new JobFormViewModel(jobWindow);
+            jobWindow.DataContext = jobViewModel;
+
+            var mainWindow = (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+            if (mainWindow != null)
             {
-                // Vérifiez si ConfigurationWindow est défini correctement
-                var configWindow = new EasySave.GUI.Views.ConfigurationWindow();
-                configWindow.Show();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error opening ConfigurationWindow: {ex.Message}");
+                var result = await jobWindow.ShowDialog<BackupJob>(mainWindow); 
+                if (result != null)
+                {
+                    _facade.AddJob(result);
+                    BackupJobs.Add(result);
+                }
             }
         }
 
-        private async Task AddJobAsync()
+        private async void OpenModifyJobWindow()
         {
-            Console.WriteLine("AddJobAsync triggered.");
-
-            var newJob = new BackupJob($"Backup {BackupJobs.Count + 1}", "/source", "/target", BackupType.Complete);
-            Console.WriteLine($"Creating new job: {newJob.Name}");
-
-            _facade.AddJob(newJob);
-            Console.WriteLine($"✅ Backup job '{newJob.Name}' added successfully.");
-
-            BackupJobs.Add(newJob);
-            SelectedJob = newJob;
-
-            RealTimeStatus = "Job added.";
-            Console.WriteLine($"✅ Job successfully added to UI: {newJob.Name}");
-
-            await Task.CompletedTask;
-        }
-
-        private async Task ModifyJobAsync()
-        {
-            Console.WriteLine("ModifyJobAsync triggered.");
-            if (SelectedJob == null)
+            if (SelectedJob == null) 
             {
-                Console.WriteLine("ModifyJobAsync failed: No job selected.");
-                RealTimeStatus = "No job selected to modify.";
-                await Task.CompletedTask;
+                RealTimeStatus = "❌ No job selected to modify.";
                 return;
             }
 
-            Console.WriteLine($"Modifying job: {SelectedJob.Name}");
-            SelectedJob.Name += " (Modified)";
-            _facade.UpdateJob(
-                BackupJobs.IndexOf(SelectedJob),
-                SelectedJob.Name,
-                SelectedJob.SourceDirectory,
-                SelectedJob.TargetDirectory,
-                SelectedJob.BackupType
-            );
+            Console.WriteLine($"🔍 Modification en cours pour le job : {SelectedJob.Name}");
 
-            RealTimeStatus = $"Job '{SelectedJob.Name}' modified successfully.";
-            Console.WriteLine($"✅ Job modified: {SelectedJob.Name}");
+            var jobWindow = new JobFormWindow();
+            var jobViewModel = new JobFormViewModel(jobWindow, SelectedJob);
+            jobWindow.DataContext = jobViewModel;
 
-            await Task.CompletedTask;
+            var mainWindow = (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+            if (mainWindow != null)
+            {
+                var result = await jobWindow.ShowDialog<BackupJob>(mainWindow); 
+                if (result != null)
+                {
+                    Console.WriteLine($"✅ Job modifié : {result.Name}");
+
+                    int index = BackupJobs.IndexOf(SelectedJob);
+                    if (index != -1)
+                    {
+                        _facade.UpdateJob(index, result.Name, result.SourceDirectory, result.TargetDirectory, result.BackupType);
+                        BackupJobs[index] = result;
+                        RealTimeStatus = $"✏️ Job '{result.Name}' modified.";
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("⚠️ Aucune modification effectuée.");
+                }
+            }
         }
 
         private async Task DeleteJobAsync()
         {
-            Console.WriteLine("DeleteJobAsync triggered.");
             if (SelectedJob == null)
             {
-                Console.WriteLine("DeleteJobAsync failed: No job selected.");
-                RealTimeStatus = "No job selected to delete.";
-                await Task.CompletedTask;
+                RealTimeStatus = "❌ No job selected to delete.";
+                Console.WriteLine("❌ Aucun job sélectionné pour suppression.");
                 return;
             }
 
-            int indexToRemove = BackupJobs.IndexOf(SelectedJob);
-            Console.WriteLine($"Deleting job: {SelectedJob.Name} at index {indexToRemove}");
-            _facade.RemoveJob(indexToRemove);
+            Console.WriteLine($"🗑️ Suppression du job : {SelectedJob.Name}");
 
-            BackupJobs.Remove(SelectedJob);
-            RealTimeStatus = $"Job '{SelectedJob.Name}' deleted successfully.";
-            Console.WriteLine($"✅ Job deleted: {SelectedJob.Name}");
+            int index = BackupJobs.IndexOf(SelectedJob);
+            if (index == -1)
+            {
+                Console.WriteLine("⚠️ Job introuvable dans la liste.");
+                return;
+            }
+
+            _facade.RemoveJob(index);
+            BackupJobs.RemoveAt(index);
+            RealTimeStatus = $"🗑️ Job '{SelectedJob.Name}' deleted.";
+            
+            Console.WriteLine($"✅ Job supprimé : {SelectedJob.Name}");
 
             await Task.CompletedTask;
         }
 
-        private async Task ExecuteJobAsync()
+
+        private async Task ExecuteAllJobsAsync()
         {
-            Console.WriteLine("ExecuteJobAsync triggered.");
-            if (SelectedJob == null)
+            if (IsBusinessSoftwareRunning())
             {
-                Console.WriteLine("ExecuteJobAsync failed: No job selected.");
-                RealTimeStatus = "No job selected to execute.";
-                await Task.CompletedTask;
+                RealTimeStatus = $"🚨 Execution blocked: {_businessSoftware} is running.";
                 return;
             }
 
-            int indexToExecute = BackupJobs.IndexOf(SelectedJob);
-            Console.WriteLine($"Executing job: {SelectedJob.Name} at index {indexToExecute}");
-            _facade.ExecuteJobByIndex(indexToExecute);
-
-            RealTimeStatus = $"Job '{SelectedJob.Name}' executed successfully.";
-            Console.WriteLine($"✅ Job executed: {SelectedJob.Name}");
-
+            _facade.ExecuteAllJobs();
+            RealTimeStatus = "✅ All jobs executed successfully.";
             await Task.CompletedTask;
+        }
+
+        private void OpenConfiguration()
+        {
+            var configWindow = new ConfigurationWindow();
+            configWindow.Show();
+        }
+
+        /// <summary>
+        /// Vérifie si le logiciel métier est en cours d'exécution
+        /// </summary>
+        private bool IsBusinessSoftwareRunning()
+        {
+            var processes = Process.GetProcesses();
+            return processes.Any(p => p.ProcessName.Contains(_businessSoftware, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

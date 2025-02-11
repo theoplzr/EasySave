@@ -1,0 +1,35 @@
+[
+  {
+    "Timestamp": "2025-02-11T10:42:05.678181+01:00",
+    "BackupName": "jdjdjdj",
+    "SourceFilePath": "/Users/tpellizzari/Documents/Source1/.DS_Store",
+    "TargetFilePath": "/Users/tpellizzari/Documents/Target1/.DS_Store",
+    "FileSize": 6148,
+    "TransferTimeMs": 1,
+    "EncryptionTimeMs": 0,
+    "Status": "Success",
+    "Level": 0
+  },
+  {
+    "Timestamp": "2025-02-11T10:42:05.706015+01:00",
+    "BackupName": "jdjdjdj",
+    "SourceFilePath": "/Users/tpellizzari/Documents/Source1/2.txt",
+    "TargetFilePath": "/Users/tpellizzari/Documents/Target1/2.txt",
+    "FileSize": 46,
+    "TransferTimeMs": 0,
+    "EncryptionTimeMs": 0,
+    "Status": "Success",
+    "Level": 0
+  },
+  {
+    "Timestamp": "2025-02-11T10:42:05.71006+01:00",
+    "BackupName": "jdjdjdj",
+    "SourceFilePath": "/Users/tpellizzari/Documents/Source1/test.txt",
+    "TargetFilePath": "/Users/tpellizzari/Documents/Target1/test.txt",
+    "FileSize": 41,
+    "TransferTimeMs": 0,
+    "EncryptionTimeMs": 0,
+    "Status": "Success",
+    "Level": 0
+  }
+]

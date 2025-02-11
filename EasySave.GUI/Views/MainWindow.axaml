@@ -4,16 +4,13 @@
         xmlns:helpers="clr-namespace:EasySave.GUI.Helpers"
         x:Class="EasySave.GUI.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Title="{Binding MainWindowTitle, Source={x:Static helpers:LanguageHelper.Instance}}"
-        Width="800" Height="600">
+        Title="EasySave" Width="800" Height="600">
     
     <DockPanel>
         <Menu DockPanel.Dock="Top">
-            <MenuItem Header="{Binding FileMenuHeader, Source={x:Static helpers:LanguageHelper.Instance}}">
-                <MenuItem Header="{Binding MenuItemConfiguration, Source={x:Static helpers:LanguageHelper.Instance}}"
-                          Command="{Binding OpenConfigurationCommand}" />
-                <MenuItem Header="{Binding MenuItemExit, Source={x:Static helpers:LanguageHelper.Instance}}"
-                          Command="{Binding ExitCommand}" />
+            <MenuItem Header="File">
+                <MenuItem Header="Configuration" Command="{Binding OpenConfigurationCommand}" />
+                <MenuItem Header="Exit" Command="{Binding ExitCommand}" />
             </MenuItem>
         </Menu>
 
@@ -25,35 +22,27 @@
             </Grid.RowDefinitions>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
-                <Button Content="{Binding ButtonAdd, Source={x:Static helpers:LanguageHelper.Instance}}"
-                        Command="{Binding AddJobCommand}" Margin="5"/>
-                <Button Content="{Binding ButtonModify, Source={x:Static helpers:LanguageHelper.Instance}}"
-                        Command="{Binding ModifyJobCommand}" Margin="5"/>
-                <Button Content="{Binding ButtonDelete, Source={x:Static helpers:LanguageHelper.Instance}}"
-                        Command="{Binding DeleteJobCommand}" Margin="5"/>
-                <Button Content="{Binding ButtonExecute, Source={x:Static helpers:LanguageHelper.Instance}}"
-                        Command="{Binding ExecuteJobCommand}" Margin="5"/>
+                <!-- Mise à jour des commandes pour ouvrir les fenêtres Add et Modify -->
+                <Button Content="Add" Command="{Binding OpenAddJobWindowCommand}" Margin="5"/>
+                <Button Content="Modify" Command="{Binding OpenModifyJobWindowCommand}" Margin="5"/>
+                <Button Content="Delete" Command="{Binding DeleteJobCommand}" Margin="5"/>
+                <Button Content="Execute" Command="{Binding ExecuteAllJobsCommand}" Margin="5"/>
             </StackPanel>
 
             <DataGrid Grid.Row="1" ItemsSource="{Binding BackupJobs}" AutoGenerateColumns="False" Margin="10"
                       SelectionMode="Single" Focusable="True"
                       SelectedItem="{Binding SelectedJob, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="{Binding ColumnName, Source={x:Static helpers:LanguageHelper.Instance}}"
-                                        Binding="{Binding Name}" />
-                    <DataGridTextColumn Header="{Binding ColumnSource, Source={x:Static helpers:LanguageHelper.Instance}}"
-                                        Binding="{Binding SourceDirectory}" />
-                    <DataGridTextColumn Header="{Binding ColumnTarget, Source={x:Static helpers:LanguageHelper.Instance}}"
-                                        Binding="{Binding TargetDirectory}" />
-                    <DataGridTextColumn Header="{Binding ColumnType, Source={x:Static helpers:LanguageHelper.Instance}}"
-                                        Binding="{Binding BackupType}" />
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
+                    <DataGridTextColumn Header="Source" Binding="{Binding SourceDirectory}" />
+                    <DataGridTextColumn Header="Target" Binding="{Binding TargetDirectory}" />
+                    <DataGridTextColumn Header="Type" Binding="{Binding BackupType}" />
                 </DataGrid.Columns>
             </DataGrid>
 
             <Border Grid.Row="2" BorderBrush="Gray" BorderThickness="1" Padding="10" Margin="10">
                 <StackPanel>
-                    <TextBlock Text="{Binding RealTimeStatusHeader, Source={x:Static helpers:LanguageHelper.Instance}}"
-                               FontWeight="Bold" Margin="0,0,0,5"/>
+                    <TextBlock Text="Real-Time Status" FontWeight="Bold" Margin="0,0,0,5"/>
                     <TextBlock Text="{Binding RealTimeStatus}" />
                 </StackPanel>
             </Border>
