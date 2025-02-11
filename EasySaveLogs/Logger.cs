@@ -11,7 +11,7 @@ namespace EasySaveLogs
         private static Logger? _instance;
         private static readonly object _lock = new object();
         private readonly string _logDirectory;
-        private readonly string _logFormat; // JSON ou XML
+        private readonly string _logFormat; // "JSON" ou "XML"
 
         /// <summary>
         /// Enum representing log levels.
@@ -66,7 +66,7 @@ namespace EasySaveLogs
         /// <param name="logEntry">The log entry to be recorded.</param>
         public void LogAction(LogEntry logEntry)
         {
-            if (logEntry.Level < Level) return; // Filtering based on log level
+            if (logEntry.Level < Level) return; // Filtrage basé sur le niveau du log
 
             if (_logFormat.ToUpper() == "XML")
                 LogToXml(logEntry);
@@ -107,6 +107,7 @@ namespace EasySaveLogs
             else
                 xmlDoc = new XDocument(new XElement("Logs"));
 
+            // Ajout de l'élément EncryptionTimeMs pour consigner le temps de cryptage
             xmlDoc.Root!.Add(new XElement("LogEntry",
                 new XElement("Timestamp", logEntry.Timestamp),
                 new XElement("BackupName", logEntry.BackupName),
@@ -114,6 +115,7 @@ namespace EasySaveLogs
                 new XElement("TargetFilePath", logEntry.TargetFilePath),
                 new XElement("FileSize", logEntry.FileSize),
                 new XElement("TransferTimeMs", logEntry.TransferTimeMs),
+                new XElement("EncryptionTimeMs", logEntry.EncryptionTimeMs), // Nouvelle ligne
                 new XElement("Status", logEntry.Status),
                 new XElement("Level", logEntry.Level.ToString())
             ));
@@ -156,6 +158,11 @@ namespace EasySaveLogs
         /// Time taken to transfer the file (in milliseconds).
         /// </summary>
         public long TransferTimeMs { get; set; }
+
+        /// <summary>
+        /// Time taken to encrypt the file (in milliseconds).
+        /// </summary>
+        public long EncryptionTimeMs { get; set; }
 
         /// <summary>
         /// Status of the backup operation (e.g., Success, Failed).

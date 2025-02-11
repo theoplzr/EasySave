@@ -11,13 +11,15 @@ namespace EasySave.GUI
         {
             AvaloniaXamlLoader.Load(this);
         }
-        
+
         public override void OnFrameworkInitializationCompleted()
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
+                // Démarrer sur MainWindow
                 desktop.MainWindow = new MainWindow();
             }
+
             base.OnFrameworkInitializationCompleted();
         }
     }
