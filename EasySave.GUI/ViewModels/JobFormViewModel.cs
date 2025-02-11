@@ -129,6 +129,9 @@ namespace EasySave.GUI.ViewModels
                 var job = new BackupJob(Name!, SourceDirectory!, TargetDirectory!, BackupType);
                 _window?.Close(job); 
                 return job;
+            } else
+            {
+                return null;
             }
         }
 
