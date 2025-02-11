@@ -42,6 +42,7 @@ namespace EasySave.GUI.ViewModels
         // Commandes mises à jour
         public ReactiveCommand<Unit, Unit> OpenAddJobWindowCommand { get; }
         public ReactiveCommand<Unit, Unit> OpenModifyJobWindowCommand { get; }
+        public ReactiveCommand<Unit, Unit> OpenListAllJobWindowCommand { get; }
         public ReactiveCommand<Unit, Unit> DeleteJobCommand { get; }
         public ReactiveCommand<Unit, Unit> ExecuteAllJobsCommand { get; }
         public ReactiveCommand<Unit, Unit> OpenConfigurationCommand { get; }
@@ -69,6 +70,7 @@ namespace EasySave.GUI.ViewModels
             // Initialiser les commandes
             OpenAddJobWindowCommand = ReactiveCommand.Create(OpenAddJobWindow);
             OpenModifyJobWindowCommand = ReactiveCommand.Create(OpenModifyJobWindow);
+            OpenListAllJobWindowCommand = ReactiveCommand.Create(OpenAllJobWindow);
             DeleteJobCommand = ReactiveCommand.CreateFromTask(DeleteJobAsync);
             ExecuteAllJobsCommand = ReactiveCommand.CreateFromTask(ExecuteAllJobsAsync);
             OpenConfigurationCommand = ReactiveCommand.Create(OpenConfiguration);
@@ -130,6 +132,20 @@ namespace EasySave.GUI.ViewModels
             }
         }
 
+        private async void OpenAllJobWindow()
+        {
+            var listWindow = new ListAllJobWindow();
+            var listViewModel = new ListAllJobViewModel(listWindow, _facade);
+            listWindow.DataContext = listViewModel;
+
+            var mainWindow = (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+            if (mainWindow != null)
+            {
+                await listWindow.ShowDialog(mainWindow);
+            }
+        }
+
+        
         private async Task DeleteJobAsync()
         {
             if (SelectedJob == null)

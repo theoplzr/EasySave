@@ -25,6 +25,7 @@
                 <!-- Mise à jour des commandes pour ouvrir les fenêtres Add et Modify -->
                 <Button Content="Add" Command="{Binding OpenAddJobWindowCommand}" Margin="5"/>
                 <Button Content="Modify" Command="{Binding OpenModifyJobWindowCommand}" Margin="5"/>
+                <Button Content="List All" Command="{Binding OpenListAllJobWindowCommand}" Margin="5"/>
                 <Button Content="Delete" Command="{Binding DeleteJobCommand}" Margin="5"/>
                 <Button Content="Execute" Command="{Binding ExecuteAllJobsCommand}" Margin="5"/>
             </StackPanel>
