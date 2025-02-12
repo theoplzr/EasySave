@@ -5,100 +5,113 @@
         x:DataType="vm:MainWindowViewModel"
         Title="EasySave" Width="800" Height="600">
 
-    <Grid>
-        <DockPanel>
-            <!-- Barre de menu -->
-            <Menu DockPanel.Dock="Top">
-                <MenuItem Header="File">
-                    <MenuItem Header="Configuration" Command="{Binding OpenConfigurationCommand}">
-                        <MenuItem.Icon>
-                            <Image Source="avares://EasySave.GUI/Assets/icon-config.png" Width="16" Height="16"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="Exit" Command="{Binding ExitCommand}">
-                        <MenuItem.Icon>
-                            <Image Source="avares://EasySave.GUI/Assets/icon-exit.png" Width="16" Height="16"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                </MenuItem>
-            </Menu>
+  <Grid>
+    <DockPanel>
+      <!-- Barre de menu -->
+      <Menu DockPanel.Dock="Top">
+        <MenuItem Header="File">
+          <MenuItem Header="Configuration" Command="{Binding OpenConfigurationCommand}">
+            <MenuItem.Icon>
+              <Image Source="avares://EasySave.GUI/Assets/icon-config.png" Width="16" Height="16"/>
+            </MenuItem.Icon>
+          </MenuItem>
+          <MenuItem Header="Exit" Command="{Binding ExitCommand}">
+            <MenuItem.Icon>
+              <Image Source="avares://EasySave.GUI/Assets/icon-exit.png" Width="16" Height="16"/>
+            </MenuItem.Icon>
+          </MenuItem>
+        </MenuItem>
+      </Menu>
 
-            <!-- Tabs -->
-            <TabControl>
-                <TabItem Header="{Binding LanguageHelperInstance.JobsTabHeader}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="Auto"/> <!-- Ligne pour le statut en temps réel -->
-                        </Grid.RowDefinitions>
+      <!-- Tabs -->
+      <TabControl>
+        <TabItem Header="{Binding LanguageHelperInstance.JobsTabHeader}">
+          <Grid>
+            <Grid.RowDefinitions>
+              <!-- Boutons d'actions -->
+              <RowDefinition Height="Auto"/>
+              <!-- Liste des jobs -->
+              <RowDefinition Height="*"/>
+              <!-- Statut en temps réel -->
+              <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-                        <!-- Boutons -->
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
-                            <Button Command="{Binding OpenAddJobWindowCommand}">
-                                <StackPanel Orientation="Horizontal">
-                                    <Image Source="avares://EasySave.GUI/Assets/icon-add.png" Width="16" Height="16" Margin="0,0,5,0"/>
-                                    <TextBlock Text="{Binding LanguageHelperInstance.ButtonAdd}"/>
-                                </StackPanel>
-                            </Button>
+            <!-- Boutons d'actions en haut -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+              <Button Command="{Binding OpenAddJobWindowCommand}">
+                <StackPanel Orientation="Horizontal">
+                  <Image Source="avares://EasySave.GUI/Assets/icon-add.png" Width="16" Height="16" Margin="0,0,5,0"/>
+                  <TextBlock Text="{Binding LanguageHelperInstance.ButtonAdd}"/>
+                </StackPanel>
+              </Button>
 
-                            <Button Command="{Binding OpenModifyJobWindowCommand}">
-                                <StackPanel Orientation="Horizontal">
-                                    <Image Source="avares://EasySave.GUI/Assets/icon-edit.png" Width="16" Height="16" Margin="0,0,5,0"/>
-                                    <TextBlock Text="{Binding LanguageHelperInstance.ButtonModify}"/>
-                                </StackPanel>
-                            </Button>
+              <Button Command="{Binding OpenModifyJobWindowCommand}">
+                <StackPanel Orientation="Horizontal">
+                  <Image Source="avares://EasySave.GUI/Assets/icon-edit.png" Width="16" Height="16" Margin="0,0,5,0"/>
+                  <TextBlock Text="{Binding LanguageHelperInstance.ButtonModify}"/>
+                </StackPanel>
+              </Button>
 
-                            <Button Command="{Binding DeleteJobCommand}">
-                                <StackPanel Orientation="Horizontal">
-                                    <Image Source="avares://EasySave.GUI/Assets/icon-delete.png" Width="16" Height="16" Margin="0,0,5,0"/>
-                                    <TextBlock Text="{Binding LanguageHelperInstance.ButtonDelete}"/>
-                                </StackPanel>
-                            </Button>
+              <Button Command="{Binding DeleteJobCommand}">
+                <StackPanel Orientation="Horizontal">
+                  <Image Source="avares://EasySave.GUI/Assets/icon-delete.png" Width="16" Height="16" Margin="0,0,5,0"/>
+                  <TextBlock Text="{Binding LanguageHelperInstance.ButtonDelete}"/>
+                </StackPanel>
+              </Button>
 
-                            <Button Command="{Binding ExecuteAllJobsCommand}">
-                                <StackPanel Orientation="Horizontal">
-                                    <Image Source="avares://EasySave.GUI/Assets/icon-play.png" Width="16" Height="16" Margin="0,0,5,0"/>
-                                    <TextBlock Text="{Binding LanguageHelperInstance.ButtonExecute}"/>
-                                </StackPanel>
-                            </Button>
-                        </StackPanel>
+              <Button Command="{Binding ExecuteAllJobsCommand}">
+                <StackPanel Orientation="Horizontal">
+                  <Image Source="avares://EasySave.GUI/Assets/icon-play.png" Width="16" Height="16" Margin="0,0,5,0"/>
+                  <TextBlock Text="{Binding LanguageHelperInstance.ButtonExecute}"/>
+                </StackPanel>
+              </Button>
+            </StackPanel>
 
-                        <!-- Liste des jobs -->
-                        <DataGrid Grid.Row="1" ItemsSource="{Binding BackupJobs}" AutoGenerateColumns="False"
-                                  Margin="10" SelectionMode="Single" Focusable="True"
-                                  SelectedItem="{Binding SelectedJob, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
-                                <DataGridTextColumn Header="Source" Binding="{Binding SourceDirectory}" />
-                                <DataGridTextColumn Header="Target" Binding="{Binding TargetDirectory}" />
-                                <DataGridTextColumn Header="Type" Binding="{Binding BackupType}" />
-                            </DataGrid.Columns>
-                        </DataGrid>
+            <!-- Liste des jobs sous forme d'étiquettes cliquables -->
+            <ScrollViewer Grid.Row="1" Margin="10">
+              <ItemsControl ItemsSource="{Binding BackupJobs}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <WrapPanel Orientation="Horizontal"/>
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
 
-                        <!-- Status bar / border -->
-                        <Border Grid.Row="2" BorderBrush="Gray" BorderThickness="1" Padding="10" Margin="10">
-                            <StackPanel>
-                                <TextBlock Text="Real-Time Status" FontWeight="Bold" Margin="0,0,0,5"/>
-                                <TextBlock Text="{Binding RealTimeStatus}" />
-                            </StackPanel>
-                        </Border>
-                    </Grid>
-                </TabItem>
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                    <!-- Utilisation de l'événement Click pour gérer la sélection -->
+                    <Button Content="{Binding Name}"
+                            Margin="5"
+                            Padding="5"
+                            Background="#FFD3D3D3"
+                            Click="JobButton_Click"/>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </ScrollViewer>
 
-                <TabItem Header="{Binding LanguageHelperInstance.ProgressTabHeader}">
-                    <DataGrid ItemsSource="{Binding BackupStates}" AutoGenerateColumns="False" Margin="10">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Job Name" Binding="{Binding BackupName}" />
-                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" />
-                            <DataGridTextColumn Header="Progress" Binding="{Binding Progress}" />
-                            <DataGridTextColumn Header="RemainingFiles" Binding="{Binding RemainingFiles}" />
-                            <DataGridTextColumn Header="RemainingSize" Binding="{Binding RemainingSize}" />
-                            <DataGridTextColumn Header="CurrentSourceFile" Binding="{Binding CurrentSourceFile}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </TabItem>
-            </TabControl>
-        </DockPanel>
-    </Grid>
+            <!-- Barre de statut -->
+            <Border Grid.Row="2" BorderBrush="Gray" BorderThickness="1" Padding="10" Margin="10">
+              <StackPanel>
+                <TextBlock Text="Real-Time Status" FontWeight="Bold" Margin="0,0,0,5"/>
+                <TextBlock Text="{Binding RealTimeStatus}" />
+              </StackPanel>
+            </Border>
+          </Grid>
+        </TabItem>
+
+        <TabItem Header="{Binding LanguageHelperInstance.ProgressTabHeader}">
+          <DataGrid ItemsSource="{Binding BackupStates}" AutoGenerateColumns="False" Margin="10">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="Job Name" Binding="{Binding BackupName}" />
+              <DataGridTextColumn Header="Status" Binding="{Binding Status}" />
+              <DataGridTextColumn Header="Progress" Binding="{Binding Progress}" />
+              <DataGridTextColumn Header="RemainingFiles" Binding="{Binding RemainingFiles}" />
+              <DataGridTextColumn Header="RemainingSize" Binding="{Binding RemainingSize}" />
+              <DataGridTextColumn Header="CurrentSourceFile" Binding="{Binding CurrentSourceFile}" />
+            </DataGrid.Columns>
+          </DataGrid>
+        </TabItem>
+      </TabControl>
+    </DockPanel>
+  </Grid>
 </Window>
