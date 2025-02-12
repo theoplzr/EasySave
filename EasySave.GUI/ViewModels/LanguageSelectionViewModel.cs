@@ -3,7 +3,7 @@ using ReactiveUI;
 using Avalonia.Controls;
 using EasySave.GUI.Helpers;
 using EasySave.GUI.Views;
-
+using Avalonia.Controls.ApplicationLifetimes;
 
 namespace EasySave.GUI.ViewModels
 {
@@ -35,6 +35,11 @@ namespace EasySave.GUI.ViewModels
         private void OpenMainWindow()
         {
             var mainWindow = new MainWindow();
+            // Mettre à jour l'owner (MainWindow) dans l'ApplicationLifetime
+            if (Avalonia.Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                desktop.MainWindow = mainWindow;
+            }
             mainWindow.Show();
             _window.Close(); 
         }

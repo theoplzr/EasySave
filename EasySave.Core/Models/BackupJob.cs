@@ -41,6 +41,8 @@ namespace EasySave.Core.Models
         [JsonIgnore] // Excluded from serialization
         public IBackupStrategy _backupStrategy;
 
+        public int Ordinal { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BackupJob"/> class.
         /// </summary>

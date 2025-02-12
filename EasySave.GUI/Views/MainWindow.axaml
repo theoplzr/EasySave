@@ -1,9 +1,15 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:EasySave.GUI.ViewModels"
+        xmlns:conv="clr-namespace:EasySave.GUI.Converters"
         x:Class="EasySave.GUI.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="EasySave" Width="800" Height="600">
+
+  <!-- Déclaration du convertisseur dans les ressources -->
+  <Window.Resources>
+    <conv:JobOrdinalConverter x:Key="JobOrdinalConverter"/>
+  </Window.Resources>
 
   <Grid>
     <DockPanel>
@@ -44,21 +50,18 @@
                   <TextBlock Text="{Binding LanguageHelperInstance.ButtonAdd}"/>
                 </StackPanel>
               </Button>
-
               <Button Command="{Binding OpenModifyJobWindowCommand}">
                 <StackPanel Orientation="Horizontal">
                   <Image Source="avares://EasySave.GUI/Assets/icon-edit.png" Width="16" Height="16" Margin="0,0,5,0"/>
                   <TextBlock Text="{Binding LanguageHelperInstance.ButtonModify}"/>
                 </StackPanel>
               </Button>
-
               <Button Command="{Binding DeleteJobCommand}">
                 <StackPanel Orientation="Horizontal">
                   <Image Source="avares://EasySave.GUI/Assets/icon-delete.png" Width="16" Height="16" Margin="0,0,5,0"/>
                   <TextBlock Text="{Binding LanguageHelperInstance.ButtonDelete}"/>
                 </StackPanel>
               </Button>
-
               <Button Command="{Binding ExecuteAllJobsCommand}">
                 <StackPanel Orientation="Horizontal">
                   <Image Source="avares://EasySave.GUI/Assets/icon-play.png" Width="16" Height="16" Margin="0,0,5,0"/>
@@ -67,7 +70,7 @@
               </Button>
             </StackPanel>
 
-            <!-- Liste des jobs sous forme d'étiquettes cliquables -->
+            <!-- Liste des jobs sous forme d'étiquettes stylées -->
             <ScrollViewer Grid.Row="1" Margin="10">
               <ItemsControl ItemsSource="{Binding BackupJobs}">
                 <ItemsControl.ItemsPanel>
@@ -75,15 +78,44 @@
                     <WrapPanel Orientation="Horizontal"/>
                   </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
-
                 <ItemsControl.ItemTemplate>
                   <DataTemplate>
-                    <!-- Utilisation de l'événement Click pour gérer la sélection -->
-                    <Button Content="{Binding Name}"
-                            Margin="5"
-                            Padding="5"
-                            Background="#FFD3D3D3"
-                            Click="JobButton_Click"/>
+                    <!-- Bouton stylé comme une "chip" avec informations supplémentaires -->
+                    <Button Margin="5"
+                            Padding="10,5"
+                            Background="#FF007ACC"
+                            BorderBrush="#FF005A9E"
+                            BorderThickness="1"
+                            CornerRadius="4"
+                            Foreground="White"
+                            Cursor="Hand"
+                            Click="JobButton_Click">
+                      <Button.Content>
+                        <StackPanel Orientation="Vertical">
+                          <!-- Afficher le numéro ordonné du job (propriété Ordinal) -->
+                          <TextBlock Text="{Binding Ordinal, Converter={StaticResource JobOrdinalConverter}}"
+                                     FontSize="14" 
+                                     FontWeight="Bold" />
+                          <!-- Afficher le nom du job -->
+                          <TextBlock Text="{Binding Name}" Margin="0,2,0,0"/>
+                          <!-- Afficher le type de sauvegarde -->
+                          <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Type: " FontSize="10" Foreground="LightGray"/>
+                            <TextBlock Text="{Binding BackupType}" FontSize="10" Foreground="LightGray"/>
+                          </StackPanel>
+                        </StackPanel>
+                      </Button.Content>
+                      <Button.Styles>
+                        <!-- Effet au survol -->
+                        <Style Selector="Button:hover">
+                          <Setter Property="Background" Value="#FF005A9E"/>
+                        </Style>
+                        <!-- Effet à l'appui -->
+                        <Style Selector="Button:pressed">
+                          <Setter Property="Background" Value="#FF003D73"/>
+                        </Style>
+                      </Button.Styles>
+                    </Button>
                   </DataTemplate>
                 </ItemsControl.ItemTemplate>
               </ItemsControl>
@@ -97,19 +129,6 @@
               </StackPanel>
             </Border>
           </Grid>
-        </TabItem>
-
-        <TabItem Header="{Binding LanguageHelperInstance.ProgressTabHeader}">
-          <DataGrid ItemsSource="{Binding BackupStates}" AutoGenerateColumns="False" Margin="10">
-            <DataGrid.Columns>
-              <DataGridTextColumn Header="Job Name" Binding="{Binding BackupName}" />
-              <DataGridTextColumn Header="Status" Binding="{Binding Status}" />
-              <DataGridTextColumn Header="Progress" Binding="{Binding Progress}" />
-              <DataGridTextColumn Header="RemainingFiles" Binding="{Binding RemainingFiles}" />
-              <DataGridTextColumn Header="RemainingSize" Binding="{Binding RemainingSize}" />
-              <DataGridTextColumn Header="CurrentSourceFile" Binding="{Binding CurrentSourceFile}" />
-            </DataGrid.Columns>
-          </DataGrid>
         </TabItem>
       </TabControl>
     </DockPanel>

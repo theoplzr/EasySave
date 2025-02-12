@@ -1,5 +1,5 @@
-using System;                         
-using System.Collections.Generic;     
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace EasySave.GUI.Helpers
@@ -11,6 +11,9 @@ namespace EasySave.GUI.Helpers
 
         private string _language = "en";
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        // Ajoutez la propriété CurrentLanguage
+        public string CurrentLanguage => _language;
 
         private static readonly Dictionary<string, Dictionary<string, string>> messages = new()
         {
@@ -32,8 +35,6 @@ namespace EasySave.GUI.Helpers
                     { "ColumnType", "Type" },
                     { "RealTimeStatusHeader", "Real-Time Status" },
                     { "JobsTabHeader", "Jobs" },
-                    { "ProgressTabHeader", "Progress" },
-
                     // --- Nouveaux ajout ---
                     { "ConfigurationWindowTitle", "Configuration" },
                     { "LogFormatLabel", "Log Format:" },
@@ -71,8 +72,6 @@ namespace EasySave.GUI.Helpers
                     { "ColumnType", "Type" },
                     { "RealTimeStatusHeader", "État en temps réel" },
                     { "JobsTabHeader", "Travaux" },
-                    { "ProgressTabHeader", "Progression" },
-
                     // --- Nouveaux ajout ---
                     { "ConfigurationWindowTitle", "Configuration" },
                     { "LogFormatLabel", "Format du Log :" },

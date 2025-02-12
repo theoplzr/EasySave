@@ -1,0 +1,13 @@
+[
+  {
+    "Timestamp": "2025-02-12T11:09:24.376288+01:00",
+    "BackupName": "Salllurnuednhednhehnde",
+    "SourceFilePath": "/Users/tpellizzari/Documents/Source2/test.txt",
+    "TargetFilePath": "/Users/tpellizzari/Documents/Target2/test.txt",
+    "FileSize": 15,
+    "TransferTimeMs": 0,
+    "EncryptionTimeMs": 0,
+    "Status": "Success",
+    "Level": 0
+  }
+]
