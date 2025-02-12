@@ -75,7 +75,16 @@ namespace EasySave.GUI.ViewModels
                 _configuration
             );
 
-            BackupJobs = new ObservableCollection<BackupJob>(_facade.ListBackupJobs());
+            // Récupération de la liste des jobs depuis le _facade
+            var jobs = _facade.ListBackupJobs();
+
+            // Pour chaque job, assigner un ordinal basé sur sa position dans la liste
+            for (int i = 0; i < jobs.Count; i++)
+            {
+                jobs[i].Ordinal = i;  // Assurez-vous que BackupJob possède une propriété Ordinal
+            }
+
+            BackupJobs = new ObservableCollection<BackupJob>(jobs);
 
             BackupStates = new ObservableCollection<BackupState>();
 
@@ -103,6 +112,8 @@ namespace EasySave.GUI.ViewModels
                 var result = await jobWindow.ShowDialog<BackupJob>(mainWindow); 
                 if (result != null)
                 {
+                    // Assigner l'ordinal en fonction du nombre actuel de jobs
+                    result.Ordinal = BackupJobs.Count;  
                     _facade.AddJob(result);
                     BackupJobs.Add(result);
 
@@ -114,7 +125,6 @@ namespace EasySave.GUI.ViewModels
                 }
             }
         }
-
 
         private async void OpenModifyJobWindow()
         {

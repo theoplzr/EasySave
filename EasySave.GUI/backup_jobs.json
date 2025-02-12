@@ -1,16 +1,1 @@
-[
-  {
-    "Id": "8a229398-7e1f-477e-ac44-49bf72d14e2d",
-    "Name": "Job1",
-    "SourceDirectory": "Users/tpellizzari/Documents/Source1",
-    "TargetDirectory": "/Users/tpellizzari/Documents/Target1",
-    "BackupType": 0
-  },
-  {
-    "Id": "520a401a-7f5c-4034-8b02-8e04debc72b6",
-    "Name": "Tets",
-    "SourceDirectory": "/Users/tpellizzari/Documents/Source1",
-    "TargetDirectory": "/Users/tpellizzari/Documents/Target1",
-    "BackupType": 0
-  }
-]
+[]
