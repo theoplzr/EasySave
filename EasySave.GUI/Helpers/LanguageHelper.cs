@@ -27,6 +27,7 @@ namespace EasySave.GUI.Helpers
                     { "MenuItemExit", "Exit" },
                     { "ButtonAdd", "Add" },
                     { "ButtonModify", "Modify" },
+                    { "ButtonList", "List All" },
                     { "ButtonDelete", "Delete" },
                     { "ButtonExecute", "Execute" },
                     { "ColumnName", "Name" },
@@ -67,6 +68,7 @@ namespace EasySave.GUI.Helpers
                     { "MenuItemExit", "Quitter" },
                     { "ButtonAdd", "Ajouter" },
                     { "ButtonModify", "Modifier" },
+                    { "ButtonList", "Lister les travaux" },
                     { "ButtonDelete", "Supprimer" },
                     { "ButtonExecute", "Exécuter" },
                     { "ColumnName", "Nom" },
@@ -112,6 +114,7 @@ namespace EasySave.GUI.Helpers
             NotifyPropertyChanged(nameof(MenuItemExit));
             NotifyPropertyChanged(nameof(ButtonAdd));
             NotifyPropertyChanged(nameof(ButtonModify));
+            NotifyPropertyChanged(nameof(ButtonList));
             NotifyPropertyChanged(nameof(ButtonDelete));
             NotifyPropertyChanged(nameof(ButtonExecute));
             NotifyPropertyChanged(nameof(ColumnName));
@@ -154,6 +157,7 @@ namespace EasySave.GUI.Helpers
         public string MenuItemExit => GetMessage("MenuItemExit");
         public string ButtonAdd => GetMessage("ButtonAdd");
         public string ButtonModify => GetMessage("ButtonModify");
+        public string ButtonList => GetMessage("ButtonList");
         public string ButtonDelete => GetMessage("ButtonDelete");
         public string ButtonExecute => GetMessage("ButtonExecute");
         public string ColumnName => GetMessage("ColumnName");
