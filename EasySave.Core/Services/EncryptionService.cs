@@ -1,15 +1,21 @@
-using System.Diagnostics;
-using EasySaveLogs;
-using EasySave.Core.Utils;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using EasySaveLogs;
+using EasySave.Core.Utils;
 
 namespace EasySave.Core.Services
 {
     public class EncryptionService
     {
-        public static int EncryptFile(string filePath)
+        /// <summary>
+        /// Chiffre ou déchiffre un fichier en utilisant un XOR bit par bit.
+        /// </summary>
+        /// <param name="filePath">Chemin du fichier à crypter</param>
+        /// <param name="key">Clé de cryptage (minimum 64 bits, soit 8 caractères)</param>
+        /// <returns>Temps de cryptage en ms (>0) ou -1 en cas d'erreur</returns>
+        public static int EncryptFile(string filePath, string key)
         {
             try
             {
@@ -20,51 +26,29 @@ namespace EasySave.Core.Services
                     return 0; // Pas de cryptage nécessaire
                 }
 
+                // Vérifier la longueur de la clé (64 bits = 8 caractères minimum)
+                if (string.IsNullOrEmpty(key) || key.Length < 8)
+                {
+                    throw new ArgumentException("La clé de cryptage doit faire au moins 64 bits (8 caractères).");
+                }
+
                 var stopwatch = Stopwatch.StartNew();
 
-                // --- Appel à CryptoSoft ---
-                ProcessStartInfo psi = new ProcessStartInfo
-                {
-                    FileName = "CryptoSoft.exe",
-                    Arguments = $"\"{filePath}\"",
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
+                // Lire le fichier
+                byte[] fileBytes = File.ReadAllBytes(filePath);
+                byte[] keyBytes = System.Text.Encoding.UTF8.GetBytes(key);
 
-                try
-                {
-                    using (var process = Process.Start(psi))
-                    {
-                        process.WaitForExit();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    string logDirectory = Configuration.GetLogDirectory();
-                    string logFormat = Configuration.GetLogFormat();
-                    Logger.GetInstance(logDirectory, logFormat).LogAction(new LogEntry
-                    {
-                        Timestamp = DateTime.Now,
-                        BackupName = "CryptoSoft",
-                        SourceFilePath = filePath,
-                        TargetFilePath = "N/A",
-                        FileSize = 0,
-                        TransferTimeMs = 0,
-                        EncryptionTimeMs = -1,
-                        Status = $"Erreur : CryptoSoft n'a pas pu être exécuté ({ex.Message})",
-                        Level = Logger.LogLevel.Error
-                    });
+                // Appliquer le chiffrement XOR
+                byte[] encryptedBytes = XorEncrypt(fileBytes, keyBytes);
 
-                    return -1;
-                }
+                // Sauvegarder le fichier crypté
+                File.WriteAllBytes(filePath, encryptedBytes);
 
                 stopwatch.Stop();
                 int encryptionTimeMs = (int)stopwatch.ElapsedMilliseconds;
 
-                string finalLogDirectory = Configuration.GetLogDirectory();
-                string finalLogFormat = Configuration.GetLogFormat();
-                Logger.GetInstance(finalLogDirectory, finalLogFormat).LogAction(new LogEntry
+                // Logger le succès
+                Logger.GetInstance(Configuration.GetLogDirectory(), Configuration.GetLogFormat()).LogAction(new LogEntry
                 {
                     Timestamp = DateTime.Now,
                     BackupName = "Cryptage",
@@ -81,9 +65,8 @@ namespace EasySave.Core.Services
             }
             catch (Exception ex)
             {
-                string logDirectory = Configuration.GetLogDirectory();
-                string logFormat = Configuration.GetLogFormat();
-                Logger.GetInstance(logDirectory, logFormat).LogAction(new LogEntry
+                // Logger l'erreur
+                Logger.GetInstance(Configuration.GetLogDirectory(), Configuration.GetLogFormat()).LogAction(new LogEntry
                 {
                     Timestamp = DateTime.Now,
                     BackupName = "Erreur Cryptage",
@@ -98,6 +81,22 @@ namespace EasySave.Core.Services
 
                 return -1;
             }
+        }
+
+        /// <summary>
+        /// Applique un XOR bit par bit entre les données et la clé.
+        /// </summary>
+        /// <param name="data">Données du fichier</param>
+        /// <param name="key">Clé de chiffrement</param>
+        /// <returns>Données chiffrées/déchiffrées</returns>
+        private static byte[] XorEncrypt(byte[] data, byte[] key)
+        {
+            byte[] output = new byte[data.Length];
+            for (int i = 0; i < data.Length; i++)
+            {
+                output[i] = (byte)(data[i] ^ key[i % key.Length]);
+            }
+            return output;
         }
     }
 }

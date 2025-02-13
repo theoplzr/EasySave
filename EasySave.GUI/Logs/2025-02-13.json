@@ -1,0 +1,68 @@
+[
+  {
+    "Timestamp": "2025-02-13T10:39:11.590329+01:00",
+    "BackupName": "Ilias",
+    "SourceFilePath": "/Users/tpellizzari/Documents/Source1/.DS_Store",
+    "TargetFilePath": "/Users/tpellizzari/Documents/Target1/.DS_Store",
+    "FileSize": 6148,
+    "TransferTimeMs": 1,
+    "EncryptionTimeMs": 0,
+    "Status": "Success",
+    "Level": 0
+  },
+  {
+    "Timestamp": "2025-02-13T10:39:11.614492+01:00",
+    "BackupName": "Ilias",
+    "SourceFilePath": "/Users/tpellizzari/Documents/Source1/2.txt",
+    "TargetFilePath": "/Users/tpellizzari/Documents/Target1/2.txt",
+    "FileSize": 46,
+    "TransferTimeMs": 0,
+    "EncryptionTimeMs": 0,
+    "Status": "Success",
+    "Level": 0
+  },
+  {
+    "Timestamp": "2025-02-13T10:39:11.61802+01:00",
+    "BackupName": "Ilias",
+    "SourceFilePath": "/Users/tpellizzari/Documents/Source1/test.txt",
+    "TargetFilePath": "/Users/tpellizzari/Documents/Target1/test.txt",
+    "FileSize": 41,
+    "TransferTimeMs": 0,
+    "EncryptionTimeMs": 0,
+    "Status": "Success",
+    "Level": 0
+  },
+  {
+    "Timestamp": "2025-02-13T10:39:11.619356+01:00",
+    "BackupName": "nfjcrncrkncerk",
+    "SourceFilePath": "/Users/tpellizzari/Documents/Source1/.DS_Store",
+    "TargetFilePath": "/Users/tpellizzari/Documents/Target1/.DS_Store",
+    "FileSize": 6148,
+    "TransferTimeMs": 0,
+    "EncryptionTimeMs": 0,
+    "Status": "Success",
+    "Level": 0
+  },
+  {
+    "Timestamp": "2025-02-13T10:39:11.620122+01:00",
+    "BackupName": "nfjcrncrkncerk",
+    "SourceFilePath": "/Users/tpellizzari/Documents/Source1/2.txt",
+    "TargetFilePath": "/Users/tpellizzari/Documents/Target1/2.txt",
+    "FileSize": 46,
+    "TransferTimeMs": 0,
+    "EncryptionTimeMs": 0,
+    "Status": "Success",
+    "Level": 0
+  },
+  {
+    "Timestamp": "2025-02-13T10:39:11.62069+01:00",
+    "BackupName": "nfjcrncrkncerk",
+    "SourceFilePath": "/Users/tpellizzari/Documents/Source1/test.txt",
+    "TargetFilePath": "/Users/tpellizzari/Documents/Target1/test.txt",
+    "FileSize": 41,
+    "TransferTimeMs": 0,
+    "EncryptionTimeMs": 0,
+    "Status": "Success",
+    "Level": 0
+  }
+]

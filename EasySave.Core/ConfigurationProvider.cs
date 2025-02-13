@@ -13,5 +13,6 @@ namespace EasySave.Core
         public static string LogFormat => _configuration["LogFormat"] ?? "JSON";
         public static string[] EncryptionExtensions => (_configuration["EncryptionExtensions"] ?? "").Split(',', System.StringSplitOptions.RemoveEmptyEntries);
         public static string BusinessSoftware => _configuration["BusinessSoftware"] ?? "";
+        public static string EncryptionKey { get; set; } = "DefaultKey123"; 
     }
 }
