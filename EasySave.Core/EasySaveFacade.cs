@@ -57,6 +57,15 @@ namespace EasySave.Core.Facade
         }
 
         /// <summary>
+        /// Get the Job index using the Job Id.
+        /// </summary>
+        /// <param name="id">The id of the job to get.</param>
+        public int GetJobIndexById(Guid id)
+        {
+            return _backupManager.GetAllJobs().FindIndex(job => job.Id == id);
+        }
+
+        /// <summary>
         /// Updates an existing backup job by providing new values for its attributes.
         /// Parameters that are null or empty will not be updated.
         /// </summary>

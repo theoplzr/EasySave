@@ -1,27 +1,67 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:EasySave.GUI.ViewModels"
+        xmlns:converters="clr-namespace:EasySave.GUI.Converters"
         x:Class="EasySave.GUI.Views.JobFormWindow"
         x:DataType="vm:JobFormViewModel"
-        Title="Add/Edit Job"
-        Width="400" Height="300">
+        Title="Job Form" Width="500" Height="450">
 
-    <StackPanel Margin="10" Spacing="10">
-        <TextBlock Text="Job Name"/>
-        <TextBox Text="{Binding Name}"/>
+    <Window.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#2C3E50" Offset="0"/>
+            <GradientStop Color="#34495E" Offset="1"/>
+        </LinearGradientBrush>
+    </Window.Background>
 
-        <TextBlock Text="Source Directory"/>
-        <TextBox Text="{Binding SourceDirectory}"/>
+    <Window.Resources>
+        <converters:StringToBoolConverter x:Key="StringToBoolConverter"/>
+    </Window.Resources>
 
-        <TextBlock Text="Target Directory"/>
-        <TextBox Text="{Binding TargetDirectory}"/>
+    <Grid>
+        <Border Background="White" CornerRadius="10" Padding="20"
+                Width="380" HorizontalAlignment="Center" VerticalAlignment="Center"
+                BoxShadow="0 4 10 #00000030">
+            
+            <StackPanel Spacing="10">
+                <TextBlock Text="Create a New Backup Job" FontSize="20" FontWeight="Bold" Foreground="#2C3E50" 
+                           HorizontalAlignment="Center" Margin="0,0,0,10"/>
 
-        <TextBlock Text="Backup Type"/>
-        <ComboBox SelectedItem="{Binding BackupType}" ItemsSource="{Binding BackupTypes}"/>
+                <TextBlock Text="Job Name:" FontWeight="Bold" Foreground="#2C3E50"/>
+                <TextBox Text="{Binding Name}" Watermark="Enter job name..." 
+                         Background="#F3F3F3" BorderBrush="#BDC3C7" CornerRadius="5" Padding="6"/>
+                <TextBlock Text="{Binding NameError}" Foreground="Red" FontSize="12"
+                           IsVisible="{Binding NameError, Converter={StaticResource StringToBoolConverter}}"/>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Command="{Binding SaveCommand}" Content="Save" Margin="5"/>
-            <Button Command="{Binding CancelCommand}" Content="Cancel" Margin="5"/>
-        </StackPanel>
-    </StackPanel>
+                <TextBlock Text="Source Directory:" FontWeight="Bold" Foreground="#2C3E50"/>
+                <TextBox Text="{Binding SourceDirectory}" Watermark="Select source directory..." 
+                         Background="#F3F3F3" BorderBrush="#BDC3C7" CornerRadius="5" Padding="6"/>
+                <TextBlock Text="{Binding SourceDirectoryError}" Foreground="Red" FontSize="12"
+                           IsVisible="{Binding SourceDirectoryError, Converter={StaticResource StringToBoolConverter}}"/>
+
+                <!-- Répertoire cible -->
+                <TextBlock Text="Target Directory:" FontWeight="Bold" Foreground="#2C3E50"/>
+                <TextBox Text="{Binding TargetDirectory}" Watermark="Select target directory..." 
+                         Background="#F3F3F3" BorderBrush="#BDC3C7" CornerRadius="5" Padding="6"/>
+                <TextBlock Text="{Binding TargetDirectoryError}" Foreground="Red" FontSize="12"
+                           IsVisible="{Binding TargetDirectoryError, Converter={StaticResource StringToBoolConverter}}"/>
+
+                <TextBlock Text="Backup Type:" FontWeight="Bold" Foreground="#2C3E50"/>
+                <ComboBox SelectedItem="{Binding BackupType}" ItemsSource="{Binding BackupTypes}" 
+                          Background="#F3F3F3" BorderBrush="#BDC3C7" CornerRadius="5" Padding="6"/>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,20,0,0">
+                    <Border Background="#27AE60" CornerRadius="5" Padding="3" Margin="5">
+                        <Button Content="Save" Command="{Binding SaveCommand}" 
+                                Foreground="White" Padding="8,5" Width="80" 
+                                FontWeight="Bold" Background="Transparent"/>
+                    </Border>
+                    <Border Background="#E74C3C" CornerRadius="5" Padding="3" Margin="5">
+                        <Button Content="Cancel" Command="{Binding CancelCommand}" 
+                                Foreground="White" Padding="8,5" Width="80" 
+                                FontWeight="Bold" Background="Transparent"/>
+                    </Border>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Grid>
 </Window>

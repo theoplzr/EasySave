@@ -1,18 +1,10 @@
 [
   {
-    "Id": "dc469ab2-159d-447e-9c19-40be782331e2",
-    "Name": "Ilias",
-    "SourceDirectory": "/Users/tpellizzari/Documents/Source1",
-    "TargetDirectory": "/Users/tpellizzari/Documents/Target1",
-    "BackupType": 0,
+    "Id": "5e6b82aa-4850-4630-8c83-83763bdc946b",
+    "Name": "jnrcej",
+    "SourceDirectory": "/Users/tpellizzari/Documents/Source3",
+    "TargetDirectory": "/Users/tpellizzari/Documents/Target3",
+    "BackupType": 1,
     "Ordinal": 0
-  },
-  {
-    "Id": "cb276c8f-a899-4686-bc3f-25c0fe3e5d46",
-    "Name": "nfjcrncrkncerk",
-    "SourceDirectory": "/Users/tpellizzari/Documents/Source1",
-    "TargetDirectory": "/Users/tpellizzari/Documents/Target1",
-    "BackupType": 0,
-    "Ordinal": 1
   }
 ]

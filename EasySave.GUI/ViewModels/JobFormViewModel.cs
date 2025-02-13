@@ -5,6 +5,7 @@ using EasySave.Core.Models;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Avalonia.Controls;
+using System.IO;
 using EasySave.GUI.Helpers;
 
 namespace EasySave.GUI.ViewModels
@@ -15,6 +16,10 @@ namespace EasySave.GUI.ViewModels
         private string _sourceDirectory;
         private string _targetDirectory;
         private BackupType _backupType;
+        private string _nameError = string.Empty;
+        private string _sourceDirectoryError = string.Empty;
+        private string _targetDirectoryError = string.Empty;
+        private bool _hasAttemptedSave = false;
         public ObservableCollection<BackupType> BackupTypes { get; }
 
         public LanguageHelper LanguageHelperInstance => LanguageHelper.Instance;
@@ -22,19 +27,31 @@ namespace EasySave.GUI.ViewModels
         public string Name
         {
             get => _name;
-            set => this.RaiseAndSetIfChanged(ref _name, value);
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _name, value);
+                if (_hasAttemptedSave) ValidateForm(); 
+            }
         }
 
         public string SourceDirectory
         {
             get => _sourceDirectory;
-            set => this.RaiseAndSetIfChanged(ref _sourceDirectory, value);
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _sourceDirectory, value);
+                if (_hasAttemptedSave) ValidateForm(); 
+            }
         }
 
         public string TargetDirectory
         {
             get => _targetDirectory;
-            set => this.RaiseAndSetIfChanged(ref _targetDirectory, value);
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _targetDirectory, value);
+                if (_hasAttemptedSave) ValidateForm(); 
+            }
         }
 
         public BackupType BackupType
@@ -42,6 +59,26 @@ namespace EasySave.GUI.ViewModels
             get => _backupType;
             set => this.RaiseAndSetIfChanged(ref _backupType, value);
         }
+
+        public string NameError
+        {
+            get => _nameError;
+            private set => this.RaiseAndSetIfChanged(ref _nameError, value);
+        }
+
+        public string SourceDirectoryError
+        {
+            get => _sourceDirectoryError;
+            private set => this.RaiseAndSetIfChanged(ref _sourceDirectoryError, value);
+        }
+
+        public string TargetDirectoryError
+        {
+            get => _targetDirectoryError;
+            private set => this.RaiseAndSetIfChanged(ref _targetDirectoryError, value);
+        }
+
+        public bool CanSave => string.IsNullOrEmpty(NameError) && string.IsNullOrEmpty(SourceDirectoryError) && string.IsNullOrEmpty(TargetDirectoryError);
 
         public ReactiveCommand<Unit, BackupJob> SaveCommand { get; } 
         public ReactiveCommand<Unit, Unit> CancelCommand { get; }
@@ -87,9 +124,46 @@ namespace EasySave.GUI.ViewModels
 
         private BackupJob SaveJob()
         {
-            var job = new BackupJob(Name, SourceDirectory, TargetDirectory, BackupType);
-            _window?.Close(job); 
-            return job;
+            _hasAttemptedSave = true; 
+            ValidateForm();
+
+            if (CanSave)
+            {
+                var job = new BackupJob(Name!, SourceDirectory!, TargetDirectory!, BackupType);
+                _window?.Close(job); 
+                return job;
+            } else
+            {
+                return null;
+            }
+        }
+
+        private void ValidateForm()
+        {
+            // Vérification du champ Name
+            NameError = string.IsNullOrWhiteSpace(Name) ? "Please enter a name for the job." : null;
+
+            // Vérification du champ SourceDirectory
+            if (string.IsNullOrWhiteSpace(SourceDirectory) || !Directory.Exists(SourceDirectory) || !Path.IsPathFullyQualified(SourceDirectory))
+            {
+                SourceDirectoryError = "Please enter a valid source directory.";
+            }
+            else
+            {
+                SourceDirectoryError = null;
+            }
+
+            // Vérification du champ TargetDirectory
+            if (string.IsNullOrWhiteSpace(TargetDirectory) || !Directory.Exists(TargetDirectory) || !Path.IsPathFullyQualified(TargetDirectory))
+            {
+                TargetDirectoryError = "Please enter a valid target directory.";
+            }
+            else
+            {
+                TargetDirectoryError = null;
+            }
+
+            this.RaisePropertyChanged(nameof(CanSave)); // Met à jour l'état du bouton Save
         }
 
         private void Cancel()

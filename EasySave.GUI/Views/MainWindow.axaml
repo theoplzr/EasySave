@@ -56,6 +56,11 @@
                   <TextBlock Text="{Binding LanguageHelperInstance.ButtonModify}"/>
                 </StackPanel>
               </Button>
+              <Button Command="{Binding OpenListAllJobWindowCommand}">
+                <StackPanel Orientation="Horizontal">
+                  <Image Source="avares://EasySave.GUI/Assets/icon-edit.png" Width="16" Height="16" Margin="0,0,5,0"/>
+                </StackPanel>
+              </Button>
               <Button Command="{Binding DeleteJobCommand}">
                 <StackPanel Orientation="Horizontal">
                   <Image Source="avares://EasySave.GUI/Assets/icon-delete.png" Width="16" Height="16" Margin="0,0,5,0"/>
@@ -120,6 +125,18 @@
                 </ItemsControl.ItemTemplate>
               </ItemsControl>
             </ScrollViewer>
+
+            <!-- Ajout d'une DataGrid pour la liste des jobs -->
+            <DataGrid Grid.Row="1" ItemsSource="{Binding BackupJobs}" AutoGenerateColumns="False" Margin="10"
+                      SelectionMode="Single" Focusable="True"
+                      SelectedItem="{Binding SelectedJob, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
+                    <DataGridTextColumn Header="Source" Binding="{Binding SourceDirectory}" />
+                    <DataGridTextColumn Header="Target" Binding="{Binding TargetDirectory}" />
+                    <DataGridTextColumn Header="Type" Binding="{Binding BackupType}" />
+                </DataGrid.Columns>
+            </DataGrid>
 
             <!-- Barre de statut -->
             <Border Grid.Row="2" BorderBrush="Gray" BorderThickness="1" Padding="10" Margin="10">

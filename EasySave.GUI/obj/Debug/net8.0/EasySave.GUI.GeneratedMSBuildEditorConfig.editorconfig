@@ -31,5 +31,8 @@ build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 [/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.GUI/Views/LanguageSelectionWindow.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
+[/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.GUI/Views/ListAllJobWindow.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
 [/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.GUI/Views/MainWindow.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
