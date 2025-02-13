@@ -80,7 +80,8 @@ namespace EasySave.Core.Template
             var encryptionExtensions = ConfigurationProvider.EncryptionExtensions; // e.g. [".txt", ".docx"]
             if (encryptionExtensions.Contains(fileExtension, StringComparer.OrdinalIgnoreCase))
             {
-                encryptionTime = Services.EncryptionService.EncryptFile(filePath);
+                string encryptionKey = ConfigurationProvider.EncryptionKey; // Ajouter une clé de cryptage issue de la config
+                encryptionTime = Services.EncryptionService.EncryptFile(filePath, encryptionKey);
             }
 
             // Log de la copie avec info sur le cryptage

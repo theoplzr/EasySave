@@ -97,10 +97,11 @@ namespace EasySave.Core.Template
                 int encryptionTime = 0;
                 var fileExtension = Path.GetExtension(filePath);
                 var encryptionExtensions = ConfigurationProvider.EncryptionExtensions; // ex: [".txt", ".docx", ...]
+                // Correction dans DifferentialBackupAlgorithm.cs
                 if (encryptionExtensions.Contains(fileExtension, StringComparer.OrdinalIgnoreCase))
                 {
-                    // Appel au service de cryptage et récupération du temps de cryptage (en ms)
-                    encryptionTime = Services.EncryptionService.EncryptFile(filePath);
+                    string encryptionKey = ConfigurationProvider.EncryptionKey;
+                    encryptionTime = Services.EncryptionService.EncryptFile(filePath, encryptionKey);
                 }
 
                 // Enregistrement des informations de transfert dans le log incluant le temps de cryptage

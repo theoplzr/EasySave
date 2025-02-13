@@ -30,7 +30,11 @@ namespace EasySaveLogs
         /// <param name="logFormat">Format of the log files (JSON or XML).</param>
         private Logger(string logDirectory, string logFormat)
         {
-            _logDirectory = logDirectory;
+            string userHomeDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            _logDirectory = string.IsNullOrWhiteSpace(logDirectory) 
+                ? Path.Combine(userHomeDirectory, "Logs") 
+                : logDirectory;
+
             _logFormat = logFormat;
 
             if (!Directory.Exists(_logDirectory))
