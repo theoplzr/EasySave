@@ -52,8 +52,8 @@ namespace EasySave.GUI.Helpers
                     { "BackupTypeLabel", "Backup Type:" },
                     { "MenuItemLanguage", "Language" },
                     { "ChooseYourLanguage", "Choose your language:" },
-                    { "English", "English" },
-                    { "French", "French" },
+                    { "English", "🏴󠁧󠁢󠁥󠁮󠁧󠁿 English" },
+                    { "French", "🇫🇷 French" },
                     // Clé ajoutée pour la liste des jobs
                     { "JobsListTitle", "Job List" },
                     { "ButtonListAllJobs", "List All Jobs" }
@@ -92,8 +92,8 @@ namespace EasySave.GUI.Helpers
                     { "BackupTypeLabel", "Type de Sauvegarde :" },
                     { "MenuItemLanguage", "Langue" },
                     { "ChooseYourLanguage", "Choisissez votre langue :" },
-                    { "English", "Anglais" },
-                    { "French", "Français" },
+                    { "English", "🏴󠁧󠁢󠁥󠁮󠁧󠁿 Anglais" },
+                    { "French", "🇫🇷 Français" },
                     // Clé ajoutée pour la liste des jobs
                     { "Jobs List", "Liste des Travaux en cours" },
                     { "ButtonListAllJobs", "Lister tous les Travaux" }

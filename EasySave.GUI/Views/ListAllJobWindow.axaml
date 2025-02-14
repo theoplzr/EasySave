@@ -8,8 +8,6 @@
 
     <Window.Resources>
         <SolidColorBrush x:Key="SelectedItemBackground" Color="#5555AA"/>
-        <!-- Convertisseur pour désactiver le bouton Remove si aucun élément n'est sélectionné -->
-        <converters:NullToBoolConverter x:Key="NullToBoolConverter"/>
     </Window.Resources>
 
     <StackPanel Margin="20">
@@ -35,12 +33,62 @@
 
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Border Padding="10" CornerRadius="5" Margin="5">
-                            <StackPanel Orientation="Vertical">
-                                <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="16" Foreground="White"/>
-                                <TextBlock Text="{Binding SourceDirectory}" FontSize="12" Foreground="LightGray"/>
-                                <TextBlock Text="{Binding TargetDirectory}" FontSize="12" Foreground="LightGray"/>
-                                <TextBlock Text="{Binding BackupType}" FontStyle="Italic" Foreground="LightBlue"/>
+                        <Border Padding="10" CornerRadius="5" Margin="5" Background="#2E2E2E">
+                            <StackPanel Orientation="Vertical" Spacing="5">
+                                <!-- Titre -->
+                                <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="16" Foreground="White" Margin="0,0,0,5"/>
+
+                                <!-- Grid pour aligner les infos avec ratio 1/3 - 2/3 -->
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*" />
+                                        <ColumnDefinition Width="2*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Définition des lignes pour chaque info -->
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Source Directory -->
+                                    <TextBlock Text="📂 Source:" FontWeight="Bold" Foreground="LightGray" Grid.Row="0" Grid.Column="0"/>
+                                    <TextBlock Text="{Binding SourceDirectory}" FontSize="12" Foreground="White" Grid.Row="0" Grid.Column="1"/>
+
+                                    <!-- Target Directory -->
+                                    <TextBlock Text="🎯 Target:" FontWeight="Bold" Foreground="LightGray" Grid.Row="1" Grid.Column="0"/>
+                                    <TextBlock Text="{Binding TargetDirectory}" FontSize="12" Foreground="White" Grid.Row="1" Grid.Column="1"/>
+
+                                    <!-- Timestamp -->
+                                    <TextBlock Text="🕒 Timestamp:" FontWeight="Bold" Foreground="LightGray" Grid.Row="2" Grid.Column="0"/>
+                                    <TextBlock Text="{Binding CompletionTime}" FontSize="12" Foreground="White" Grid.Row="2" Grid.Column="1"/>
+
+                                    <!-- File Size -->
+                                    <TextBlock Text="📏 File Size:" FontWeight="Bold" Foreground="LightGray" Grid.Row="3" Grid.Column="0"/>
+                                    <TextBlock Text="{Binding FileSize}" FontSize="12" Foreground="White" Grid.Row="3" Grid.Column="1"/>
+
+                                    <!-- Transfer Time -->
+                                    <TextBlock Text="⚡ Transfer Time:" FontWeight="Bold" Foreground="LightGray" Grid.Row="4" Grid.Column="0"/>
+                                    <TextBlock Text="{Binding TransferTimeMs} ms" FontSize="12" Foreground="White" Grid.Row="4" Grid.Column="1"/>
+
+                                    <!-- Encryption Time -->
+                                    <TextBlock Text="🔒 Encryption Time:" FontWeight="Bold" Foreground="LightGray" Grid.Row="5" Grid.Column="0"/>
+                                    <TextBlock Text="{Binding EncryptionTimeMs} ms" FontSize="12" Foreground="White" Grid.Row="5" Grid.Column="1"/>
+
+                                    <!-- Status -->
+                                    <TextBlock Text="✅ Status:" FontWeight="Bold" Foreground="LightGray" Grid.Row="6" Grid.Column="0"/>
+                                    <TextBlock Text="{Binding Status}" FontSize="12" Foreground="LightGreen" Grid.Row="6" Grid.Column="1"/>
+
+                                    <!-- Backup Level -->
+                                    <TextBlock Text="📊 Level:" FontWeight="Bold" Foreground="LightGray" Grid.Row="7" Grid.Column="0"/>
+                                    <TextBlock Text="{Binding Level}" FontSize="12" Foreground="White" Grid.Row="7" Grid.Column="1"/>
+                                </Grid>
                             </StackPanel>
                         </Border>
                     </DataTemplate>
@@ -49,10 +97,6 @@
         </Border>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
-            <Button Content="Remove" Command="{Binding RemoveCommand}" Margin="5"
-                    Background="#D9534F" Foreground="White" Padding="8,5" Width="80"
-                    CornerRadius="5" IsEnabled="{Binding SelectedBackupJob, Converter={StaticResource NullToBoolConverter}}"/>
-            
             <Button Content="Cancel" Command="{Binding CancelCommand}" Margin="5"
                     Background="#5BC0DE" Foreground="White" Padding="8,5" Width="80"
                     CornerRadius="5"/>
