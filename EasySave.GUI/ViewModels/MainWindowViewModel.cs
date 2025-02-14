@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using ReactiveUI;
 using EasySave.Core.Models;
 using EasySave.Core.Facade;
+using EasySave.Core.Observers;
 using EasySave.GUI.Views;
 using EasySave.Core.Repositories;
 using EasySave.GUI.Observers;
@@ -22,13 +23,15 @@ namespace EasySave.GUI.ViewModels
     {
         private readonly EasySaveFacade _facade;
         private readonly IConfiguration _configuration;
+        private readonly FileStateObserver _fileStateObserver;
         private string _businessSoftware;
+        private bool _isObserverActive = false; // Empêche d'ajouter plusieurs fois FileStateObserver
 
         public LanguageHelper LanguageHelperInstance => LanguageHelper.Instance;
 
         public ObservableCollection<BackupJob> BackupJobs { get; }
 
-        private ObservableCollection<BackupState> _backupStates;
+        private ObservableCollection<BackupState> _backupStates = new ObservableCollection<BackupState>();
         public ObservableCollection<BackupState> BackupStates
         {
             get => _backupStates;
@@ -49,7 +52,7 @@ namespace EasySave.GUI.ViewModels
             set => this.RaiseAndSetIfChanged(ref _realTimeStatus, value);
         }
 
-        // Commandes mises à jour
+        // Commandes
         public ReactiveCommand<Unit, Unit> OpenAddJobWindowCommand { get; }
         public ReactiveCommand<Unit, Unit> OpenModifyJobWindowCommand { get; }
         public ReactiveCommand<Unit, Unit> OpenListAllJobWindowCommand { get; }
@@ -61,7 +64,6 @@ namespace EasySave.GUI.ViewModels
 
         public MainWindowViewModel()
         {
-            // Charger la configuration
             _configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -76,23 +78,21 @@ namespace EasySave.GUI.ViewModels
                 _configuration
             );
 
-            // Récupération de la liste des jobs depuis le _facade
-            var jobs = _facade.ListBackupJobs();
+            string stateFilePath = "state.json";
+            _fileStateObserver = new FileStateObserver(stateFilePath);
 
-            // Pour chaque job, assigner un ordinal basé sur sa position dans la liste
+            var jobs = _facade.ListBackupJobs();
             for (int i = 0; i < jobs.Count; i++)
             {
-                jobs[i].Ordinal = i;  // Assurez-vous que BackupJob possède une propriété Ordinal
+                jobs[i].Ordinal = i;
             }
 
             BackupJobs = new ObservableCollection<BackupJob>(jobs);
-
             BackupStates = new ObservableCollection<BackupState>();
 
             var uiObserver = new UIStateObserver(BackupStates);
-            _facade.AddObserver(uiObserver); 
+            _facade.AddObserver(uiObserver);
 
-            // Initialiser les commandes
             OpenAddJobWindowCommand = ReactiveCommand.Create(OpenAddJobWindow);
             OpenModifyJobWindowCommand = ReactiveCommand.Create(OpenModifyJobWindow);
             OpenListAllJobWindowCommand = ReactiveCommand.Create(OpenAllJobWindow);
@@ -101,6 +101,65 @@ namespace EasySave.GUI.ViewModels
             OpenConfigurationCommand = ReactiveCommand.Create(OpenConfiguration);
             ExitCommand = ReactiveCommand.Create(() => Environment.Exit(0));
             ChangeLanguageCommand = ReactiveCommand.Create<string>(ChangeLanguage);
+        }
+
+        /// <summary>
+        /// Exécute tous les jobs et active FileStateObserver pour le suivi en temps réel.
+        /// </summary>
+        private async Task ExecuteAllJobsAsync()
+        {
+            if (IsBusinessSoftwareRunning())
+            {
+                RealTimeStatus = $"🚨 Execution blocked: {_businessSoftware} is running.";
+                return;
+            }
+
+            if (!_isObserverActive)
+            {
+                _facade.AddObserver(_fileStateObserver);
+                _isObserverActive = true;
+                Console.WriteLine("🟢 FileStateObserver activé.");
+            }
+
+            _facade.ExecuteAllJobs();
+
+            RealTimeStatus = "✅ All jobs executed successfully.";
+            await Task.CompletedTask;
+        }
+
+        private async Task DeleteJobAsync()
+        {
+            if (SelectedJob == null)
+            {
+                RealTimeStatus = "❌ No job selected to delete.";
+                return;
+            }
+
+            int index = BackupJobs.IndexOf(SelectedJob);
+            if (index == -1)
+                return;
+
+            _facade.RemoveJob(index);
+            BackupJobs.RemoveAt(index);
+            RealTimeStatus = $"🗑️ Job '{SelectedJob.Name}' deleted.";
+            await Task.CompletedTask;
+        }
+
+        private void OpenConfiguration()
+        {
+            var configWindow = new ConfigurationWindow();
+            configWindow.Show();
+        }
+
+        private void ChangeLanguage(string languageCode)
+        {
+            LanguageHelper.Instance.SetLanguage(languageCode);
+        }
+
+        private bool IsBusinessSoftwareRunning()
+        {
+            var processes = Process.GetProcesses();
+            return processes.Any(p => p.ProcessName.Contains(_businessSoftware, StringComparison.OrdinalIgnoreCase));
         }
 
         private async void OpenAddJobWindow()
@@ -115,16 +174,11 @@ namespace EasySave.GUI.ViewModels
                 var result = await jobWindow.ShowDialog<BackupJob>(mainWindow); 
                 if (result != null)
                 {
-                    // Assigner l'ordinal en fonction du nombre actuel de jobs
                     result.Ordinal = BackupJobs.Count;  
                     _facade.AddJob(result);
                     BackupJobs.Add(result);
 
                     RealTimeStatus = $"✅ Job '{result.Name}' ajouté avec succès.";
-                }
-                else
-                {
-                    RealTimeStatus = "⚠️ Ajout de job annulé.";
                 }
             }
         }
@@ -132,12 +186,7 @@ namespace EasySave.GUI.ViewModels
         private async void OpenModifyJobWindow()
         {
             if (SelectedJob == null) 
-            {
-                RealTimeStatus = "❌ No job selected to modify.";
                 return;
-            }
-
-            Console.WriteLine($"🔍 Modification en cours pour le job : {SelectedJob.Name}");
 
             var jobWindow = new JobFormWindow();
             var jobViewModel = new JobFormViewModel(jobWindow, SelectedJob);
@@ -149,8 +198,6 @@ namespace EasySave.GUI.ViewModels
                 var result = await jobWindow.ShowDialog<BackupJob>(mainWindow); 
                 if (result != null)
                 {
-                    Console.WriteLine($"✅ Job modifié : {result.Name}");
-
                     int index = BackupJobs.IndexOf(SelectedJob);
                     if (index != -1)
                     {
@@ -158,10 +205,6 @@ namespace EasySave.GUI.ViewModels
                         BackupJobs[index] = result;
                         RealTimeStatus = $"✏️ Job '{result.Name}' modified.";
                     }
-                }
-                else
-                {
-                    Console.WriteLine("⚠️ Aucune modification effectuée.");
                 }
             }
         }
@@ -177,68 +220,6 @@ namespace EasySave.GUI.ViewModels
             {
                 await listWindow.ShowDialog(mainWindow);
             }
-        }
-
-        
-        private async Task DeleteJobAsync()
-        {
-            if (SelectedJob == null)
-            {
-                RealTimeStatus = "❌ No job selected to delete.";
-                Console.WriteLine("❌ Aucun job sélectionné pour suppression.");
-                return;
-            }
-
-            Console.WriteLine($"🗑️ Suppression du job : {SelectedJob.Name}");
-
-            int index = BackupJobs.IndexOf(SelectedJob);
-            if (index == -1)
-            {
-                Console.WriteLine("⚠️ Job introuvable dans la liste.");
-                return;
-            }
-
-            _facade.RemoveJob(index);
-            BackupJobs.RemoveAt(index);
-            RealTimeStatus = $"🗑️ Job '{SelectedJob.Name}' deleted.";
-            
-            Console.WriteLine($"✅ Job supprimé : {SelectedJob.Name}");
-
-            await Task.CompletedTask;
-        }
-
-
-        private async Task ExecuteAllJobsAsync()
-        {
-            if (IsBusinessSoftwareRunning())
-            {
-                RealTimeStatus = $"🚨 Execution blocked: {_businessSoftware} is running.";
-                return;
-            }
-
-            _facade.ExecuteAllJobs();
-            RealTimeStatus = "✅ All jobs executed successfully.";
-            await Task.CompletedTask;
-        }
-
-        private void OpenConfiguration()
-        {
-            var configWindow = new ConfigurationWindow();
-            configWindow.Show();
-        }
-
-        private void ChangeLanguage(string languageCode)
-        {
-            LanguageHelper.Instance.SetLanguage(languageCode);
-        }
-
-        /// <summary>
-        /// Vérifie si le logiciel métier est en cours d'exécution
-        /// </summary>
-        private bool IsBusinessSoftwareRunning()
-        {
-            var processes = Process.GetProcesses();
-            return processes.Any(p => p.ProcessName.Contains(_businessSoftware, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

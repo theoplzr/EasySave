@@ -1,0 +1,15 @@
+[
+  {
+    "BackupName": "YC",
+    "LastActionTime": "2025-02-14T15:37:11.248485+01:00",
+    "Status": "Active",
+    "TotalFiles": 3,
+    "TotalSize": 6235,
+    "RemainingFiles": 0,
+    "RemainingSize": 0,
+    "Progress": 100,
+    "CurrentSourceFile": "/Users/tpellizzari/Documents/Source1/test.txt",
+    "CurrentTargetFile": "/Users/tpellizzari/Documents/Target1/test.txt",
+    "JobId": "a7c8bdcd-571b-41ed-96e8-a7f284379e6e"
+  }
+]
