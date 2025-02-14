@@ -3,13 +3,13 @@
         xmlns:vm="clr-namespace:EasySave.GUI.ViewModels"
         x:Class="EasySave.GUI.Views.ConfigurationWindow"
         x:DataType="vm:ConfigurationViewModel"
-        Title="{Binding ConfigurationWindowTitle}"
+        Title="Configuration"
         Width="400" Height="500">
 
     <StackPanel Margin="10" Spacing="10">
         
         <!-- Log Format -->
-        <TextBlock Text="{Binding LogFormatLabel}"/>
+        <TextBlock Text="Log Format:"/>
         <ComboBox SelectedItem="{Binding LogFormat}" ItemsSource="{Binding LogFormatOptions}"/>
 
         <!-- Business Software -->
@@ -34,7 +34,7 @@
         <!-- Boutons -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="Tester CryptoSoft" Command="{Binding TestCryptoSoftCommand}" Margin="5"/>
-            <Button Content="{Binding ButtonSave}" Command="{Binding SaveCommand}" Margin="5"/>
+            <Button Content="Save" Command="{Binding SaveCommand}" Margin="5"/>
         </StackPanel>
 
         <!-- Résultat du test CryptoSoft -->

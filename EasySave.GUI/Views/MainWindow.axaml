@@ -21,7 +21,7 @@
               <Image Source="avares://EasySave.GUI/Assets/icon-config.png" Width="16" Height="16"/>
             </MenuItem.Icon>
           </MenuItem>
-          <MenuItem Header="{Binding MenuItemLanguage}">
+          <MenuItem Header="{Binding LanguageHelperInstance.MenuItemLanguage}">
             <MenuItem.Icon>
                 <Image Source="avares://EasySave.GUI/Assets/icon-language.png" Width="16" Height="16"/>
             </MenuItem.Icon>

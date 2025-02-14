@@ -138,7 +138,7 @@ namespace EasySave.GUI.Helpers
             NotifyPropertyChanged(nameof(SourceDirectoryLabel));
             NotifyPropertyChanged(nameof(TargetDirectoryLabel));
             NotifyPropertyChanged(nameof(BackupTypeLabel));
-            NotifyPropertyChanged(nameof(LanguageSelectionWindowTitle));
+            NotifyPropertyChanged(nameof(MenuItemLanguage));
             NotifyPropertyChanged(nameof(ChooseYourLanguage));
             NotifyPropertyChanged(nameof(English));
             NotifyPropertyChanged(nameof(French));
@@ -182,6 +182,7 @@ namespace EasySave.GUI.Helpers
         public string TargetDirectoryLabel => GetMessage("TargetDirectoryLabel");
         public string BackupTypeLabel => GetMessage("BackupTypeLabel");
         public string LanguageSelectionWindowTitle => GetMessage("LanguageSelectionWindowTitle");
+        public string MenuItemLanguage => GetMessage("MenuItemLanguage");
         public string ChooseYourLanguage => GetMessage("ChooseYourLanguage");
         public string English => GetMessage("English");
         public string French => GetMessage("French");
