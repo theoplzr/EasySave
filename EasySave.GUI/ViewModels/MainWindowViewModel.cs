@@ -57,6 +57,7 @@ namespace EasySave.GUI.ViewModels
         public ReactiveCommand<Unit, Unit> ExecuteAllJobsCommand { get; }
         public ReactiveCommand<Unit, Unit> OpenConfigurationCommand { get; }
         public ReactiveCommand<Unit, Unit> ExitCommand { get; }
+        public ReactiveCommand<string, Unit> ChangeLanguageCommand { get; }
 
         public MainWindowViewModel()
         {
@@ -99,6 +100,7 @@ namespace EasySave.GUI.ViewModels
             ExecuteAllJobsCommand = ReactiveCommand.CreateFromTask(ExecuteAllJobsAsync);
             OpenConfigurationCommand = ReactiveCommand.Create(OpenConfiguration);
             ExitCommand = ReactiveCommand.Create(() => Environment.Exit(0));
+            ChangeLanguageCommand = ReactiveCommand.Create<string>(ChangeLanguage);
         }
 
         private async void OpenAddJobWindow()
@@ -223,6 +225,11 @@ namespace EasySave.GUI.ViewModels
         {
             var configWindow = new ConfigurationWindow();
             configWindow.Show();
+        }
+
+        private void ChangeLanguage(string languageCode)
+        {
+            LanguageHelper.Instance.SetLanguage(languageCode);
         }
 
         /// <summary>

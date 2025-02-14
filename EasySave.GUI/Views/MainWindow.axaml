@@ -21,6 +21,14 @@
               <Image Source="avares://EasySave.GUI/Assets/icon-config.png" Width="16" Height="16"/>
             </MenuItem.Icon>
           </MenuItem>
+          <MenuItem Header="Language">
+            <MenuItem.Icon>
+                <Image Source="avares://EasySave.GUI/Assets/icon-language.png" Width="16" Height="16"/>
+            </MenuItem.Icon>
+            <MenuItem Header="🇫🇷 Français" Command="{Binding ChangeLanguageCommand}" CommandParameter="fr"/>
+            <MenuItem Header="🏴󠁧󠁢󠁥󠁮󠁧󠁿 English" Command="{Binding ChangeLanguageCommand}" CommandParameter="en"/>
+          </MenuItem>
+
           <MenuItem Header="{Binding LanguageHelperInstance.MenuItemExit}" Command="{Binding ExitCommand}">
             <MenuItem.Icon>
               <Image Source="avares://EasySave.GUI/Assets/icon-exit.png" Width="16" Height="16"/>
