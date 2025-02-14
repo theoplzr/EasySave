@@ -1,0 +1,29 @@
+# Logs
+Logs/
+*.log
+
+# Visual Studio Code
+.vscode/
+
+# Build artifacts
+bin/
+obj/
+out/
+
+# User-specific files
+*.user
+*.suo
+*.cache
+*.preferences
+*.db
+
+# Avalonia temporary files
+*.xaml.cs
+
+# Ignore config and secrets
+appsettings.json
+appsettings.Development.json
+
+# Rider / JetBrains
+.idea/
+*.iml

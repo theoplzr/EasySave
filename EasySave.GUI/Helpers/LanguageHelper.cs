@@ -12,15 +12,15 @@ namespace EasySave.GUI.Helpers
         private string _language = "en";
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        // Ajoutez la propriété CurrentLanguage
         public string CurrentLanguage => _language;
+
+        public string ButtonListAllJobs => GetMessage("ButtonListAllJobs");
 
         private static readonly Dictionary<string, Dictionary<string, string>> messages = new()
         {
             {
                 "en", new Dictionary<string, string>
                 {
-                    // Clés déjà existantes
                     { "MainWindowTitle", "EasySave" },
                     { "FileMenuHeader", "File" },
                     { "MenuItemConfiguration", "Configuration" },
@@ -35,7 +35,8 @@ namespace EasySave.GUI.Helpers
                     { "ColumnType", "Type" },
                     { "RealTimeStatusHeader", "Real-Time Status" },
                     { "JobsTabHeader", "Jobs" },
-                    // --- Nouveaux ajout ---
+                    { "ProgressTabHeader", "Progress" },
+                    // Nouveaux ajout
                     { "ConfigurationWindowTitle", "Configuration" },
                     { "LogFormatLabel", "Log Format:" },
                     { "ExtensionsToEncryptLabel", "Extensions to Encrypt:" },
@@ -52,12 +53,14 @@ namespace EasySave.GUI.Helpers
                     { "ChooseYourLanguage", "Choose your language:" },
                     { "English", "English" },
                     { "French", "French" },
+                    // Clé ajoutée pour la liste des jobs
+                    { "JobsListTitle", "Job List" },
+                    { "ButtonListAllJobs", "List All Jobs" }
                 }
             },
             {
                 "fr", new Dictionary<string, string>
                 {
-                    // Clés déjà existantes
                     { "MainWindowTitle", "EasySave" },
                     { "FileMenuHeader", "Fichier" },
                     { "MenuItemConfiguration", "Configuration" },
@@ -72,7 +75,7 @@ namespace EasySave.GUI.Helpers
                     { "ColumnType", "Type" },
                     { "RealTimeStatusHeader", "État en temps réel" },
                     { "JobsTabHeader", "Travaux" },
-                    // --- Nouveaux ajout ---
+                    { "ProgressTabHeader", "Progression" },
                     { "ConfigurationWindowTitle", "Configuration" },
                     { "LogFormatLabel", "Format du Log :" },
                     { "ExtensionsToEncryptLabel", "Extensions à Chiffrer :" },
@@ -89,6 +92,9 @@ namespace EasySave.GUI.Helpers
                     { "ChooseYourLanguage", "Choisissez votre langue :" },
                     { "English", "Anglais" },
                     { "French", "Français" },
+                    // Clé ajoutée pour la liste des jobs
+                    { "Jobs List", "Liste des Travaux en cours" },
+                    { "ButtonListAllJobs", "Lister tous les Travaux" }
                 }
             }
         };
@@ -99,7 +105,7 @@ namespace EasySave.GUI.Helpers
         {
             _language = language;
 
-            // Propriétés déjà existantes
+            // Propriétés existantes
             NotifyPropertyChanged(nameof(MainWindowTitle));
             NotifyPropertyChanged(nameof(FileMenuHeader));
             NotifyPropertyChanged(nameof(MenuItemConfiguration));
@@ -133,6 +139,9 @@ namespace EasySave.GUI.Helpers
             NotifyPropertyChanged(nameof(ChooseYourLanguage));
             NotifyPropertyChanged(nameof(English));
             NotifyPropertyChanged(nameof(French));
+
+            // Nouvelle propriété pour la liste des jobs
+            NotifyPropertyChanged(nameof(JobsListTitle));
         }
 
         private void NotifyPropertyChanged(string propertyName)
@@ -172,6 +181,9 @@ namespace EasySave.GUI.Helpers
         public string ChooseYourLanguage => GetMessage("ChooseYourLanguage");
         public string English => GetMessage("English");
         public string French => GetMessage("French");
+
+        // Nouvelle propriété pour la liste des jobs
+        public string JobsListTitle => GetMessage("JobsListTitle");
 
         private string GetMessage(string key)
         {

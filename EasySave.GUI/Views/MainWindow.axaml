@@ -4,8 +4,8 @@
         xmlns:conv="clr-namespace:EasySave.GUI.Converters"
         x:Class="EasySave.GUI.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Title="EasySave" Width="800" Height="600">
-
+        Title="{Binding LanguageHelperInstance.MainWindowTitle}" Width="800" Height="600">
+  
   <!-- Déclaration du convertisseur dans les ressources -->
   <Window.Resources>
     <conv:JobOrdinalConverter x:Key="JobOrdinalConverter"/>
@@ -15,13 +15,13 @@
     <DockPanel>
       <!-- Barre de menu -->
       <Menu DockPanel.Dock="Top">
-        <MenuItem Header="File">
-          <MenuItem Header="Configuration" Command="{Binding OpenConfigurationCommand}">
+        <MenuItem Header="{Binding LanguageHelperInstance.FileMenuHeader}">
+          <MenuItem Header="{Binding LanguageHelperInstance.MenuItemConfiguration}" Command="{Binding OpenConfigurationCommand}">
             <MenuItem.Icon>
               <Image Source="avares://EasySave.GUI/Assets/icon-config.png" Width="16" Height="16"/>
             </MenuItem.Icon>
           </MenuItem>
-          <MenuItem Header="Exit" Command="{Binding ExitCommand}">
+          <MenuItem Header="{Binding LanguageHelperInstance.MenuItemExit}" Command="{Binding ExitCommand}">
             <MenuItem.Icon>
               <Image Source="avares://EasySave.GUI/Assets/icon-exit.png" Width="16" Height="16"/>
             </MenuItem.Icon>
@@ -36,6 +36,8 @@
             <Grid.RowDefinitions>
               <!-- Boutons d'actions -->
               <RowDefinition Height="Auto"/>
+              <!-- Titre de la liste des jobs -->
+              <RowDefinition Height="Auto"/>
               <!-- Liste des jobs -->
               <RowDefinition Height="*"/>
               <!-- Statut en temps réel -->
@@ -43,7 +45,7 @@
             </Grid.RowDefinitions>
 
             <!-- Boutons d'actions en haut -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
               <Button Command="{Binding OpenAddJobWindowCommand}">
                 <StackPanel Orientation="Horizontal">
                   <Image Source="avares://EasySave.GUI/Assets/icon-add.png" Width="16" Height="16" Margin="0,0,5,0"/>
@@ -59,6 +61,7 @@
               <Button Command="{Binding OpenListAllJobWindowCommand}">
                 <StackPanel Orientation="Horizontal">
                   <Image Source="avares://EasySave.GUI/Assets/icon-edit.png" Width="16" Height="16" Margin="0,0,5,0"/>
+                  <TextBlock Text="{Binding LanguageHelperInstance.ButtonListAllJobs}" VerticalAlignment="Center"/>
                 </StackPanel>
               </Button>
               <Button Command="{Binding DeleteJobCommand}">
@@ -75,7 +78,7 @@
               </Button>
             </StackPanel>
 
-            <!-- Liste des jobs sous forme d'étiquettes stylées -->
+               <!-- Liste des jobs sous forme d'étiquettes cliquables -->
             <ScrollViewer Grid.Row="1" Margin="10">
               <ItemsControl ItemsSource="{Binding BackupJobs}">
                 <ItemsControl.ItemsPanel>
@@ -85,7 +88,6 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                   <DataTemplate>
-                    <!-- Bouton stylé comme une "chip" avec informations supplémentaires -->
                     <Button Margin="5"
                             Padding="10,5"
                             Background="#FF007ACC"
@@ -126,22 +128,10 @@
               </ItemsControl>
             </ScrollViewer>
 
-            <!-- Ajout d'une DataGrid pour la liste des jobs -->
-            <DataGrid Grid.Row="1" ItemsSource="{Binding BackupJobs}" AutoGenerateColumns="False" Margin="10"
-                      SelectionMode="Single" Focusable="True"
-                      SelectedItem="{Binding SelectedJob, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
-                    <DataGridTextColumn Header="Source" Binding="{Binding SourceDirectory}" />
-                    <DataGridTextColumn Header="Target" Binding="{Binding TargetDirectory}" />
-                    <DataGridTextColumn Header="Type" Binding="{Binding BackupType}" />
-                </DataGrid.Columns>
-            </DataGrid>
-
             <!-- Barre de statut -->
-            <Border Grid.Row="2" BorderBrush="Gray" BorderThickness="1" Padding="10" Margin="10">
+            <Border Grid.Row="3" BorderBrush="Gray" BorderThickness="1" Padding="10" Margin="10">
               <StackPanel>
-                <TextBlock Text="Real-Time Status" FontWeight="Bold" Margin="0,0,0,5"/>
+                <TextBlock Text="{Binding LanguageHelperInstance.RealTimeStatusHeader}" FontWeight="Bold" Margin="0,0,0,5"/>
                 <TextBlock Text="{Binding RealTimeStatus}" />
               </StackPanel>
             </Border>

@@ -4,15 +4,42 @@
         x:Class="EasySave.GUI.Views.ConfigurationWindow"
         x:DataType="vm:ConfigurationViewModel"
         Title="Configuration"
-        Width="400" Height="380">
+        Width="400" Height="500">
 
     <StackPanel Margin="10" Spacing="10">
+        
+        <!-- Log Format -->
         <TextBlock Text="Log Format"/>
         <ComboBox SelectedItem="{Binding LogFormat}" ItemsSource="{Binding LogFormatOptions}"/>
 
-        <TextBlock Text="Business Software"/>
+        <!-- Business Software -->
+        <TextBlock Text="Business Software (Bloqueur de backup)"/>
         <TextBox Text="{Binding BusinessSoftware}"/>
 
-        <Button Command="{Binding SaveCommand}" Content="Save" Margin="5"/>
+        <!-- Répertoire des logs -->
+        <TextBlock Text="Dossier des logs"/>
+        <TextBox Text="{Binding LogDirectory}" IsReadOnly="True"/>
+        <Button Content="Choisir un dossier..." Command="{Binding ChooseLogDirectoryCommand}" CommandParameter="{Binding $parent}" />
+
+        <!-- Extensions de fichiers à chiffrer -->
+        <TextBlock Text="Extensions de fichiers à chiffrer"/>
+        <ListBox ItemsSource="{Binding EncryptionExtensions}" Height="80"/>
+        
+        <StackPanel Orientation="Horizontal">
+            <TextBox x:Name="ExtensionInput" Width="200" Watermark="Ex: .txt"/>
+            <Button Content="Ajouter" Command="{Binding AddExtensionCommand}" CommandParameter="{Binding ElementName=ExtensionInput, Path=Text}"/>
+            <Button Content="Supprimer" Command="{Binding RemoveExtensionCommand}" CommandParameter="{Binding ElementName=ExtensionInput, Path=Text}"/>
+        </StackPanel>
+
+        <!-- Boutons -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Tester CryptoSoft" Command="{Binding TestCryptoSoftCommand}" Margin="5"/>
+            <Button Content="Sauvegarder" Command="{Binding SaveCommand}" Margin="5"/>
+        </StackPanel>
+
+        <!-- Résultat du test CryptoSoft -->
+        <TextBlock Text="Résultat du test CryptoSoft:" FontWeight="Bold"/>
+        <TextBlock Text="{Binding CryptoTestResult}" Foreground="Green"/>
+
     </StackPanel>
 </Window>
