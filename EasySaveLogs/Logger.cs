@@ -31,7 +31,6 @@ namespace EasySaveLogs
         private Logger(string logDirectory, string logFormat)
         {
             string userHomeDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            Console.WriteLine($"aaaaaaaaaaaaa1:{userHomeDirectory}");
 
             //Vérifier si le chemin récuperé est vide ou null; utiliser logDirectory en fallback
             if (string.IsNullOrWhiteSpace(userHomeDirectory))
@@ -42,7 +41,6 @@ namespace EasySaveLogs
             {
                 _logDirectory = Path.Combine(userHomeDirectory, "Logs");
             }
-            Console.WriteLine($"aaaaaaaaaaaaa:{_logDirectory}");
             // Vérifier et créer le dossier si nécessaire
             try
             {
