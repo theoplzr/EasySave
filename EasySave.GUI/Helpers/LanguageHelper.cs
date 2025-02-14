@@ -37,7 +37,6 @@ namespace EasySave.GUI.Helpers
                     { "RealTimeStatusHeader", "Real-Time Status" },
                     { "JobsTabHeader", "Jobs" },
                     { "ProgressTabHeader", "Progress" },
-                    // Nouveaux ajout
                     { "ConfigurationWindowTitle", "Configuration" },
                     { "LogFormatLabel", "Log Format:" },
                     { "ExtensionsToEncryptLabel", "Extensions to Encrypt:" },
@@ -56,7 +55,10 @@ namespace EasySave.GUI.Helpers
                     { "French", "🇫🇷 French" },
                     // Clé ajoutée pour la liste des jobs
                     { "JobsListTitle", "Job List" },
-                    { "ButtonListAllJobs", "List All Jobs" }
+                    { "ButtonListAllJobs", "List All Jobs" },
+                    // Clé ajoutée pour la liste de tous les jobs
+                    {"AllBackupJobsTitle", "All Backup Jobs"},
+                    {"AllJobsList", "All Jobs List"},
                 }
             },
             {
@@ -96,7 +98,10 @@ namespace EasySave.GUI.Helpers
                     { "French", "🇫🇷 Français" },
                     // Clé ajoutée pour la liste des jobs
                     { "Jobs List", "Liste des Travaux en cours" },
-                    { "ButtonListAllJobs", "Lister tous les Travaux" }
+                    { "ButtonListAllJobs", "Lister tous les Travaux" },
+                    // Clé ajoutée pour la liste de tous les jobs
+                    {"AllBackupJobsTitle", "Tous les travaux"},
+                    {"AllJobsList", "Liste des travaux effectués"},
                 }
             }
         };
@@ -125,7 +130,6 @@ namespace EasySave.GUI.Helpers
             NotifyPropertyChanged(nameof(JobsTabHeader));
             NotifyPropertyChanged(nameof(ProgressTabHeader));
 
-            // Nouveaux
             NotifyPropertyChanged(nameof(ConfigurationWindowTitle));
             NotifyPropertyChanged(nameof(LogFormatLabel));
             NotifyPropertyChanged(nameof(ExtensionsToEncryptLabel));
@@ -145,6 +149,8 @@ namespace EasySave.GUI.Helpers
 
             // Nouvelle propriété pour la liste des jobs
             NotifyPropertyChanged(nameof(JobsListTitle));
+            NotifyPropertyChanged(nameof(AllBackupJobsTitle));
+            NotifyPropertyChanged(nameof(AllJobsList));
         }
 
         private void NotifyPropertyChanged(string propertyName)
@@ -189,6 +195,8 @@ namespace EasySave.GUI.Helpers
 
         // Nouvelle propriété pour la liste des jobs
         public string JobsListTitle => GetMessage("JobsListTitle");
+        public string AllBackupJobsTitle => GetMessage("AllBackupJobsTitle");
+        public string AllJobsList => GetMessage("AllJobsList");
 
         private string GetMessage(string key)
         {

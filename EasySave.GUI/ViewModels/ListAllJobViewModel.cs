@@ -4,6 +4,7 @@ using ReactiveUI;
 using Avalonia.Controls;
 using EasySave.Core.Models;
 using EasySave.Core.Facade;
+using EasySave.GUI.Helpers;
 using System.Reactive.Linq;
 using System;
 using System.IO;
@@ -32,6 +33,10 @@ namespace EasySave.GUI.ViewModels
         /// The currently selected backup job in the UI.
         /// </summary>
         private BackupJob? _selectedBackupJob;
+        /// <summary>
+        /// Gets the singleton instance of the LanguageHelper class.
+        /// </summary>
+        public LanguageHelper LanguageHelperInstance => LanguageHelper.Instance;
         /// <summary>
         /// Collection of backup jobs to be displayed in the UI.
         /// </summary>
