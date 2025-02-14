@@ -62,38 +62,50 @@ namespace EasySave.GUI.ViewModels
 
             string _logDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Logs");
             BackupJobs = new ObservableCollection<FinishedBackupJob>();
-            LoadBackupJobsFromJson(); // Charger les jobs au démarrage
+            LoadBackupJobsFromJson(); // Load the jobs
 
             CancelCommand = ReactiveCommand.Create(Cancel);
         }
 
+        /// <summary>
+        /// Loads backup jobs from JSON files stored in the "Logs" directory.
+        /// It reads all JSON files, deserializes them into FinishedBackupJob objects,
+        /// and adds them to the BackupJobs collection while avoiding duplicates.
+        /// </summary>
         public void LoadBackupJobsFromJson()
         {
+            // Define the logs directory path
             string logDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Logs");
-            // Vérifier si le dossier existe
+
+            // Check if the directory exists
             if (!Directory.Exists(logDirectory))
             {
-                Console.WriteLine($"Le dossier {logDirectory} n'existe pas.");
+                Console.WriteLine($"The directory {logDirectory} does not exist.");
                 return;
             }
 
-            // Parcourir tous les fichiers JSON
+            // Retrieve all JSON files from the directory
             var jsonFiles = Directory.GetFiles(logDirectory, "*.json");
+
             foreach (var file in jsonFiles)
             {
                 try
                 {
-                    // Lire le contenu du fichier JSON
+                    // Read the content of the JSON file
                     string jsonContent = File.ReadAllText(file);
-                    // Désérialiser le JSON en une liste de FinishedBackupJob
+
+                    // Deserialize the JSON into a list of FinishedBackupJob objects
                     List<FinishedBackupJob> finishedBackupJobs = ParseFinishedBackupJobs(jsonContent);
 
+                    // If the parsed jobs are not null, process them
                     if (finishedBackupJobs != null)
                     {
                         foreach (var job in finishedBackupJobs)
                         {
-                            // Vérifier si ce job n'existe pas déjà pour éviter les doublons
-                            if (!BackupJobs.Any(b => b.Name == job.Name && b.SourceDirectory == job.SourceDirectory && b.TargetDirectory == job.TargetDirectory))
+                            // Check if the job already exists to prevent duplicates
+                            if (!BackupJobs.Any(b => b.Name == job.Name && 
+                                                    b.SourceDirectory == job.SourceDirectory && 
+                                                    b.TargetDirectory == job.TargetDirectory))
                             {
                                 BackupJobs.Add(job);
                             }
@@ -102,7 +114,7 @@ namespace EasySave.GUI.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Erreur lors de la lecture du fichier {file}: {ex.Message}");
+                    Console.WriteLine($"Error reading file {file}: {ex.Message}");
                 }
             }
         }
