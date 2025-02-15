@@ -8,10 +8,10 @@ namespace EasySave.GUI.Converters
     {
         public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            return value != null; // Retourne true si la valeur n'est pas null, sinon false
+            return value != null; // Si null -> false, sinon -> true
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }

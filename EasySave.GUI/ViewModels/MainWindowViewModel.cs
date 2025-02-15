@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Reactive;
 using System.Threading.Tasks;
 using ReactiveUI;
@@ -25,18 +26,11 @@ namespace EasySave.GUI.ViewModels
         private readonly IConfiguration _configuration;
         private readonly FileStateObserver _fileStateObserver;
         private string _businessSoftware;
-        private bool _isObserverActive = false; // Empêche d'ajouter plusieurs fois FileStateObserver
+        private bool _isObserverActive = false;
 
         public LanguageHelper LanguageHelperInstance => LanguageHelper.Instance;
 
         public ObservableCollection<BackupJob> BackupJobs { get; }
-
-        private ObservableCollection<BackupState> _backupStates = new ObservableCollection<BackupState>();
-        public ObservableCollection<BackupState> BackupStates
-        {
-            get => _backupStates;
-            set => this.RaiseAndSetIfChanged(ref _backupStates, value);
-        }
 
         private BackupJob? _selectedJob;
         public BackupJob? SelectedJob
@@ -69,7 +63,7 @@ namespace EasySave.GUI.ViewModels
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .Build();
 
-            _businessSoftware = _configuration["BusinessSoftware"] ?? "TextEdit"; 
+            _businessSoftware = _configuration["BusinessSoftware"] ?? "TextEdit";
 
             _facade = new EasySaveFacade(
                 new JsonBackupJobRepository("backup_jobs.json"),
@@ -78,8 +72,7 @@ namespace EasySave.GUI.ViewModels
                 _configuration
             );
 
-            string stateFilePath = "state.json";
-            _fileStateObserver = new FileStateObserver(stateFilePath);
+            _fileStateObserver = new FileStateObserver("state.json");
 
             var jobs = _facade.ListBackupJobs();
             for (int i = 0; i < jobs.Count; i++)
@@ -88,10 +81,12 @@ namespace EasySave.GUI.ViewModels
             }
 
             BackupJobs = new ObservableCollection<BackupJob>(jobs);
-            BackupStates = new ObservableCollection<BackupState>();
 
-            var uiObserver = new UIStateObserver(BackupStates);
-            _facade.AddObserver(uiObserver);
+            // Abonnez-vous aux changements de la propriété IsSelected de chaque job
+            foreach (var job in BackupJobs)
+            {
+                job.PropertyChanged += Job_PropertyChanged;
+            }
 
             OpenAddJobWindowCommand = ReactiveCommand.Create(OpenAddJobWindow);
             OpenModifyJobWindowCommand = ReactiveCommand.Create(OpenModifyJobWindow);
@@ -103,9 +98,30 @@ namespace EasySave.GUI.ViewModels
             ChangeLanguageCommand = ReactiveCommand.Create<string>(ChangeLanguage);
         }
 
-        /// <summary>
-        /// Exécute tous les jobs et active FileStateObserver pour le suivi en temps réel.
-        /// </summary>
+        // Gère les changements de sélection sur chaque BackupJob
+        private void Job_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (sender is BackupJob job && e.PropertyName == nameof(BackupJob.IsSelected))
+            {
+                if (job.IsSelected)
+                {
+                    // Désélectionne tous les autres jobs
+                    foreach (var otherJob in BackupJobs)
+                    {
+                        if (!ReferenceEquals(otherJob, job) && otherJob.IsSelected)
+                        {
+                            otherJob.IsSelected = false;
+                        }
+                    }
+                    SelectedJob = job;
+                }
+                else if (!job.IsSelected && SelectedJob == job)
+                {
+                    SelectedJob = null;
+                }
+            }
+        }
+
         private async Task ExecuteAllJobsAsync()
         {
             if (IsBusinessSoftwareRunning())
@@ -118,11 +134,9 @@ namespace EasySave.GUI.ViewModels
             {
                 _facade.AddObserver(_fileStateObserver);
                 _isObserverActive = true;
-                Console.WriteLine("🟢 FileStateObserver activé.");
             }
 
             _facade.ExecuteAllJobs();
-
             RealTimeStatus = "✅ All jobs executed successfully.";
             await Task.CompletedTask;
         }
@@ -141,7 +155,8 @@ namespace EasySave.GUI.ViewModels
 
             _facade.RemoveJob(index);
             BackupJobs.RemoveAt(index);
-            RealTimeStatus = $"🗑️ Job '{SelectedJob.Name}' deleted.";
+            SelectedJob = null;
+            RealTimeStatus = $"🗑️ Job deleted.";
             await Task.CompletedTask;
         }
 
@@ -171,13 +186,14 @@ namespace EasySave.GUI.ViewModels
             var mainWindow = (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
             if (mainWindow != null)
             {
-                var result = await jobWindow.ShowDialog<BackupJob>(mainWindow); 
+                var result = await jobWindow.ShowDialog<BackupJob>(mainWindow);
                 if (result != null)
                 {
-                    result.Ordinal = BackupJobs.Count;  
+                    result.Ordinal = BackupJobs.Count;
                     _facade.AddJob(result);
+                    // Abonnez-vous aux changements de la propriété IsSelected pour le nouveau job
+                    result.PropertyChanged += Job_PropertyChanged;
                     BackupJobs.Add(result);
-
                     RealTimeStatus = $"✅ Job '{result.Name}' ajouté avec succès.";
                 }
             }
@@ -185,8 +201,7 @@ namespace EasySave.GUI.ViewModels
 
         private async void OpenModifyJobWindow()
         {
-            if (SelectedJob == null) 
-                return;
+            if (SelectedJob == null) return;
 
             var jobWindow = new JobFormWindow();
             var jobViewModel = new JobFormViewModel(jobWindow, SelectedJob);
@@ -195,7 +210,7 @@ namespace EasySave.GUI.ViewModels
             var mainWindow = (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
             if (mainWindow != null)
             {
-                var result = await jobWindow.ShowDialog<BackupJob>(mainWindow); 
+                var result = await jobWindow.ShowDialog<BackupJob>(mainWindow);
                 if (result != null)
                 {
                     int index = BackupJobs.IndexOf(SelectedJob);

@@ -1,9 +1,9 @@
 [
   {
-    "Id": "b4ca66ab-9579-4953-b76e-48fee2e6a4e0",
-    "Name": "YC",
-    "SourceDirectory": "/Users/tpellizzari/Documents/Source1",
-    "TargetDirectory": "/Users/tpellizzari/Documents/Target1",
+    "Id": "58ea2023-a9fc-446b-b13f-96f805587d4e",
+    "Name": "Salut",
+    "SourceDirectory": "/Users/tpellizzari/Documents/Source4",
+    "TargetDirectory": "/Users/tpellizzari/Documents/Target4",
     "BackupType": 0,
     "Ordinal": 0
   }
