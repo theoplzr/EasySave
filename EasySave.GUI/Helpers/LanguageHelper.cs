@@ -21,7 +21,7 @@ namespace EasySave.GUI.Helpers
             {
                 "en", new Dictionary<string, string>
                 {
-                    { "MainWindowTitle", "EasySave" },
+                    { "MainWindowTitle", "EasySave Project, FISA A3 INFO (24/27)" },
                     { "FileMenuHeader", "File" },
                     { "MenuItemConfiguration", "Configuration" },
                     { "MenuItemExit", "Exit" },
@@ -54,15 +54,14 @@ namespace EasySave.GUI.Helpers
                     { "ChooseYourLanguage", "Choose your language:" },
                     { "English", "English" },
                     { "French", "French" },
-                    // Clé ajoutée pour la liste des jobs
-                    { "JobsListTitle", "Job List" },
+                    { "JobsListTitle", "Here are your backup jobs created in progress!" },
                     { "ButtonListAllJobs", "List All Jobs" }
                 }
             },
             {
                 "fr", new Dictionary<string, string>
                 {
-                    { "MainWindowTitle", "EasySave" },
+                    { "MainWindowTitle", "Projet EasySave en FISA A3 INFO (24/27)" },
                     { "FileMenuHeader", "Fichier" },
                     { "MenuItemConfiguration", "Configuration" },
                     { "MenuItemExit", "Quitter" },
@@ -94,8 +93,7 @@ namespace EasySave.GUI.Helpers
                     { "ChooseYourLanguage", "Choisissez votre langue :" },
                     { "English", "Anglais" },
                     { "French", "Français" },
-                    // Clé ajoutée pour la liste des jobs
-                    { "Jobs List", "Liste des Travaux en cours" },
+                    { "Jobs List", "Voici vos travaux de sauvegardes créés en cours !" },
                     { "ButtonListAllJobs", "Lister tous les Travaux" }
                 }
             }

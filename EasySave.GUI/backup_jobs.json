@@ -1,10 +1,20 @@
 [
   {
-    "Id": "58ea2023-a9fc-446b-b13f-96f805587d4e",
+    "Id": "3dc9e671-4cc9-4589-b3aa-69c24857471b",
     "Name": "Salut",
     "SourceDirectory": "/Users/tpellizzari/Documents/Source4",
     "TargetDirectory": "/Users/tpellizzari/Documents/Target4",
     "BackupType": 0,
-    "Ordinal": 0
+    "Ordinal": 0,
+    "IsSelected": false
+  },
+  {
+    "Id": "8891ca2d-5c18-468b-a7d1-f62e88a82ae1",
+    "Name": "Job2",
+    "SourceDirectory": "/Users/tpellizzari/Documents/Source1",
+    "TargetDirectory": "/Users/tpellizzari/Documents/Target1",
+    "BackupType": 0,
+    "Ordinal": 1,
+    "IsSelected": false
   }
 ]
