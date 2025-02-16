@@ -1,28 +1,15 @@
 [
   {
-    "BackupName": "Salut",
-    "LastActionTime": "2025-02-15T16:21:45.192063+01:00",
+    "BackupName": "TestXML",
+    "LastActionTime": "2025-02-16T13:50:31.444337+01:00",
     "Status": "Active",
     "TotalFiles": 1,
     "TotalSize": 15,
     "RemainingFiles": 0,
     "RemainingSize": 0,
     "Progress": 100,
-    "CurrentSourceFile": "/Users/tpellizzari/Documents/Source4/test.txt",
-    "CurrentTargetFile": "/Users/tpellizzari/Documents/Target4/test.txt",
-    "JobId": "72679053-b00b-480d-8998-cec8cc365691"
-  },
-  {
-    "BackupName": "Job2",
-    "LastActionTime": "2025-02-15T16:21:45.199831+01:00",
-    "Status": "Active",
-    "TotalFiles": 3,
-    "TotalSize": 6235,
-    "RemainingFiles": 0,
-    "RemainingSize": 0,
-    "Progress": 100,
-    "CurrentSourceFile": "/Users/tpellizzari/Documents/Source1/test.txt",
-    "CurrentTargetFile": "/Users/tpellizzari/Documents/Target1/test.txt",
-    "JobId": "80db1fa4-32c2-4656-aabb-9a0581d8c10e"
+    "CurrentSourceFile": "/Users/tpellizzari/Documents/Source6/test.txt",
+    "CurrentTargetFile": "/Users/tpellizzari/Documents/test.txt",
+    "JobId": "c62dcf80-1139-47eb-8328-c48bc4f4d92f"
   }
 ]
