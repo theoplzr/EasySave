@@ -67,7 +67,7 @@ namespace EasySave.GUI.Helpers
             {
                 "fr", new Dictionary<string, string>
                 {
-                    { "MainWindowTitle", "Projet EasySave en FISA A3 INFO (24/27)" },
+                    { "MainWindowTitle", "Projet EasySave, FISA A3 INFO (24/27)" },
                     { "FileMenuHeader", "Réglages" },
                     { "MenuItemConfiguration", "Configuration" },
                     { "MenuItemExit", "Quitter" },
