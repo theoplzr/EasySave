@@ -62,7 +62,6 @@
                   ToolTip.Tip="Ajouter un job"/>
           <Button Content="{Binding LanguageHelperInstance.ButtonModify}" 
                   Command="{Binding OpenModifyJobWindowCommand}"
-                  IsEnabled="{Binding SelectedJob, Converter={StaticResource NullToBoolConverter}}"
                   Classes="sidebar"
                   ToolTip.Tip="Modifier le job sélectionné"/>
           <Button Content="{Binding LanguageHelperInstance.ButtonList}" 
@@ -71,7 +70,6 @@
                   ToolTip.Tip="Lister tous les jobs"/>
           <Button Content="{Binding LanguageHelperInstance.ButtonDelete}" 
                   Command="{Binding DeleteJobCommand}"
-                  IsEnabled="{Binding SelectedJob, Converter={StaticResource NullToBoolConverter}}"
                   Classes="sidebar"
                   ToolTip.Tip="Supprimer le job sélectionné"/>
           <Button Content="{Binding LanguageHelperInstance.ButtonExecute}" 

@@ -4,7 +4,8 @@ using Avalonia.ReactiveUI;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
-using EasySaveLogs; // Assurez-vous que Logger et ConfigurationReloader sont dans ce namespace
+using EasySaveLogs; 
+using CryptoSoftLib;
 
 namespace EasySave.GUI
 {
@@ -19,8 +20,8 @@ namespace EasySave.GUI
                 .Build();
 
             // Récupérer les valeurs spécifiques à la GUI
-            string logDirectory = configuration["LogDirectory"] ?? "/Users/tpellizzari/Logs";
-            string logFormat = configuration["LogFormat"] ?? "JSON";
+            string logDirectory = configuration["LogDirectory"];
+            string logFormat = configuration["LogFormat"];
 
             // Créer l'instance du Logger avec ces valeurs
             Logger logger = Logger.GetInstance(logDirectory, logFormat);

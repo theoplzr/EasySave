@@ -1,11 +1,11 @@
 [
   {
-    "Id": "c62dcf80-1139-47eb-8328-c48bc4f4d92f",
-    "Name": "TestXML",
-    "SourceDirectory": "/Users/tpellizzari/Documents/Source6/",
-    "TargetDirectory": "/Users/tpellizzari/Documents/",
+    "Id": "5bd4ce26-24fe-4eb5-9118-0fbb4a1c7415",
+    "Name": "UnTestdeJSON",
+    "SourceDirectory": "/Users/tpellizzari/Documents/Source1/",
+    "TargetDirectory": "/Users/tpellizzari/Documents/Target1/",
     "BackupType": 0,
     "Ordinal": 0,
-    "IsSelected": true
+    "IsSelected": false
   }
 ]

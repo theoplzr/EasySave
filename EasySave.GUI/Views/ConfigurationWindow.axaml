@@ -3,11 +3,10 @@
         xmlns:vm="clr-namespace:EasySave.GUI.ViewModels"
         x:Class="EasySave.GUI.Views.ConfigurationWindow"
         x:DataType="vm:ConfigurationViewModel"
-        Title="Configuration"
+        Title="{Binding LanguageHelperInstance.ConfigurationWindowTitle}"
         Width="400" Height="500"
         Background="White">
   
-  <!-- Définition explicite du DataContext -->
   <Window.DataContext>
     <vm:ConfigurationViewModel/>
   </Window.DataContext>
@@ -15,39 +14,34 @@
   <Border Padding="20" Background="#FAFAFA" CornerRadius="10" BorderBrush="#3498db" BorderThickness="2">
     <StackPanel Spacing="15">
       
-      <!-- En-tête avec titre -->
       <Border Background="#3498db" CornerRadius="6" Padding="10">
-        <TextBlock Text="Configuration" 
+        <TextBlock Text="{Binding LanguageHelperInstance.ConfigurationWindowTitle}" 
                    FontSize="22" 
                    FontWeight="Bold" 
                    Foreground="White" 
                    HorizontalAlignment="Center"/>
       </Border>
       
-      <!-- Log Format -->
       <StackPanel Orientation="Vertical" Spacing="5">
-        <TextBlock Text="Log Format:" FontWeight="SemiBold" Foreground="#2c3e50"/>
+        <TextBlock Text="{Binding LanguageHelperInstance.LogFormatLabel}" FontWeight="SemiBold" Foreground="#2c3e50"/>
         <ComboBox SelectedItem="{Binding LogFormat}" 
                   ItemsSource="{Binding LogFormatOptions}" 
                   Background="#ecf0f1" Foreground="#2c3e50"/>
       </StackPanel>
       
-      <!-- Business Software -->
       <StackPanel Orientation="Vertical" Spacing="5">
-        <TextBlock Text="Business Software (Backup Blocker):" FontWeight="SemiBold" Foreground="#2c3e50"/>
+        <TextBlock Text="{Binding LanguageHelperInstance.BusinessSoftwareLabel}" FontWeight="SemiBold" Foreground="#2c3e50"/>
         <TextBox Text="{Binding BusinessSoftware}" Background="#ecf0f1" Foreground="#2c3e50"/>
       </StackPanel>
       
-      <!-- Répertoire des logs -->
       <StackPanel Orientation="Vertical" Spacing="5">
-        <TextBlock Text="Log Directory:" FontWeight="SemiBold" Foreground="#2c3e50"/>
+        <TextBlock Text="{Binding LanguageHelperInstance.LogFormatLabel}" FontWeight="SemiBold"/>
         <Grid ColumnDefinitions="*,Auto">
           <TextBox Text="{Binding LogDirectory}" 
                    IsReadOnly="True" 
                    Background="#ecf0f1" Foreground="#2c3e50" 
                    Grid.Column="0"/>
-          <!-- Passage du parent Window comme CommandParameter -->
-          <Button Content="Browse..." 
+          <Button Content="{Binding LanguageHelperInstance.BrowseButton}" 
                   Command="{Binding ChooseLogDirectoryCommand}" 
                   CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                   Grid.Column="1" Margin="5,0,0,0"
@@ -55,33 +49,17 @@
         </Grid>
       </StackPanel>
       
-      <!-- Extensions à chiffrer -->
       <StackPanel Orientation="Vertical" Spacing="5">
-        <TextBlock Text="File Extensions to Encrypt:" FontWeight="SemiBold" Foreground="#2c3e50"/>
+        <TextBlock Text="{Binding LanguageHelperInstance.ExtensionsToEncryptLabel}" FontWeight="SemiBold" Foreground="#2c3e50"/>
         <ListBox ItemsSource="{Binding EncryptionExtensions}" 
                  Height="80" Background="#ecf0f1" Foreground="#2c3e50"/>
-        <Grid ColumnDefinitions="*,Auto,Auto">
-          <TextBox x:Name="ExtensionInput" 
-                   Watermark="e.g., .txt" 
-                   Background="#ecf0f1" Foreground="#2c3e50" 
-                   Grid.Column="0"/>
-          <Button Content="Add" 
-                  Command="{Binding AddExtensionCommand}" 
-                  CommandParameter="{Binding ElementName=ExtensionInput, Path=Text}" 
-                  Grid.Column="1" Margin="5,0,0,0"
-                  Background="#3498db" Foreground="White"/>
-          <Button Content="Remove" 
-                  Command="{Binding RemoveExtensionCommand}" 
-                  CommandParameter="{Binding ElementName=ExtensionInput, Path=Text}" 
-                  Grid.Column="2" Margin="5,0,0,0"
-                  Background="#e74c3c" Foreground="White"/>
-        </Grid>
       </StackPanel>
       
-      <!-- Boutons Save / Close -->
       <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10">
-        <Button Content="Save" Command="{Binding SaveCommand}" Width="80" Background="#2ecc71" Foreground="White"/>
-        <Button Content="Close" Width="80" Background="#e74c3c" Foreground="White" Click="Close_Click"/>
+        <Button Content="{Binding LanguageHelperInstance.ButtonSave}" Command="{Binding SaveCommand}" Width="100" Background="#2ecc71" Foreground="White"/>
+        <Button Content="{Binding LanguageHelperInstance.ButtonCancel}" Command="{Binding CloseCommand}" 
+                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                Width="80" Background="#e74c3c" Foreground="White"/>
       </StackPanel>
       
     </StackPanel>

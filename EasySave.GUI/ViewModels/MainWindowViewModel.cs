@@ -60,10 +60,10 @@ namespace EasySave.GUI.ViewModels
         {
             _configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("appsettings.GUI.json", optional: true, reloadOnChange: true)
                 .Build();
 
-            _businessSoftware = _configuration["BusinessSoftware"] ?? "TextEdit";
+            _businessSoftware = _configuration["BusinessSoftware"];
 
             _facade = new EasySaveFacade(
                 new JsonBackupJobRepository("backup_jobs.json"),
@@ -142,7 +142,7 @@ namespace EasySave.GUI.ViewModels
         {
             if (SelectedJob == null)
             {
-                RealTimeStatus = "❌ No job selected to delete.";
+                RealTimeStatus = "❌ Please select a job before deleting.";
                 return;
             }
 
@@ -196,7 +196,11 @@ namespace EasySave.GUI.ViewModels
 
         private async void OpenModifyJobWindow()
         {
-            if (SelectedJob == null) return;
+            if (SelectedJob == null)
+            {
+                RealTimeStatus = "❌ Please select a job before modifying.";
+                return;
+            }
 
             var jobWindow = new JobFormWindow();
             var jobViewModel = new JobFormViewModel(jobWindow, SelectedJob);

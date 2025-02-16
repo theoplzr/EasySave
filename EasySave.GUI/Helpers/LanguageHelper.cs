@@ -172,6 +172,8 @@ namespace EasySave.GUI.Helpers
         public string JobNamePlaceholder => GetMessage("JobNamePlaceholder");
         public string SourceDirectoryPlaceholder => GetMessage("SourceDirectoryPlaceholder");
         public string TargetDirectoryPlaceholder => GetMessage("TargetDirectoryPlaceholder");
+        public string ErrorLoadingFiles => GetMessage("ErrorLoadingFiles");
+
         public string GetMessage(string key) => messages[_language].TryGetValue(key, out var value) ? value : $"[MISSING: {key}]";
     }
 }

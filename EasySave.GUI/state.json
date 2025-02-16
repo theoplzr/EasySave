@@ -1,15 +1,15 @@
 [
   {
-    "BackupName": "TestXML",
-    "LastActionTime": "2025-02-16T13:50:31.444337+01:00",
-    "Status": "Active",
-    "TotalFiles": 1,
-    "TotalSize": 15,
+    "BackupName": "UnTestdeJSON",
+    "LastActionTime": "2025-02-16T17:17:18.027286+01:00",
+    "Status": "En cours",
+    "TotalFiles": 0,
+    "TotalSize": 0,
     "RemainingFiles": 0,
     "RemainingSize": 0,
     "Progress": 100,
-    "CurrentSourceFile": "/Users/tpellizzari/Documents/Source6/test.txt",
-    "CurrentTargetFile": "/Users/tpellizzari/Documents/test.txt",
-    "JobId": "c62dcf80-1139-47eb-8328-c48bc4f4d92f"
+    "CurrentSourceFile": "En attente...",
+    "CurrentTargetFile": "En attente...",
+    "JobId": "5bd4ce26-24fe-4eb5-9118-0fbb4a1c7415"
   }
 ]

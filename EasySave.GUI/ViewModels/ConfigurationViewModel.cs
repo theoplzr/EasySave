@@ -21,6 +21,9 @@ namespace EasySave.GUI.ViewModels
         private string _logDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Logs");
         private ObservableCollection<string> _encryptionExtensions = new();
 
+        // Instance du gestionnaire de langue
+        public LanguageHelper LanguageHelperInstance => LanguageHelper.Instance;
+
         public string LogFormat
         {
             get => _logFormat;
@@ -51,6 +54,7 @@ namespace EasySave.GUI.ViewModels
         public ReactiveCommand<string, Unit> RemoveExtensionCommand { get; }
         public ReactiveCommand<Unit, Unit> SaveCommand { get; }
         public ReactiveCommand<Window, Unit> ChooseLogDirectoryCommand { get; }
+        public ReactiveCommand<Window, Unit> CloseCommand { get; }
 
         public ConfigurationViewModel()
         {
@@ -59,6 +63,15 @@ namespace EasySave.GUI.ViewModels
             RemoveExtensionCommand = ReactiveCommand.Create<string>(RemoveExtension);
             SaveCommand = ReactiveCommand.Create(SaveSettings);
             ChooseLogDirectoryCommand = ReactiveCommand.CreateFromTask<Window>(ChooseLogDirectory);
+            
+            // Correction de CloseCommand avec vérification de null
+            CloseCommand = ReactiveCommand.Create<Window>(window =>
+            {
+                if (window != null)
+                {
+                    window.Close();
+                }
+            });
         }
 
         public void LoadSettings()
@@ -73,19 +86,15 @@ namespace EasySave.GUI.ViewModels
 
                     LogFormat = config?.LogFormat ?? "JSON";
                     BusinessSoftware = config?.BusinessSoftware ?? "Calculator";
-                    LogDirectory = !string.IsNullOrWhiteSpace(config?.LogDirectory)
-                        ? config.LogDirectory
-                        : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Logs");
-                    EncryptionExtensions = new ObservableCollection<string>(
-                        config?.EncryptionExtensions ?? new List<string> { ".txt", ".docx" }
-                    );
+                    LogDirectory = config?.LogDirectory ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Logs");
+                    EncryptionExtensions = new ObservableCollection<string>(config?.EncryptionExtensions ?? new List<string> { ".txt", ".docx" });
 
-                    Console.WriteLine($"📂 Logs seront enregistrés dans : {LogDirectory}");
+                    Debug.WriteLine($"📂 {LanguageHelperInstance.LogFormatLabel} : {LogDirectory}");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Erreur lors du chargement de la configuration : {ex.Message}");
+                Debug.WriteLine($"❌ {LanguageHelperInstance.ErrorLoadingFiles} {ex.Message}");
             }
         }
 
@@ -93,8 +102,6 @@ namespace EasySave.GUI.ViewModels
         {
             try
             {
-                Console.WriteLine("✅ SaveSettings() appelé");
-
                 var config = new ConfigurationData
                 {
                     LogFormat = LogFormat,
@@ -106,11 +113,11 @@ namespace EasySave.GUI.ViewModels
                 string json = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText("appsettings.GUI.json", json);
 
-                Console.WriteLine($"✅ Configuration enregistrée avec succès. 📂 Logs seront stockés dans : {LogDirectory}");
+                Debug.WriteLine($"✅ {LanguageHelperInstance.ButtonSave} - {LogDirectory}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Erreur lors de l'enregistrement de la configuration : {ex.Message}");
+                Debug.WriteLine($"❌ {LanguageHelperInstance.ErrorLoadingFiles} {ex.Message}");
             }
         }
 
@@ -130,9 +137,6 @@ namespace EasySave.GUI.ViewModels
             }
         }
 
-        /// <summary>
-        /// Permet de sélectionner un dossier pour enregistrer les logs.
-        /// </summary>
         private async Task ChooseLogDirectory(Window window)
         {
             var folders = await window.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions

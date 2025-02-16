@@ -89,3 +89,5 @@
 /Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.GUI/obj/Debug/net8.0/EasySave.2782C664.Up2Date
 /Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.GUI/obj/Debug/net8.0/EasySave.GUI.genruntimeconfig.cache
 /Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.GUI/obj/Debug/net8.0/ref/EasySave.GUI.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.GUI/bin/Debug/net8.0/CryptoSoftLib.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.GUI/bin/Debug/net8.0/CryptoSoftLib.pdb
