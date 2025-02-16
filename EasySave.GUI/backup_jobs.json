@@ -1,6 +1,6 @@
 [
   {
-    "Id": "3dc9e671-4cc9-4589-b3aa-69c24857471b",
+    "Id": "72679053-b00b-480d-8998-cec8cc365691",
     "Name": "Salut",
     "SourceDirectory": "/Users/tpellizzari/Documents/Source4",
     "TargetDirectory": "/Users/tpellizzari/Documents/Target4",
@@ -9,7 +9,7 @@
     "IsSelected": false
   },
   {
-    "Id": "8891ca2d-5c18-468b-a7d1-f62e88a82ae1",
+    "Id": "80db1fa4-32c2-4656-aabb-9a0581d8c10e",
     "Name": "Job2",
     "SourceDirectory": "/Users/tpellizzari/Documents/Source1",
     "TargetDirectory": "/Users/tpellizzari/Documents/Target1",

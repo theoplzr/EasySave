@@ -82,7 +82,6 @@ namespace EasySave.GUI.ViewModels
 
             BackupJobs = new ObservableCollection<BackupJob>(jobs);
 
-            // Abonnez-vous aux changements de la propriété IsSelected de chaque job
             foreach (var job in BackupJobs)
             {
                 job.PropertyChanged += Job_PropertyChanged;
@@ -98,14 +97,12 @@ namespace EasySave.GUI.ViewModels
             ChangeLanguageCommand = ReactiveCommand.Create<string>(ChangeLanguage);
         }
 
-        // Gère les changements de sélection sur chaque BackupJob
         private void Job_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (sender is BackupJob job && e.PropertyName == nameof(BackupJob.IsSelected))
             {
                 if (job.IsSelected)
                 {
-                    // Désélectionne tous les autres jobs
                     foreach (var otherJob in BackupJobs)
                     {
                         if (!ReferenceEquals(otherJob, job) && otherJob.IsSelected)
@@ -183,15 +180,13 @@ namespace EasySave.GUI.ViewModels
             var jobViewModel = new JobFormViewModel(jobWindow);
             jobWindow.DataContext = jobViewModel;
 
-            var mainWindow = (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
-            if (mainWindow != null)
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow != null)
             {
-                var result = await jobWindow.ShowDialog<BackupJob>(mainWindow);
+                var result = await jobWindow.ShowDialog<BackupJob>(desktop.MainWindow);
                 if (result != null)
                 {
                     result.Ordinal = BackupJobs.Count;
                     _facade.AddJob(result);
-                    // Abonnez-vous aux changements de la propriété IsSelected pour le nouveau job
                     result.PropertyChanged += Job_PropertyChanged;
                     BackupJobs.Add(result);
                     RealTimeStatus = $"✅ Job '{result.Name}' ajouté avec succès.";
@@ -207,10 +202,9 @@ namespace EasySave.GUI.ViewModels
             var jobViewModel = new JobFormViewModel(jobWindow, SelectedJob);
             jobWindow.DataContext = jobViewModel;
 
-            var mainWindow = (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
-            if (mainWindow != null)
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow != null)
             {
-                var result = await jobWindow.ShowDialog<BackupJob>(mainWindow);
+                var result = await jobWindow.ShowDialog<BackupJob>(desktop.MainWindow);
                 if (result != null)
                 {
                     int index = BackupJobs.IndexOf(SelectedJob);
@@ -230,10 +224,9 @@ namespace EasySave.GUI.ViewModels
             var listViewModel = new ListAllJobViewModel(listWindow, _facade);
             listWindow.DataContext = listViewModel;
 
-            var mainWindow = (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
-            if (mainWindow != null)
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow != null)
             {
-                await listWindow.ShowDialog(mainWindow);
+                await listWindow.ShowDialog(desktop.MainWindow);
             }
         }
     }

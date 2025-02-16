@@ -10,7 +10,6 @@ namespace EasySave.GUI.ViewModels
     public class LanguageSelectionViewModel : ViewModelBase
     {
         private readonly Window _window;
-
         public ReactiveCommand<Unit, Unit> SelectEnglishCommand { get; }
         public ReactiveCommand<Unit, Unit> SelectFrenchCommand { get; }
         public LanguageHelper LanguageHelperInstance => LanguageHelper.Instance;
@@ -36,7 +35,7 @@ namespace EasySave.GUI.ViewModels
         {
             var mainWindow = new MainWindow();
             // Mettre à jour l'owner (MainWindow) dans l'ApplicationLifetime
-            if (Avalonia.Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            if (Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 desktop.MainWindow = mainWindow;
             }

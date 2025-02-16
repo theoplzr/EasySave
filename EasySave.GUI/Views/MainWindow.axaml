@@ -102,10 +102,10 @@
                       Command="{Binding OpenConfigurationCommand}"
                       ToolTip.Tip="Configuration"/>
             <MenuItem Header="{Binding LanguageHelperInstance.MenuItemLanguage}">
-              <MenuItem Header="🇫🇷 {Binding French}" 
+              <MenuItem Header="🇫🇷 Passer en français" 
                         Command="{Binding ChangeLanguageCommand}" 
                         CommandParameter="fr"/>
-              <MenuItem Header="🏴 {Binding English}" 
+              <MenuItem Header="🇬🇧 Switch to English" 
                         Command="{Binding ChangeLanguageCommand}" 
                         CommandParameter="en"/>
             </MenuItem>
