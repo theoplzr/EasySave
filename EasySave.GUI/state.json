@@ -1,7 +1,7 @@
 [
   {
-    "BackupName": "jfjfj",
-    "LastActionTime": "2025-02-17T12:13:07.506314+01:00",
+    "BackupName": "Théo",
+    "LastActionTime": "2025-02-17T17:07:03.531302+01:00",
     "Status": "En cours",
     "TotalFiles": 3,
     "TotalSize": 0,
@@ -10,6 +10,6 @@
     "Progress": 100,
     "CurrentSourceFile": "/Users/tpellizzari/Documents/Source1/test_6mo.txt",
     "CurrentTargetFile": "/Users/tpellizzari/Documents/Target1/test_6mo.txt",
-    "JobId": "57bbdaad-ce2c-490e-b8be-4ee018517011"
+    "JobId": "e21297df-86ee-4939-a2aa-abe30713b2c9"
   }
 ]
