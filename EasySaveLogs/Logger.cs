@@ -113,7 +113,8 @@ namespace EasySaveLogs
         /// <param name="logEntry">The log entry to be recorded.</param>
         private void LogToJson(LogEntry logEntry)
         {
-            string logFilePath = System.IO.Path.Combine(_logDirectory, $"{DateTime.Now:yyyy-MM-dd}.json");
+            // Utilisation de l'heure pour créer un nom de fichier unique
+            string logFilePath = System.IO.Path.Combine(_logDirectory, $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.json");
             var logEntries = new List<LogEntry>();
 
             if (System.IO.File.Exists(logFilePath))
@@ -132,7 +133,8 @@ namespace EasySaveLogs
         /// <param name="logEntry">The log entry to be recorded.</param>
         private void LogToXml(LogEntry logEntry)
         {
-            string logFilePath = System.IO.Path.Combine(_logDirectory, $"{DateTime.Now:yyyy-MM-dd}.xml");
+            // Utilisation de l'heure pour créer un nom de fichier unique
+            string logFilePath = System.IO.Path.Combine(_logDirectory, $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.xml");
             XDocument xmlDoc;
 
             if (System.IO.File.Exists(logFilePath))
@@ -140,7 +142,6 @@ namespace EasySaveLogs
             else
                 xmlDoc = new XDocument(new XElement("Logs"));
 
-            // Ajout de l'élément EncryptionTimeMs pour consigner le temps de cryptage
             xmlDoc.Root!.Add(new XElement("LogEntry",
                 new XElement("Timestamp", logEntry.Timestamp),
                 new XElement("BackupName", logEntry.BackupName),

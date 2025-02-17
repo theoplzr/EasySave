@@ -11,6 +11,7 @@ using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using EasySave.GUI.Helpers;
+using EasySaveLogs;
 
 namespace EasySave.GUI.ViewModels
 {
@@ -64,6 +65,8 @@ namespace EasySave.GUI.ViewModels
             SaveCommand = ReactiveCommand.Create<Window>(window =>
             {
                 SaveSettings();
+                // Reconfigure le Logger avec le nouveau format choisi
+                Logger.GetInstance(LogDirectory, LogFormat).Reconfigure(LogFormat);
                 window?.Close();
             });
             ChooseLogDirectoryCommand = ReactiveCommand.CreateFromTask<Window>(ChooseLogDirectory);

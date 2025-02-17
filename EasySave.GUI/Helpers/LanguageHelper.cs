@@ -70,7 +70,9 @@ namespace EasySave.GUI.Helpers
                     { "JobAdded", "✅ Job '{0}' added successfully." },
                     { "JobModified", "✏️ Job '{0}' modified." },
                     { "PleaseSelectJobForDeletion", "❌ Please select a job before deleting." },
-                    { "PleaseSelectJobForModification", "❌ Please select a job before modifying." }
+                    { "PleaseSelectJobForModification", "❌ Please select a job before modifying." },
+                    { "ButtonAddExtension", "Add" },
+                    { "ButtonRemoveExtension", "Remove" },
                 }
             },
             {
@@ -127,7 +129,9 @@ namespace EasySave.GUI.Helpers
                     { "JobAdded", "✅ Travail '{0}' ajouté avec succès." },
                     { "JobModified", "✏️ Travail '{0}' modifié." },
                     { "PleaseSelectJobForDeletion", "❌ Veuillez sélectionner un travail avant de supprimer." },
-                    { "PleaseSelectJobForModification", "❌ Veuillez sélectionner un travail avant de modifier." }
+                    { "PleaseSelectJobForModification", "❌ Veuillez sélectionner un travail avant de modifier." },
+                    { "ButtonAddExtension", "Ajouter" },
+                    { "ButtonRemoveExtension", "Retirer" },
                 }
             }
         };
@@ -192,6 +196,8 @@ namespace EasySave.GUI.Helpers
         public string SourceDirectoryPlaceholder => GetMessage("SourceDirectoryPlaceholder");
         public string TargetDirectoryPlaceholder => GetMessage("TargetDirectoryPlaceholder");
         public string ErrorLoadingFiles => GetMessage("ErrorLoadingFiles");
+        public string ButtonAddExtension => GetMessage("ButtonAddExtension");
+        public string ButtonRemoveExtension => GetMessage("ButtonRemoveExtension");
 
         public string GetMessage(string key) =>
             messages[_language].TryGetValue(key, out var value)
