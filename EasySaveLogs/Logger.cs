@@ -11,7 +11,7 @@ namespace EasySaveLogs
         private static Logger? _instance;
         private static readonly object _lock = new object();
         private readonly string _logDirectory;
-        private readonly string _logFormat; // "JSON" ou "XML"
+        private string _logFormat; 
 
         /// <summary>
         /// Enum representing log levels.
@@ -32,33 +32,33 @@ namespace EasySaveLogs
         {
             string userHomeDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
-            //Vérifier si le chemin récuperé est vide ou null; utiliser logDirectory en fallback
+            // Vérifier si le chemin récupéré est vide ou null; utiliser logDirectory en fallback
             if (string.IsNullOrWhiteSpace(userHomeDirectory))
             {
                 _logDirectory = logDirectory;
             }
             else
             {
-                _logDirectory = Path.Combine(userHomeDirectory, "Logs");
+                _logDirectory = System.IO.Path.Combine(userHomeDirectory, "Logs");
             }
             // Vérifier et créer le dossier si nécessaire
             try
             {
-                if (!Directory.Exists(_logDirectory))
+                if (!System.IO.Directory.Exists(_logDirectory))
                 {
-                    Directory.CreateDirectory(_logDirectory);
+                    System.IO.Directory.CreateDirectory(_logDirectory);
                 }
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
-                Console.WriteLine($"Erreur lors de la création du dossier de logs :{ex.Message}");
-                _logDirectory = logDirectory; //Fallback vers le dossier spécifié 
+                Console.WriteLine($"Erreur lors de la création du dossier de logs : {ex.Message}");
+                _logDirectory = logDirectory; // Fallback vers le dossier spécifié 
             }
             _logFormat = logFormat;
 
-            if (!Directory.Exists(_logDirectory))
+            if (!System.IO.Directory.Exists(_logDirectory))
             {
-                Directory.CreateDirectory(_logDirectory);
+                System.IO.Directory.CreateDirectory(_logDirectory);
             }
         }
 
@@ -84,6 +84,16 @@ namespace EasySaveLogs
         }
 
         /// <summary>
+        /// Permet de reconfigurer dynamiquement le format de log.
+        /// </summary>
+        /// <param name="newLogFormat">Le nouveau format (JSON ou XML).</param>
+        public void Reconfigure(string newLogFormat)
+        {
+            _logFormat = newLogFormat;
+            Console.WriteLine($"Logger reconfiguré pour le format {_logFormat}");
+        }
+
+        /// <summary>
         /// Logs an action by appending it to a JSON or XML file.
         /// </summary>
         /// <param name="logEntry">The log entry to be recorded.</param>
@@ -103,17 +113,18 @@ namespace EasySaveLogs
         /// <param name="logEntry">The log entry to be recorded.</param>
         private void LogToJson(LogEntry logEntry)
         {
-            string logFilePath = Path.Combine(_logDirectory, $"{DateTime.Now:yyyy-MM-dd}.json");
+            // Utilisation de l'heure pour créer un nom de fichier unique
+            string logFilePath = System.IO.Path.Combine(_logDirectory, $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.json");
             var logEntries = new List<LogEntry>();
 
-            if (File.Exists(logFilePath))
+            if (System.IO.File.Exists(logFilePath))
             {
-                var existingLogs = File.ReadAllText(logFilePath);
+                var existingLogs = System.IO.File.ReadAllText(logFilePath);
                 logEntries = JsonConvert.DeserializeObject<List<LogEntry>>(existingLogs) ?? new List<LogEntry>();
             }
 
             logEntries.Add(logEntry);
-            File.WriteAllText(logFilePath, JsonConvert.SerializeObject(logEntries, Formatting.Indented));
+            System.IO.File.WriteAllText(logFilePath, JsonConvert.SerializeObject(logEntries, Formatting.Indented));
         }
 
         /// <summary>
@@ -122,15 +133,15 @@ namespace EasySaveLogs
         /// <param name="logEntry">The log entry to be recorded.</param>
         private void LogToXml(LogEntry logEntry)
         {
-            string logFilePath = Path.Combine(_logDirectory, $"{DateTime.Now:yyyy-MM-dd}.xml");
+            // Utilisation de l'heure pour créer un nom de fichier unique
+            string logFilePath = System.IO.Path.Combine(_logDirectory, $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.xml");
             XDocument xmlDoc;
 
-            if (File.Exists(logFilePath))
+            if (System.IO.File.Exists(logFilePath))
                 xmlDoc = XDocument.Load(logFilePath);
             else
                 xmlDoc = new XDocument(new XElement("Logs"));
 
-            // Ajout de l'élément EncryptionTimeMs pour consigner le temps de cryptage
             xmlDoc.Root!.Add(new XElement("LogEntry",
                 new XElement("Timestamp", logEntry.Timestamp),
                 new XElement("BackupName", logEntry.BackupName),
@@ -138,7 +149,7 @@ namespace EasySaveLogs
                 new XElement("TargetFilePath", logEntry.TargetFilePath),
                 new XElement("FileSize", logEntry.FileSize),
                 new XElement("TransferTimeMs", logEntry.TransferTimeMs),
-                new XElement("EncryptionTimeMs", logEntry.EncryptionTimeMs), // Nouvelle ligne
+                new XElement("EncryptionTimeMs", logEntry.EncryptionTimeMs),
                 new XElement("Status", logEntry.Status),
                 new XElement("Level", logEntry.Level.ToString())
             ));

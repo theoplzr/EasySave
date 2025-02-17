@@ -628,8 +628,17 @@
           }
         }
       },
+      "CryptoSoftLib/1.0.0": {
+        "runtime": {
+          "CryptoSoftLib.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
       "EasySave.Core/1.0.0": {
         "dependencies": {
+          "CryptoSoftLib": "1.0.0",
           "EasySaveLogs": "1.0.0",
           "Microsoft.Extensions.Configuration": "9.0.1",
           "Microsoft.Extensions.Configuration.Binder": "9.0.1",
@@ -997,6 +1006,11 @@
       "sha512": "sha512-2gkt2kuYPhDKd8gtl34jZSJOnn4nRJfFngCDcTZT/uySbK++ua0YQx2418l9Rn1Y4dE5XNq6zG9ZsE5ltLlNNw==",
       "path": "tmds.dbus.protocol/0.20.0",
       "hashPath": "tmds.dbus.protocol.0.20.0.nupkg.sha512"
+    },
+    "CryptoSoftLib/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
     },
     "EasySave.Core/1.0.0": {
       "type": "project",

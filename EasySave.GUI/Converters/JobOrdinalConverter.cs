@@ -1,7 +1,7 @@
 using System;
 using System.Globalization;
 using Avalonia.Data.Converters;
-using EasySave.GUI.Helpers;  // N'oubliez pas ce using
+using EasySave.GUI.Helpers;  
 
 namespace EasySave.GUI.Converters
 {

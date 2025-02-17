@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Reactive;
 using System.Threading.Tasks;
 using ReactiveUI;
 using EasySave.Core.Models;
 using EasySave.Core.Facade;
+using EasySave.Core.Observers;
 using EasySave.GUI.Views;
 using EasySave.Core.Repositories;
 using EasySave.GUI.Observers;
@@ -22,18 +24,13 @@ namespace EasySave.GUI.ViewModels
     {
         private readonly EasySaveFacade _facade;
         private readonly IConfiguration _configuration;
+        private readonly FileStateObserver _fileStateObserver;
         private string _businessSoftware;
+        private bool _isObserverActive = false;
 
         public LanguageHelper LanguageHelperInstance => LanguageHelper.Instance;
 
         public ObservableCollection<BackupJob> BackupJobs { get; }
-
-        private ObservableCollection<BackupState> _backupStates;
-        public ObservableCollection<BackupState> BackupStates
-        {
-            get => _backupStates;
-            set => this.RaiseAndSetIfChanged(ref _backupStates, value);
-        }
 
         private BackupJob? _selectedJob;
         public BackupJob? SelectedJob
@@ -49,7 +46,7 @@ namespace EasySave.GUI.ViewModels
             set => this.RaiseAndSetIfChanged(ref _realTimeStatus, value);
         }
 
-        // Commandes mises à jour
+        // Commandes
         public ReactiveCommand<Unit, Unit> OpenAddJobWindowCommand { get; }
         public ReactiveCommand<Unit, Unit> OpenModifyJobWindowCommand { get; }
         public ReactiveCommand<Unit, Unit> OpenListAllJobWindowCommand { get; }
@@ -61,13 +58,12 @@ namespace EasySave.GUI.ViewModels
 
         public MainWindowViewModel()
         {
-            // Charger la configuration
             _configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("appsettings.GUI.json", optional: true, reloadOnChange: true)
                 .Build();
 
-            _businessSoftware = _configuration["BusinessSoftware"] ?? "TextEdit"; 
+            _businessSoftware = _configuration["BusinessSoftware"];
 
             _facade = new EasySaveFacade(
                 new JsonBackupJobRepository("backup_jobs.json"),
@@ -76,23 +72,21 @@ namespace EasySave.GUI.ViewModels
                 _configuration
             );
 
-            // Récupération de la liste des jobs depuis le _facade
-            var jobs = _facade.ListBackupJobs();
+            _fileStateObserver = new FileStateObserver("state.json");
 
-            // Pour chaque job, assigner un ordinal basé sur sa position dans la liste
+            var jobs = _facade.ListBackupJobs();
             for (int i = 0; i < jobs.Count; i++)
             {
-                jobs[i].Ordinal = i;  // Assurez-vous que BackupJob possède une propriété Ordinal
+                jobs[i].Ordinal = i;
             }
 
             BackupJobs = new ObservableCollection<BackupJob>(jobs);
 
-            BackupStates = new ObservableCollection<BackupState>();
+            foreach (var job in BackupJobs)
+            {
+                job.PropertyChanged += Job_PropertyChanged;
+            }
 
-            var uiObserver = new UIStateObserver(BackupStates);
-            _facade.AddObserver(uiObserver); 
-
-            // Initialiser les commandes
             OpenAddJobWindowCommand = ReactiveCommand.Create(OpenAddJobWindow);
             OpenModifyJobWindowCommand = ReactiveCommand.Create(OpenModifyJobWindow);
             OpenListAllJobWindowCommand = ReactiveCommand.Create(OpenAllJobWindow);
@@ -103,123 +97,66 @@ namespace EasySave.GUI.ViewModels
             ChangeLanguageCommand = ReactiveCommand.Create<string>(ChangeLanguage);
         }
 
-        private async void OpenAddJobWindow()
+        private void Job_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            var jobWindow = new JobFormWindow();
-            var jobViewModel = new JobFormViewModel(jobWindow);
-            jobWindow.DataContext = jobViewModel;
-
-            var mainWindow = (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
-            if (mainWindow != null)
+            if (sender is BackupJob job && e.PropertyName == nameof(BackupJob.IsSelected))
             {
-                var result = await jobWindow.ShowDialog<BackupJob>(mainWindow); 
-                if (result != null)
+                if (job.IsSelected)
                 {
-                    // Assigner l'ordinal en fonction du nombre actuel de jobs
-                    result.Ordinal = BackupJobs.Count;  
-                    _facade.AddJob(result);
-                    BackupJobs.Add(result);
-
-                    RealTimeStatus = $"✅ Job '{result.Name}' ajouté avec succès.";
-                }
-                else
-                {
-                    RealTimeStatus = "⚠️ Ajout de job annulé.";
-                }
-            }
-        }
-
-        private async void OpenModifyJobWindow()
-        {
-            if (SelectedJob == null) 
-            {
-                RealTimeStatus = "❌ No job selected to modify.";
-                return;
-            }
-
-            Console.WriteLine($"🔍 Modification en cours pour le job : {SelectedJob.Name}");
-
-            var jobWindow = new JobFormWindow();
-            var jobViewModel = new JobFormViewModel(jobWindow, SelectedJob);
-            jobWindow.DataContext = jobViewModel;
-
-            var mainWindow = (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
-            if (mainWindow != null)
-            {
-                var result = await jobWindow.ShowDialog<BackupJob>(mainWindow); 
-                if (result != null)
-                {
-                    Console.WriteLine($"✅ Job modifié : {result.Name}");
-
-                    int index = BackupJobs.IndexOf(SelectedJob);
-                    if (index != -1)
+                    foreach (var otherJob in BackupJobs)
                     {
-                        _facade.UpdateJob(index, result.Name, result.SourceDirectory, result.TargetDirectory, result.BackupType);
-                        BackupJobs[index] = result;
-                        RealTimeStatus = $"✏️ Job '{result.Name}' modified.";
+                        if (!ReferenceEquals(otherJob, job) && otherJob.IsSelected)
+                        {
+                            otherJob.IsSelected = false;
+                        }
                     }
+                    SelectedJob = job;
                 }
-                else
+                else if (!job.IsSelected && SelectedJob == job)
                 {
-                    Console.WriteLine("⚠️ Aucune modification effectuée.");
+                    SelectedJob = null;
                 }
             }
         }
-
-        private async void OpenAllJobWindow()
-        {
-            var listWindow = new ListAllJobWindow();
-            var listViewModel = new ListAllJobViewModel(listWindow, _facade);
-            listWindow.DataContext = listViewModel;
-
-            var mainWindow = (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
-            if (mainWindow != null)
-            {
-                await listWindow.ShowDialog(mainWindow);
-            }
-        }
-
-        
-        private async Task DeleteJobAsync()
-        {
-            if (SelectedJob == null)
-            {
-                RealTimeStatus = "❌ No job selected to delete.";
-                Console.WriteLine("❌ Aucun job sélectionné pour suppression.");
-                return;
-            }
-
-            Console.WriteLine($"🗑️ Suppression du job : {SelectedJob.Name}");
-
-            int index = BackupJobs.IndexOf(SelectedJob);
-            if (index == -1)
-            {
-                Console.WriteLine("⚠️ Job introuvable dans la liste.");
-                return;
-            }
-
-            _facade.RemoveJob(index);
-            BackupJobs.RemoveAt(index);
-            RealTimeStatus = $"🗑️ Job '{SelectedJob.Name}' deleted.";
-            
-            Console.WriteLine($"✅ Job supprimé : {SelectedJob.Name}");
-
-            await Task.CompletedTask;
-        }
-
 
         private async Task ExecuteAllJobsAsync()
         {
             if (IsBusinessSoftwareRunning())
             {
-                RealTimeStatus = $"🚨 Execution blocked: {_businessSoftware} is running.";
+                RealTimeStatus = $"{LanguageHelperInstance.GetMessage("ExecutionBlocked")} {_businessSoftware} {LanguageHelperInstance.GetMessage("IsRunning")}";
                 return;
             }
 
+            if (!_isObserverActive)
+            {
+                _facade.AddObserver(_fileStateObserver);
+                _isObserverActive = true;
+            }
+
             _facade.ExecuteAllJobs();
-            RealTimeStatus = "✅ All jobs executed successfully.";
+            RealTimeStatus = LanguageHelperInstance.GetMessage("AllJobsExecuted");
             await Task.CompletedTask;
         }
+
+        private async Task DeleteJobAsync()
+        {
+            if (SelectedJob == null)
+            {
+                RealTimeStatus = LanguageHelperInstance.GetMessage("PleaseSelectJobForDeletion");
+                return;
+            }
+
+            int index = BackupJobs.IndexOf(SelectedJob);
+            if (index == -1)
+                return;
+
+            _facade.RemoveJob(index);
+            BackupJobs.RemoveAt(index);
+            SelectedJob = null;
+            RealTimeStatus = LanguageHelperInstance.GetMessage("JobDeleted");
+            await Task.CompletedTask;
+        }
+
 
         private void OpenConfiguration()
         {
@@ -232,13 +169,70 @@ namespace EasySave.GUI.ViewModels
             LanguageHelper.Instance.SetLanguage(languageCode);
         }
 
-        /// <summary>
-        /// Vérifie si le logiciel métier est en cours d'exécution
-        /// </summary>
         private bool IsBusinessSoftwareRunning()
         {
             var processes = Process.GetProcesses();
             return processes.Any(p => p.ProcessName.Contains(_businessSoftware, StringComparison.OrdinalIgnoreCase));
+        }
+
+        private async void OpenAddJobWindow()
+        {
+            var jobWindow = new JobFormWindow();
+            var jobViewModel = new JobFormViewModel(jobWindow);
+            jobWindow.DataContext = jobViewModel;
+
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow != null)
+            {
+                var result = await jobWindow.ShowDialog<BackupJob>(desktop.MainWindow);
+                if (result != null)
+                {
+                    result.Ordinal = BackupJobs.Count;
+                    _facade.AddJob(result);
+                    result.PropertyChanged += Job_PropertyChanged;
+                    BackupJobs.Add(result);
+                    RealTimeStatus = string.Format(LanguageHelperInstance.GetMessage("JobAdded"), result.Name);
+                }
+            }
+        }
+
+        private async void OpenModifyJobWindow()
+        {
+            if (SelectedJob == null)
+            {
+                RealTimeStatus = LanguageHelperInstance.GetMessage("PleaseSelectJobForModification");
+                return;
+            }
+
+            var jobWindow = new JobFormWindow();
+            var jobViewModel = new JobFormViewModel(jobWindow, SelectedJob);
+            jobWindow.DataContext = jobViewModel;
+
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow != null)
+            {
+                var result = await jobWindow.ShowDialog<BackupJob>(desktop.MainWindow);
+                if (result != null)
+                {
+                    int index = BackupJobs.IndexOf(SelectedJob);
+                    if (index != -1)
+                    {
+                        _facade.UpdateJob(index, result.Name, result.SourceDirectory, result.TargetDirectory, result.BackupType);
+                        BackupJobs[index] = result;
+                        RealTimeStatus = string.Format(LanguageHelperInstance.GetMessage("JobModified"), result.Name);
+                    }
+                }
+            }
+        }
+
+        private async void OpenAllJobWindow()
+        {
+            var listWindow = new ListAllJobWindow();
+            var listViewModel = new ListAllJobViewModel(listWindow, _facade);
+            listWindow.DataContext = listViewModel;
+
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow != null)
+            {
+                await listWindow.ShowDialog(desktop.MainWindow);
+            }
         }
     }
 }

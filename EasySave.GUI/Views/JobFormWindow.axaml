@@ -6,62 +6,89 @@
         x:DataType="vm:JobFormViewModel"
         Title="{Binding LanguageHelperInstance.JobFormWindowTitle}" Width="500" Height="450">
 
-    <Window.Background>
-        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-            <GradientStop Color="#2C3E50" Offset="0"/>
-            <GradientStop Color="#34495E" Offset="1"/>
-        </LinearGradientBrush>
-    </Window.Background>
+  <Window.Background>
+    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+      <GradientStop Color="#2C3E50" Offset="0"/>
+      <GradientStop Color="#34495E" Offset="1"/>
+    </LinearGradientBrush>
+  </Window.Background>
 
-    <Window.Resources>
-        <converters:StringToBoolConverter x:Key="StringToBoolConverter"/>
-    </Window.Resources>
+  <Window.Resources>
+    <converters:StringToBoolConverter x:Key="StringToBoolConverter"/>
+  </Window.Resources>
 
-    <Grid>
-        <Border Background="White" CornerRadius="10" Padding="20"
-                Width="380" HorizontalAlignment="Center" VerticalAlignment="Center"
-                BoxShadow="0 4 10 #00000030">
-            
-            <StackPanel Spacing="10">
-                <TextBlock Text="{Binding LanguageHelperInstance.JobFormWindowTitle}" FontSize="20" FontWeight="Bold" Foreground="#2C3E50" 
-                           HorizontalAlignment="Center" Margin="0,0,0,10"/>
+  <Grid>
+    <Border Background="White" CornerRadius="10" Padding="20"
+            Width="380" HorizontalAlignment="Center" VerticalAlignment="Center"
+            BoxShadow="0 4 10 #00000030">
+      
+      <StackPanel Spacing="10">
+        <!-- Titre de la fenêtre -->
+        <TextBlock Text="{Binding LanguageHelperInstance.JobFormWindowTitle}" 
+                   FontSize="20" FontWeight="Bold" Foreground="#2C3E50" 
+                   HorizontalAlignment="Center" Margin="0,0,0,10"/>
 
-                <TextBlock Text="{Binding LanguageHelperInstance.JobNameLabel}" FontWeight="Bold" Foreground="#2C3E50"/>
-                <TextBox Text="{Binding Name}" Watermark="Enter job name..." 
-                         Background="#F3F3F3" BorderBrush="#BDC3C7" CornerRadius="5" Padding="6"/>
-                <TextBlock Text="{Binding NameError}" Foreground="Red" FontSize="12"
-                           IsVisible="{Binding NameError, Converter={StaticResource StringToBoolConverter}}"/>
+        <!-- Nom du job -->
+        <TextBlock Text="{Binding LanguageHelperInstance.JobNameLabel}" 
+                   FontWeight="Bold" Foreground="#2C3E50"/>
+        <TextBox Text="{Binding Name}" 
+                 Watermark="{Binding LanguageHelperInstance.JobNamePlaceholder}" 
+                 Background="#F3F3F3" BorderBrush="#BDC3C7" CornerRadius="5" Padding="6"/>
+        <TextBlock Text="{Binding NameError}" Foreground="Red" FontSize="12"
+                   IsVisible="{Binding NameError, Converter={StaticResource StringToBoolConverter}}"/>
 
-                <TextBlock Text="{Binding LanguageHelperInstance.SourceDirectoryLabel}:" FontWeight="Bold" Foreground="#2C3E50"/>
-                <TextBox Text="{Binding SourceDirectory}" Watermark="Select source directory..." 
-                         Background="#F3F3F3" BorderBrush="#BDC3C7" CornerRadius="5" Padding="6"/>
-                <TextBlock Text="{Binding SourceDirectoryError}" Foreground="Red" FontSize="12"
-                           IsVisible="{Binding SourceDirectoryError, Converter={StaticResource StringToBoolConverter}}"/>
+        <!-- Répertoire source avec bouton Browse -->
+        <TextBlock Text="{Binding LanguageHelperInstance.SourceDirectoryLabel}" 
+                   FontWeight="Bold" Foreground="#2C3E50"/>
+        <StackPanel Orientation="Horizontal" Spacing="5">
+          <TextBox Text="{Binding SourceDirectory}" 
+                   Watermark="{Binding LanguageHelperInstance.SourceDirectoryPlaceholder}" 
+                   Background="#F3F3F3" BorderBrush="#BDC3C7" CornerRadius="5" Padding="6"
+                   HorizontalAlignment="Stretch" Width="250"/>
+          <Button Content="{Binding LanguageHelperInstance.BrowseButton}" 
+                  Command="{Binding BrowseSourceCommand}" 
+                  Background="#BDC3C7" Padding="6" HorizontalAlignment="Right"/>
+        </StackPanel>
+        <TextBlock Text="{Binding SourceDirectoryError}" Foreground="Red" FontSize="12"
+                   IsVisible="{Binding SourceDirectoryError, Converter={StaticResource StringToBoolConverter}}"/>
 
-                <!-- Répertoire cible -->
-                <TextBlock Text="{Binding LanguageHelperInstance.TargetDirectoryLabel}" FontWeight="Bold" Foreground="#2C3E50"/>
-                <TextBox Text="{Binding TargetDirectory}" Watermark="Select target directory..." 
-                         Background="#F3F3F3" BorderBrush="#BDC3C7" CornerRadius="5" Padding="6"/>
-                <TextBlock Text="{Binding TargetDirectoryError}" Foreground="Red" FontSize="12"
-                           IsVisible="{Binding TargetDirectoryError, Converter={StaticResource StringToBoolConverter}}"/>
+        <!-- Répertoire cible avec bouton Browse -->
+        <TextBlock Text="{Binding LanguageHelperInstance.TargetDirectoryLabel}" 
+                   FontWeight="Bold" Foreground="#2C3E50"/>
+        <StackPanel Orientation="Horizontal" Spacing="5">
+          <TextBox Text="{Binding TargetDirectory}" 
+                   Watermark="{Binding LanguageHelperInstance.TargetDirectoryPlaceholder}" 
+                   Background="#F3F3F3" BorderBrush="#BDC3C7" CornerRadius="5" Padding="6"
+                   HorizontalAlignment="Stretch" Width="250"/>
+          <Button Content="{Binding LanguageHelperInstance.BrowseButton}" 
+                  Command="{Binding BrowseTargetCommand}" 
+                  Background="#BDC3C7" Padding="6" HorizontalAlignment="Right"/>
+        </StackPanel>
+        <TextBlock Text="{Binding TargetDirectoryError}" Foreground="Red" FontSize="12"
+                   IsVisible="{Binding TargetDirectoryError, Converter={StaticResource StringToBoolConverter}}"/>
 
-                <TextBlock Text="{Binding LanguageHelperInstance.BackupTypeLabel}" FontWeight="Bold" Foreground="#2C3E50"/>
-                <ComboBox SelectedItem="{Binding BackupType}" ItemsSource="{Binding BackupTypes}" 
-                          Background="#F3F3F3" BorderBrush="#BDC3C7" CornerRadius="5" Padding="6"/>
+        <!-- Type de backup -->
+        <TextBlock Text="{Binding LanguageHelperInstance.BackupTypeLabel}" 
+                   FontWeight="Bold" Foreground="#2C3E50"/>
+        <ComboBox SelectedItem="{Binding BackupType}" ItemsSource="{Binding BackupTypes}" 
+                  Background="#F3F3F3" BorderBrush="#BDC3C7" CornerRadius="5" Padding="6"/>
 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,20,0,0">
-                    <Border Background="#27AE60" CornerRadius="5" Padding="3" Margin="5">
-                        <Button Content="{Binding LanguageHelperInstance.ButtonSave}" Command="{Binding SaveCommand}" 
-                                Foreground="White" Padding="8,5" Width="80" 
-                                FontWeight="Bold" Background="Transparent"/>
-                    </Border>
-                    <Border Background="#E74C3C" CornerRadius="5" Padding="3" Margin="5">
-                        <Button Content="{Binding LanguageHelperInstance.ButtonCancel}" Command="{Binding CancelCommand}" 
-                                Foreground="White" Padding="8,5" Width="80" 
-                                FontWeight="Bold" Background="Transparent"/>
-                    </Border>
-                </StackPanel>
-            </StackPanel>
-        </Border>
-    </Grid>
+        <!-- Boutons Save / Cancel -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10" Margin="0,20,0,0">
+          <Border Background="#27AE60" CornerRadius="5" Padding="3" Margin="5">
+            <Button Content="{Binding LanguageHelperInstance.ButtonSave}" 
+                    Command="{Binding SaveCommand}" 
+                    Foreground="White" Padding="8,5" Width="110" 
+                    FontWeight="Bold" Background="Transparent"/>
+          </Border>
+          <Border Background="#E74C3C" CornerRadius="5" Padding="3" Margin="5">
+            <Button Content="{Binding LanguageHelperInstance.ButtonCancel}" 
+                    Command="{Binding CancelCommand}" 
+                    Foreground="White" Padding="8,5" Width="80" 
+                    FontWeight="Bold" Background="Transparent"/>
+          </Border>
+        </StackPanel>
+      </StackPanel>
+    </Border>
+  </Grid>
 </Window>

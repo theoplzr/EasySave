@@ -6,14 +6,11 @@ using EasySave.Core.Repositories;
 using EasySave.Core.Template;
 using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
+using CryptoSoftLib;
+using System.IO;
 
 namespace EasySave.Core
 {
-    /// <summary>
-    /// Manages backup jobs, including execution, addition, removal, and updates.
-    /// Uses the Observer pattern to notify registered observers of state changes.
-    /// Implements the Template Method pattern to execute backups with different strategies.
-    /// </summary>
     public class BackupManager
     {
         private readonly IBackupJobRepository _jobRepository;
@@ -21,24 +18,29 @@ namespace EasySave.Core
         private readonly Logger _logger;
         private readonly List<IBackupObserver> _observers;
         private readonly int _maxJobs;
-        private readonly string _cryptoSoftPath = "/Applications/CryptoSoft.app/Contents/MacOS/CryptoSoft"; 
-        private readonly string _businessSoftwareName = "Calculator"; 
+        private readonly string _cryptoSoftPath;
+        private readonly string _businessSoftwareName;
+        private readonly string[] _encryptionExtensions;
+        private readonly string _encryptionKey;
 
         public BackupManager(IBackupJobRepository jobRepository, string logDirectory, IConfiguration configuration)
         {
-            _jobRepository = jobRepository;
-            _backupJobs = _jobRepository.Load();
+            _jobRepository = jobRepository ?? throw new ArgumentNullException(nameof(jobRepository));
+            _backupJobs = _jobRepository.Load() ?? new List<BackupJob>();
             _observers = new List<IBackupObserver>();
 
-            // Charger LogFormat et MaxBackupJobs depuis la configuration
-            string logFormat = configuration["Logging:LogFormat"] ?? "JSON";
             _maxJobs = int.TryParse(configuration["MaxBackupJobs"], out int maxJobs) ? maxJobs : 5;
+            _cryptoSoftPath = "/Applications/CryptoSoft.app/Contents/MacOS/CryptoSoft";
+            _businessSoftwareName = configuration["BusinessSoftware"] ?? "Spotify";
+            _encryptionExtensions = configuration.GetSection("EncryptionExtensions").Get<string[]>() ?? Array.Empty<string>();
+            _encryptionKey = "DefaultKey123";
 
-            // Initialiser le logger avec le format correct
+            // Initialisation du logger
+            string logFormat = configuration["LogFormat"] ?? "JSON";
             _logger = Logger.GetInstance(logDirectory, logFormat);
         }
 
-        // ------------------------- Observer Methods -------------------------
+        // ------------------------- Gestion des Observateurs -------------------------
 
         public void AddObserver(IBackupObserver observer)
         {
@@ -50,10 +52,7 @@ namespace EasySave.Core
 
         public void RemoveObserver(IBackupObserver observer)
         {
-            if (_observers.Contains(observer))
-            {
-                _observers.Remove(observer);
-            }
+            _observers.Remove(observer);
         }
 
         private void NotifyObservers(BackupState state)
@@ -69,10 +68,12 @@ namespace EasySave.Core
             _jobRepository.Save(_backupJobs);
         }
 
-        // ------------------------- Backup Job Management -------------------------
+        // ------------------------- Gestion des Jobs de Sauvegarde -------------------------
 
         public void AddBackupJob(BackupJob job)
         {
+            if (job == null) throw new ArgumentNullException(nameof(job));
+
             _backupJobs.Add(job);
             SaveChanges();
             Console.WriteLine($"✅ Backup job '{job.Name}' added successfully.");
@@ -89,6 +90,11 @@ namespace EasySave.Core
         public int GetBackupJobCount()
         {
             return _backupJobs.Count;
+        }
+
+        public List<BackupJob> GetAllJobs()
+        {
+            return _backupJobs;
         }
 
         public void ExecuteBackupByIndex(int index)
@@ -159,102 +165,78 @@ namespace EasySave.Core
 
         private void ExecuteBackup(BackupJob job)
         {
-                // Récupérez le nom du logiciel métier depuis la configuration
-                var businessSoftware = ConfigurationProvider.BusinessSoftware; // par exemple "Calculator"
-                if (!string.IsNullOrEmpty(businessSoftware) && Services.BusinessSoftwareChecker.IsBusinessSoftwareRunning(businessSoftware))
+            if (IsBusinessSoftwareRunning())
+            {
+                _logger.LogAction(new LogEntry
                 {
-                    // Loggez l’arrêt et affichez un message
+                    Timestamp = DateTime.Now,
+                    BackupName = job.Name,
+                    Status = $"Stopped: Business software '{_businessSoftwareName}' detected"
+                });
+                Console.WriteLine($"Backup job '{job.Name}' stopped: business software '{_businessSoftwareName}' is running.");
+                return;
+            }
+
+            BackupState state = new BackupState
+            {
+                JobId = job.Id,
+                BackupName = job.Name,
+                Status = "En cours",
+                LastActionTime = DateTime.Now,
+                CurrentSourceFile = "En attente...",
+                CurrentTargetFile = "En attente...",
+                TotalFiles = Directory.GetFiles(job.SourceDirectory, "*", SearchOption.AllDirectories).Length
+            };
+
+            NotifyObservers(state);
+
+            // Choisir l’algorithme de sauvegarde
+            AbstractBackupAlgorithm algorithm = job.BackupType == BackupType.Complete
+                ? new FullBackupAlgorithm(_logger, state => NotifyObservers(state), () => SaveChanges())
+                : new DifferentialBackupAlgorithm(_logger, state => NotifyObservers(state), () => SaveChanges());
+
+            try
+            {
+                algorithm.Execute(job);
+
+                // Vérification AVANT cryptage pour éviter tout chiffrement non désiré
+                foreach (var file in Directory.GetFiles(job.TargetDirectory))
+                {
+                    var fileExtension = Path.GetExtension(file);
+                    if (!_encryptionExtensions.Contains(fileExtension, StringComparer.OrdinalIgnoreCase))
+                    {
+                        Console.WriteLine($"Fichier ignoré pour cryptage : {file}");
+                        continue;
+                    }
+
+                    Console.WriteLine($"Chiffrement du fichier : {file}");
+                    int encryptionTime = CryptoSoft.EncryptFile(file, _encryptionKey);
+                    Console.WriteLine($"Fichier {file} crypté en {encryptionTime}ms");
+
                     _logger.LogAction(new LogEntry
                     {
                         Timestamp = DateTime.Now,
                         BackupName = job.Name,
-                        SourceFilePath = "",
-                        TargetFilePath = "",
-                        FileSize = 0,
+                        SourceFilePath = file,
+                        TargetFilePath = file,
+                        FileSize = new FileInfo(file).Length,
                         TransferTimeMs = 0,
-                        EncryptionTimeMs = 0,
-                        Status = $"Stopped: Business software '{businessSoftware}' detected"
+                        EncryptionTimeMs = encryptionTime,
+                        Status = "Fichier crypté avec succès",
+                        Level = Logger.LogLevel.Info
                     });
-                    Console.WriteLine($"Backup job '{job.Name}' stopped: business software '{businessSoftware}' is running.");
-                    return; // Interrompt l’exécution
                 }
 
-                // Choisir l’algorithme de sauvegarde approprié
-                AbstractBackupAlgorithm algorithm = job.BackupType == BackupType.Complete
-                    ? new FullBackupAlgorithm(_logger, state => NotifyObservers(state), () => SaveChanges())
-                    : new DifferentialBackupAlgorithm(_logger, state => NotifyObservers(state), () => SaveChanges());
-
-                try
-                {
-                    algorithm.Execute(job);
-                }
-                catch (OperationCanceledException ex)
-    {
-        // Cas où on a détecté le logiciel métier en plein milieu
-        Console.WriteLine($"⚠️ Backup '{job.Name}' interrupted: {ex.Message}");
-        _logger.LogAction(new LogEntry
-        {
-            Timestamp = DateTime.Now,
-            BackupName = job.Name,
-            SourceFilePath = "",
-            TargetFilePath = "",
-            FileSize = 0,
-            TransferTimeMs = 0,
-            EncryptionTimeMs = 0,
-            Status = $"Interrupted in mid-backup: {ex.Message}",
-            Level = Logger.LogLevel.Warning
-        });
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Error executing backup job '{job.Name}': {ex.Message}");
-    }
-        }
-
-        /// <summary>
-        /// Vérifie si un logiciel métier est en cours d'exécution.
-        /// </summary>
-        public bool IsBusinessSoftwareRunning()
-        {
-            return Process.GetProcessesByName(_businessSoftwareName).Any();
-        }
-
-        /// <summary>
-        /// Crypte un fichier avec CryptoSoft et mesure le temps de cryptage.
-        /// </summary>
-        public long EncryptFile(string filePath)
-        {
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            try
-            {
-                ProcessStartInfo startInfo = new ProcessStartInfo
-                {
-                    FileName = _cryptoSoftPath,
-                    Arguments = filePath,
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false
-                };
-
-                using (Process process = Process.Start(startInfo))
-                {
-                    process.WaitForExit();
-                }
-
-                stopwatch.Stop();
-                return stopwatch.ElapsedMilliseconds;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erreur lors du cryptage : {ex.Message}");
-                return -1;
+                Console.WriteLine($"Erreur lors de l'exécution de la sauvegarde : {ex.Message}");
             }
         }
 
-        public List<BackupJob> GetAllJobs()
+        public bool IsBusinessSoftwareRunning()
         {
-            return _backupJobs;
+            return Process.GetProcessesByName(_businessSoftwareName).Any();
         }
     }
 }

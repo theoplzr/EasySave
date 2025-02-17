@@ -20,10 +20,6 @@ out/
 # Avalonia temporary files
 *.xaml.cs
 
-# Ignore config and secrets
-appsettings.json
-appsettings.Development.json
-
 # Rider / JetBrains
 .idea/
 *.iml

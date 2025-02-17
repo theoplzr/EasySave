@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EasySaveLogs\EasySaveLogs.csproj" />
+    <ProjectReference Include="..\CryptoSoftLib\CryptoSoftLib.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using EasySave.GUI.ViewModels;
+using Avalonia.Interactivity;
 
 namespace EasySave.GUI.Views
 {
@@ -15,6 +16,11 @@ namespace EasySave.GUI.Views
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+        }
+
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

@@ -1,151 +1,159 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:EasySave.GUI.ViewModels"
-        xmlns:conv="clr-namespace:EasySave.GUI.Converters"
+        xmlns:conv="clr-namespace:EasySave.GUI.Converters;assembly=EasySave.GUI"
         x:Class="EasySave.GUI.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Title="{Binding LanguageHelperInstance.MainWindowTitle}" Width="800" Height="600">
+        Title="{Binding LanguageHelperInstance.MainWindowTitle}" 
+        Width="1000" Height="650"
+        Background="#F3F4F6">
   
-  <!-- Déclaration du convertisseur dans les ressources -->
+  <!-- Définition explicite du DataContext -->
+  <Window.DataContext>
+    <vm:MainWindowViewModel/>
+  </Window.DataContext>
+  
   <Window.Resources>
     <conv:JobOrdinalConverter x:Key="JobOrdinalConverter"/>
+    <conv:BoolToJobBackgroundConverter x:Key="BoolToJobBackgroundConverter"/>
+    <conv:NullToBoolConverter x:Key="NullToBoolConverter"/>
+    <conv:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
   </Window.Resources>
+
+  <Window.Styles>
+    <!-- Style pour la barre latérale -->
+    <Style Selector="Button.sidebar">
+      <Setter Property="FontSize" Value="16"/>
+      <Setter Property="FontWeight" Value="Bold"/>
+      <Setter Property="Padding" Value="12"/>
+      <Setter Property="Margin" Value="10,5"/>
+      <Setter Property="Background" Value="#34495E"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="Height" Value="50"/>
+      <Setter Property="Width" Value="180"/>
+      <Setter Property="HorizontalAlignment" Value="Center"/>
+      <!-- Effet au survol -->
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+
+    <!-- Style pour les jobs -->
+    <Style Selector="ToggleButton.job">
+      <Setter Property="BorderBrush" Value="#FF005A9E"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="Padding" Value="10,5"/>
+      <Setter Property="Margin" Value="5"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+  </Window.Styles>
 
   <Grid>
     <DockPanel>
-      <!-- Barre de menu -->
-      <Menu DockPanel.Dock="Top">
-        <MenuItem Header="{Binding LanguageHelperInstance.FileMenuHeader}">
-          <MenuItem Header="{Binding LanguageHelperInstance.MenuItemConfiguration}" Command="{Binding OpenConfigurationCommand}">
-            <MenuItem.Icon>
-              <Image Source="avares://EasySave.GUI/Assets/icon-config.png" Width="16" Height="16"/>
-            </MenuItem.Icon>
+      <!-- Barre latérale -->
+      <DockPanel DockPanel.Dock="Left" Background="#2C3E50" Width="220" Margin="10">
+        <!-- Partie supérieure : logo de l'application et boutons -->
+        <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Center">
+          <!-- Logo de l'application centré et redimensionné -->
+          <Image Source="avares://EasySave.GUI/Assets/logo.jpeg" Width="180" Height="80" Margin="10"/>
+          <Button Content="{Binding LanguageHelperInstance.ButtonAdd}" 
+                  Command="{Binding OpenAddJobWindowCommand}"
+                  Classes="sidebar"
+                  ToolTip.Tip="Ajouter un job"/>
+          <Button Content="{Binding LanguageHelperInstance.ButtonModify}" 
+                  Command="{Binding OpenModifyJobWindowCommand}"
+                  Classes="sidebar"
+                  ToolTip.Tip="Modifier le job sélectionné"/>
+          <Button Content="{Binding LanguageHelperInstance.ButtonList}" 
+                  Command="{Binding OpenListAllJobWindowCommand}"
+                  Classes="sidebar"
+                  ToolTip.Tip="Lister tous les jobs"/>
+          <Button Content="{Binding LanguageHelperInstance.ButtonDelete}" 
+                  Command="{Binding DeleteJobCommand}"
+                  Classes="sidebar"
+                  ToolTip.Tip="Supprimer le job sélectionné"/>
+          <Button Content="{Binding LanguageHelperInstance.ButtonExecute}" 
+                  Command="{Binding ExecuteAllJobsCommand}"
+                  Classes="sidebar"
+                  ToolTip.Tip="Exécuter tous les jobs"/>
+        </StackPanel>
+        <!-- Partie inférieure : logo de l'école agrandi et aligné en bas à gauche -->
+        <StackPanel DockPanel.Dock="Bottom" HorizontalAlignment="Left" Margin="10">
+          <Image Source="avares://EasySave.GUI/Assets/icone-ecole.webp" Width="180" Height="165" Margin="10"/>
+        </StackPanel>
+      </DockPanel>
+
+      <!-- Contenu principal -->
+      <Grid>
+        <!-- Nouvelle structure de lignes pour inclure le titre de la liste -->
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>    <!-- Menu -->
+          <RowDefinition Height="Auto"/>    <!-- Titre de la liste -->
+          <RowDefinition Height="*"/>       <!-- Liste des jobs -->
+          <RowDefinition Height="Auto"/>    <!-- Statut en temps réel -->
+        </Grid.RowDefinitions>
+
+        <!-- Menu -->
+        <Menu Grid.Row="0" Background="White">
+          <MenuItem Header="{Binding LanguageHelperInstance.FileMenuHeader}">
+            <MenuItem Header="{Binding LanguageHelperInstance.MenuItemConfiguration}" 
+                      Command="{Binding OpenConfigurationCommand}"
+                      ToolTip.Tip="Configuration"/>
+            <MenuItem Header="{Binding LanguageHelperInstance.MenuItemLanguage}">
+              <MenuItem Header="🇫🇷 Passer en français" 
+                        Command="{Binding ChangeLanguageCommand}" 
+                        CommandParameter="fr"/>
+              <MenuItem Header="🇬🇧 Switch to English" 
+                        Command="{Binding ChangeLanguageCommand}" 
+                        CommandParameter="en"/>
+            </MenuItem>
+            <MenuItem Header="{Binding LanguageHelperInstance.MenuItemExit}" 
+                      Command="{Binding ExitCommand}"
+                      ToolTip.Tip="Quitter"/>
           </MenuItem>
-          <MenuItem Header="{Binding LanguageHelperInstance.MenuItemLanguage}">
-            <MenuItem.Icon>
-                <Image Source="avares://EasySave.GUI/Assets/icon-language.png" Width="16" Height="16"/>
-            </MenuItem.Icon>
-            <MenuItem Header="{Binding LanguageHelperInstance.French}" Command="{Binding ChangeLanguageCommand}" CommandParameter="fr"/>
-            <MenuItem Header="{Binding LanguageHelperInstance.English}" Command="{Binding ChangeLanguageCommand}" CommandParameter="en"/>
-          </MenuItem>
+        </Menu>
 
-          <MenuItem Header="{Binding LanguageHelperInstance.MenuItemExit}" Command="{Binding ExitCommand}">
-            <MenuItem.Icon>
-              <Image Source="avares://EasySave.GUI/Assets/icon-exit.png" Width="16" Height="16"/>
-            </MenuItem.Icon>
-          </MenuItem>
-        </MenuItem>
-      </Menu>
+        <!-- Titre de la liste des jobs -->
+        <TextBlock Grid.Row="1" Text="{Binding LanguageHelperInstance.JobsListTitle}" 
+                   FontSize="18" FontWeight="Bold" Foreground="#2C3E50"
+                   Margin="20,10,20,5" HorizontalAlignment="Center"/>
 
-      <!-- Tabs -->
-      <TabControl>
-        <TabItem Header="{Binding LanguageHelperInstance.JobsTabHeader}">
-          <Grid>
-            <Grid.RowDefinitions>
-              <!-- Boutons d'actions -->
-              <RowDefinition Height="Auto"/>
-              <!-- Titre de la liste des jobs -->
-              <RowDefinition Height="Auto"/>
-              <!-- Liste des jobs -->
-              <RowDefinition Height="*"/>
-              <!-- Statut en temps réel -->
-              <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+        <!-- Liste des jobs -->
+        <ScrollViewer Grid.Row="2" Margin="20">
+          <ItemsControl ItemsSource="{Binding BackupJobs}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel Orientation="Horizontal"/>
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <ToggleButton Classes="job"
+                              IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                              ToolTip.Tip="{Binding Name}">
+                  <Border Background="{Binding IsSelected, Converter={StaticResource BoolToJobBackgroundConverter}}"
+                          CornerRadius="4" Padding="5">
+                    <StackPanel Orientation="Vertical">
+                      <TextBlock Text="{Binding Ordinal, Converter={StaticResource JobOrdinalConverter}}" 
+                                 FontSize="14" FontWeight="Bold"/>
+                      <TextBlock Text="{Binding Name}" Margin="0,2,0,0"/>
+                    </StackPanel>
+                  </Border>
+                </ToggleButton>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
 
-            <!-- Boutons d'actions en haut -->
-            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
-              <Button Command="{Binding OpenAddJobWindowCommand}">
-                <StackPanel Orientation="Horizontal">
-                  <Image Source="avares://EasySave.GUI/Assets/icon-add.png" Width="16" Height="16" Margin="0,0,5,0"/>
-                  <TextBlock Text="{Binding LanguageHelperInstance.ButtonAdd}"/>
-                </StackPanel>
-              </Button>
-              <Button Command="{Binding OpenModifyJobWindowCommand}">
-                <StackPanel Orientation="Horizontal">
-                  <Image Source="avares://EasySave.GUI/Assets/icon-edit.png" Width="16" Height="16" Margin="0,0,5,0"/>
-                  <TextBlock Text="{Binding LanguageHelperInstance.ButtonModify}"/>
-                </StackPanel>
-              </Button>
-              <Button Command="{Binding OpenListAllJobWindowCommand}">
-                <StackPanel Orientation="Horizontal">
-                  <Image Source="avares://EasySave.GUI/Assets/icon-list.png" Width="16" Height="16" Margin="0,0,5,0"/>
-                  <TextBlock Text="{Binding LanguageHelperInstance.ButtonList}"/>
-                </StackPanel>
-              </Button>
-              <Button Command="{Binding DeleteJobCommand}">
-                <StackPanel Orientation="Horizontal">
-                  <Image Source="avares://EasySave.GUI/Assets/icon-delete.png" Width="16" Height="16" Margin="0,0,5,0"/>
-                  <TextBlock Text="{Binding LanguageHelperInstance.ButtonDelete}"/>
-                </StackPanel>
-              </Button>
-              <Button Command="{Binding ExecuteAllJobsCommand}">
-                <StackPanel Orientation="Horizontal">
-                  <Image Source="avares://EasySave.GUI/Assets/icon-play.png" Width="16" Height="16" Margin="0,0,5,0"/>
-                  <TextBlock Text="{Binding LanguageHelperInstance.ButtonExecute}"/>
-                </StackPanel>
-              </Button>
-            </StackPanel>
-
-               <!-- Liste des jobs sous forme d'étiquettes cliquables -->
-            <ScrollViewer Grid.Row="1" Margin="10">
-              <ItemsControl ItemsSource="{Binding BackupJobs}">
-                <ItemsControl.ItemsPanel>
-                  <ItemsPanelTemplate>
-                    <WrapPanel Orientation="Horizontal"/>
-                  </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                  <DataTemplate>
-                    <Button Margin="5"
-                            Padding="10,5"
-                            Background="#FF007ACC"
-                            BorderBrush="#FF005A9E"
-                            BorderThickness="1"
-                            CornerRadius="4"
-                            Foreground="White"
-                            Cursor="Hand"
-                            Click="JobButton_Click">
-                      <Button.Content>
-                        <StackPanel Orientation="Vertical">
-                          <!-- Afficher le numéro ordonné du job (propriété Ordinal) -->
-                          <TextBlock Text="{Binding Ordinal, Converter={StaticResource JobOrdinalConverter}}"
-                                     FontSize="14" 
-                                     FontWeight="Bold" />
-                          <!-- Afficher le nom du job -->
-                          <TextBlock Text="{Binding Name}" Margin="0,2,0,0"/>
-                          <!-- Afficher le type de sauvegarde -->
-                          <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Type: " FontSize="10" Foreground="LightGray"/>
-                            <TextBlock Text="{Binding BackupType}" FontSize="10" Foreground="LightGray"/>
-                          </StackPanel>
-                        </StackPanel>
-                      </Button.Content>
-                      <Button.Styles>
-                        <!-- Effet au survol -->
-                        <Style Selector="Button:hover">
-                          <Setter Property="Background" Value="#FF005A9E"/>
-                        </Style>
-                        <!-- Effet à l'appui -->
-                        <Style Selector="Button:pressed">
-                          <Setter Property="Background" Value="#FF003D73"/>
-                        </Style>
-                      </Button.Styles>
-                    </Button>
-                  </DataTemplate>
-                </ItemsControl.ItemTemplate>
-              </ItemsControl>
-            </ScrollViewer>
-
-            <!-- Barre de statut -->
-            <Border Grid.Row="3" BorderBrush="Gray" BorderThickness="1" Padding="10" Margin="10">
-              <StackPanel>
-                <TextBlock Text="{Binding LanguageHelperInstance.RealTimeStatusHeader}" FontWeight="Bold" Margin="0,0,0,5"/>
-                <TextBlock Text="{Binding RealTimeStatus}" />
-              </StackPanel>
-            </Border>
-          </Grid>
-        </TabItem>
-      </TabControl>
+        <!-- Statut en temps réel -->
+        <Border Grid.Row="3" Background="White" BorderBrush="Gray" BorderThickness="1" Padding="10" Margin="20">
+          <StackPanel>
+            <TextBlock Text="{Binding LanguageHelperInstance.RealTimeStatusHeader}" 
+                       FontWeight="Bold" FontSize="14"/>
+            <TextBlock Text="{Binding RealTimeStatus}" FontSize="12"/>
+          </StackPanel>
+        </Border>
+      </Grid>
     </DockPanel>
   </Grid>
 </Window>

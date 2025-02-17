@@ -3,43 +3,119 @@
         xmlns:vm="clr-namespace:EasySave.GUI.ViewModels"
         x:Class="EasySave.GUI.Views.ConfigurationWindow"
         x:DataType="vm:ConfigurationViewModel"
-        Title="Configuration"
-        Width="400" Height="500">
-
-    <StackPanel Margin="10" Spacing="10">
-        
-        <!-- Log Format -->
-        <TextBlock Text="Log Format:"/>
-        <ComboBox SelectedItem="{Binding LogFormat}" ItemsSource="{Binding LogFormatOptions}"/>
-
-        <!-- Business Software -->
-        <TextBlock Text="Business Software (Bloqueur de backup)"/>
-        <TextBox Text="{Binding BusinessSoftware}"/>
-
-        <!-- Répertoire des logs -->
-        <TextBlock Text="Dossier des logs"/>
-        <TextBox Text="{Binding LogDirectory}" IsReadOnly="True"/>
-        <Button Content="Choisir un dossier..." Command="{Binding ChooseLogDirectoryCommand}" CommandParameter="{Binding $parent}" />
-
-        <!-- Extensions de fichiers à chiffrer -->
-        <TextBlock Text="Extensions de fichiers à chiffrer"/>
-        <ListBox ItemsSource="{Binding EncryptionExtensions}" Height="80"/>
-        
-        <StackPanel Orientation="Horizontal">
-            <TextBox x:Name="ExtensionInput" Width="200" Watermark="Ex: .txt"/>
-            <Button Content="Ajouter" Command="{Binding AddExtensionCommand}" CommandParameter="{Binding ElementName=ExtensionInput, Path=Text}"/>
-            <Button Content="Supprimer" Command="{Binding RemoveExtensionCommand}" CommandParameter="{Binding ElementName=ExtensionInput, Path=Text}"/>
+        Title="{Binding LanguageHelperInstance.ConfigurationWindowTitle}"
+        Width="400" Height="500"
+        Background="White">
+  
+  <Window.DataContext>
+    <vm:ConfigurationViewModel/>
+  </Window.DataContext>
+  
+  <Border Padding="20" Background="#FAFAFA" CornerRadius="10" BorderBrush="#3498db" BorderThickness="2">
+    <!-- Utilisation d'un Grid à deux lignes -->
+    <Grid RowDefinitions="*,Auto">
+      <!-- Ligne 0 : contenu principal -->
+      <ScrollViewer Grid.Row="0">
+        <StackPanel Spacing="15">
+          
+          <Border Background="#3498db" CornerRadius="6" Padding="10">
+            <TextBlock Text="{Binding LanguageHelperInstance.ConfigurationWindowTitle}" 
+                       FontSize="22" 
+                       FontWeight="Bold" 
+                       Foreground="White" 
+                       HorizontalAlignment="Center"/>
+          </Border>
+          
+          <!-- Champ pour le format du log (garder tel quel) -->
+          <StackPanel Orientation="Vertical" Spacing="5">
+            <TextBlock Text="{Binding LanguageHelperInstance.LogFormatLabel}" 
+                       FontWeight="SemiBold" 
+                       Foreground="#2c3e50"/>
+            <ComboBox SelectedItem="{Binding LogFormat}" 
+                      ItemsSource="{Binding LogFormatOptions}" 
+                      Background="#ecf0f1" 
+                      Foreground="#2c3e50"/>
+          </StackPanel>
+          
+          <StackPanel Orientation="Vertical" Spacing="5">
+            <TextBlock Text="{Binding LanguageHelperInstance.BusinessSoftwareLabel}" 
+                       FontWeight="SemiBold" 
+                       Foreground="#2c3e50"/>
+            <TextBox Text="{Binding BusinessSoftware}" 
+                     Background="#ecf0f1" 
+                     Foreground="#2c3e50"/>
+          </StackPanel>
+          
+          <!-- Champ pour le répertoire des logs -->
+          <StackPanel Orientation="Vertical" Spacing="5">
+            <TextBlock Text="{Binding LanguageHelperInstance.LogDirectoryLabel}" 
+                       FontWeight="SemiBold"/>
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBox Text="{Binding LogDirectory}" 
+                       IsReadOnly="True" 
+                       Background="#ecf0f1" 
+                       Foreground="#2c3e50" 
+                       Grid.Column="0"/>
+              <Button Content="{Binding LanguageHelperInstance.BrowseButton}" 
+                      Command="{Binding ChooseLogDirectoryCommand}" 
+                      CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                      Grid.Column="1" 
+                      Margin="5,0,0,0"
+                      Background="#2ecc71" 
+                      Foreground="White"/>
+            </Grid>
+          </StackPanel>
+          
+          <!-- Champ pour les extensions à crypter -->
+          <StackPanel Orientation="Vertical" Spacing="5">
+            <TextBlock Text="{Binding LanguageHelperInstance.ExtensionsToEncryptLabel}" 
+                       FontWeight="SemiBold" 
+                       Foreground="#2c3e50"/>
+            <!-- Liste des extensions -->
+            <ListBox x:Name="ExtensionsListBox"
+                     ItemsSource="{Binding EncryptionExtensions}" 
+                     Height="80" 
+                     Background="#ecf0f1" 
+                     Foreground="#2c3e50"/>
+            <!-- Boutons Add et Remove pour gérer les extensions -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Spacing="5">
+              <TextBox x:Name="NewExtensionTextBox" 
+                       Width="100" 
+                       Watermark="Extension" 
+                       Background="#ecf0f1" 
+                       Foreground="#2c3e50"/>
+              <Button Content="{Binding LanguageHelperInstance.ButtonAddExtension}" 
+                      Command="{Binding AddExtensionCommand}" 
+                      CommandParameter="{Binding Text, ElementName=NewExtensionTextBox}"
+                      Background="#27AE60" 
+                      Foreground="White"/>
+              <Button Content="{Binding LanguageHelperInstance.ButtonRemoveExtension}" 
+                      Command="{Binding RemoveExtensionCommand}" 
+                      CommandParameter="{Binding SelectedItem, ElementName=ExtensionsListBox}"
+                      Background="#E74C3C" 
+                      Foreground="White"/>
+            </StackPanel>
+          </StackPanel>
+          
         </StackPanel>
+      </ScrollViewer>
+      
+      <!-- Ligne 1 : boutons Save et Cancel, placés en bas -->
+      <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,10,0,0">
+        <Button Content="{Binding LanguageHelperInstance.ButtonSave}" 
+                Command="{Binding SaveCommand}" 
+                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                Width="100" 
+                Background="#2ecc71" 
+                Foreground="White"/>
+        <Button Content="{Binding LanguageHelperInstance.ButtonCancel}" 
+                Command="{Binding CloseCommand}" 
+                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                Width="80" 
+                Background="#e74c3c" 
+                Foreground="White"/>
+      </StackPanel>
 
-        <!-- Boutons -->
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Content="Tester CryptoSoft" Command="{Binding TestCryptoSoftCommand}" Margin="5"/>
-            <Button Content="Save" Command="{Binding SaveCommand}" Margin="5"/>
-        </StackPanel>
-
-        <!-- Résultat du test CryptoSoft -->
-        <TextBlock Text="Résultat du test CryptoSoft:" FontWeight="Bold"/>
-        <TextBlock Text="{Binding CryptoTestResult}" Foreground="Green"/>
-
-    </StackPanel>
+    </Grid>
+  </Border>
 </Window>

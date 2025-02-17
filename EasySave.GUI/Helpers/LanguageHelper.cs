@@ -9,20 +9,18 @@ namespace EasySave.GUI.Helpers
         private static readonly Lazy<LanguageHelper> _instance = new(() => new LanguageHelper());
         public static LanguageHelper Instance => _instance.Value;
 
-        private string _language = "en";
+        private string _language = "en"; // Langue par défaut
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public string CurrentLanguage => _language;
-
-        public string ButtonListAllJobs => GetMessage("ButtonListAllJobs");
 
         private static readonly Dictionary<string, Dictionary<string, string>> messages = new()
         {
             {
                 "en", new Dictionary<string, string>
                 {
-                    { "MainWindowTitle", "EasySave" },
-                    { "FileMenuHeader", "File" },
+                    { "MainWindowTitle", "EasySave Project, FISA A3 INFO (24/27)" },
+                    { "FileMenuHeader", "Settings" },
                     { "MenuItemConfiguration", "Configuration" },
                     { "MenuItemExit", "Exit" },
                     { "ButtonAdd", "Add" },
@@ -39,20 +37,20 @@ namespace EasySave.GUI.Helpers
                     { "ProgressTabHeader", "Progress" },
                     { "ConfigurationWindowTitle", "Configuration" },
                     { "LogFormatLabel", "Log Format:" },
+                    { "LogDirectoryLabel", "Log Directory:" },  // Nouvelle clé
                     { "ExtensionsToEncryptLabel", "Extensions to Encrypt:" },
-                    { "BusinessSoftwareLabel", "Business Software Name:" },
+                    { "BusinessSoftwareLabel", "Blocking business software:" },
                     { "ButtonRemove", "Remove" },
                     { "ButtonSave", "Save" },
                     { "ButtonCancel", "Cancel" },
-                    { "JobFormWindowTitle", "Job Form" },
+                    { "JobFormWindowTitle", "Backup Form" },
                     { "JobNameLabel", "Job Name:" },
                     { "SourceDirectoryLabel", "Source Directory:" },
                     { "TargetDirectoryLabel", "Target Directory:" },
                     { "BackupTypeLabel", "Backup Type:" },
                     { "MenuItemLanguage", "Language" },
                     { "ChooseYourLanguage", "Choose your language:" },
-                    { "English", "🏴󠁧󠁢󠁥󠁮󠁧󠁿 English" },
-                    { "French", "🇫🇷 French" },
+
                     // Clé ajoutée pour la liste des jobs
                     { "JobsListTitle", "Job List" },
                     { "ButtonListAllJobs", "List All Jobs" },
@@ -67,13 +65,36 @@ namespace EasySave.GUI.Helpers
                     {"LabelEncryptionTime", "🔒 Encryption Time:"},
                     {"LabelStatus", "✅ Status:"},
                     {"LabelStrategy", "📊 Strategy:"},
+                    { "English", "English" },
+                    { "French", "French" },
+                    { "JobsListTitle", "Here are your backup jobs created in progress!" },
+                    { "ButtonListAllJobs", "List All Jobs" },
+                    { "BrowseButton", "Browse" },
+                    { "JobNamePlaceholder", "Enter a job name..." },
+                    { "SourceDirectoryPlaceholder", "Select source directory..." },
+                    { "TargetDirectoryPlaceholder", "Select target directory..." },
+                    { "JobNameError", "Please enter a name for the job." },
+                    { "SourceDirectoryError", "Please select a source directory." },
+                    { "TargetDirectoryError", "Please select a target directory." },
+                    { "DirectoryNotExist", "The selected directory does not exist." },
+                    { "ErrorLoadingFiles", "Error loading files: " },
+                    { "ExecutionBlocked", "🚨 Execution blocked:" },
+                    { "IsRunning", "is running." },
+                    { "AllJobsExecuted", "✅ All jobs executed successfully." },
+                    { "JobDeleted", "🗑️ Job deleted." },
+                    { "JobAdded", "✅ Job '{0}' added successfully." },
+                    { "JobModified", "✏️ Job '{0}' modified." },
+                    { "PleaseSelectJobForDeletion", "❌ Please select a job before deleting." },
+                    { "PleaseSelectJobForModification", "❌ Please select a job before modifying." },
+                    { "ButtonAddExtension", "Add" },
+                    { "ButtonRemoveExtension", "Remove" },
                 }
             },
             {
                 "fr", new Dictionary<string, string>
                 {
-                    { "MainWindowTitle", "EasySave" },
-                    { "FileMenuHeader", "Fichier" },
+                    { "MainWindowTitle", "Projet EasySave, FISA A3 INFO (24/27)" },
+                    { "FileMenuHeader", "Réglages" },
                     { "MenuItemConfiguration", "Configuration" },
                     { "MenuItemExit", "Quitter" },
                     { "ButtonAdd", "Ajouter" },
@@ -90,20 +111,20 @@ namespace EasySave.GUI.Helpers
                     { "ProgressTabHeader", "Progression" },
                     { "ConfigurationWindowTitle", "Configuration" },
                     { "LogFormatLabel", "Format du Log :" },
+                    { "LogDirectoryLabel", "Répertoire des logs :" },  // Nouvelle clé
                     { "ExtensionsToEncryptLabel", "Extensions à Chiffrer :" },
-                    { "BusinessSoftwareLabel", "Logiciel métier :" },
+                    { "BusinessSoftwareLabel", "Logiciel métier bloquant :" },
                     { "ButtonRemove", "Retirer" },
                     { "ButtonSave", "Enregistrer" },
                     { "ButtonCancel", "Annuler" },
-                    { "JobFormWindowTitle", "Formulaire de Job" },
+                    { "JobFormWindowTitle", "Formulaire de sauvegarde" },
                     { "JobNameLabel", "Nom du Job :" },
                     { "SourceDirectoryLabel", "Dossier Source :" },
                     { "TargetDirectoryLabel", "Dossier Cible :" },
                     { "BackupTypeLabel", "Type de Sauvegarde :" },
                     { "MenuItemLanguage", "Langue" },
                     { "ChooseYourLanguage", "Choisissez votre langue :" },
-                    { "English", "🏴󠁧󠁢󠁥󠁮󠁧󠁿 Anglais" },
-                    { "French", "🇫🇷 Français" },
+
                     // Clé ajoutée pour la liste des jobs
                     { "Jobs List", "Liste des Travaux en cours" },
                     { "ButtonListAllJobs", "Lister tous les Travaux" },
@@ -118,6 +139,30 @@ namespace EasySave.GUI.Helpers
                     {"LabelEncryptionTime", "🔒 Temps de cryptage:"},
                     {"LabelStatus", "✅ Status:"},
                     {"LabelStrategy", "📊 Stratégie:"},
+
+                    { "English", "Anglais" },
+                    { "French", "Français" },
+                    { "JobsListTitle", "Voici vos travaux de sauvegarde créés en cours !" },
+                    { "ButtonListAllJobs", "Lister tous les Travaux" },
+                    { "BrowseButton", "Parcourir" },
+                    { "JobNamePlaceholder", "Entrez un nom pour le travail..." },
+                    { "SourceDirectoryPlaceholder", "Sélectionnez le dossier source..." },
+                    { "TargetDirectoryPlaceholder", "Sélectionnez le dossier cible..." },
+                    { "JobNameError", "Veuillez entrer un nom pour le travail." },
+                    { "SourceDirectoryError", "Veuillez sélectionner un dossier source." },
+                    { "TargetDirectoryError", "Veuillez sélectionner un dossier cible." },
+                    { "DirectoryNotExist", "Le dossier sélectionné n'existe pas." },
+                    { "ErrorLoadingFiles", "Erreur lors du chargement des fichiers : " },
+                    { "ExecutionBlocked", "🚨 Exécution bloquée:" },
+                    { "IsRunning", "est en cours d'exécution." },
+                    { "AllJobsExecuted", "✅ Tous les travaux ont été exécutés avec succès." },
+                    { "JobDeleted", "🗑️ Travail supprimé." },
+                    { "JobAdded", "✅ Travail '{0}' ajouté avec succès." },
+                    { "JobModified", "✏️ Travail '{0}' modifié." },
+                    { "PleaseSelectJobForDeletion", "❌ Veuillez sélectionner un travail avant de supprimer." },
+                    { "PleaseSelectJobForModification", "❌ Veuillez sélectionner un travail avant de modifier." },
+                    { "ButtonAddExtension", "Ajouter" },
+                    { "ButtonRemoveExtension", "Retirer" },
                 }
             }
         };
@@ -127,60 +172,22 @@ namespace EasySave.GUI.Helpers
         public void SetLanguage(string language)
         {
             _language = language;
+            NotifyAllProperties();
+        }
 
-            // Propriétés existantes
-            NotifyPropertyChanged(nameof(MainWindowTitle));
-            NotifyPropertyChanged(nameof(FileMenuHeader));
-            NotifyPropertyChanged(nameof(MenuItemConfiguration));
-            NotifyPropertyChanged(nameof(MenuItemExit));
-            NotifyPropertyChanged(nameof(ButtonAdd));
-            NotifyPropertyChanged(nameof(ButtonModify));
-            NotifyPropertyChanged(nameof(ButtonList));
-            NotifyPropertyChanged(nameof(ButtonDelete));
-            NotifyPropertyChanged(nameof(ButtonExecute));
-            NotifyPropertyChanged(nameof(ColumnName));
-            NotifyPropertyChanged(nameof(ColumnSource));
-            NotifyPropertyChanged(nameof(ColumnTarget));
-            NotifyPropertyChanged(nameof(ColumnType));
-            NotifyPropertyChanged(nameof(RealTimeStatusHeader));
-            NotifyPropertyChanged(nameof(JobsTabHeader));
-            NotifyPropertyChanged(nameof(ProgressTabHeader));
-
-            NotifyPropertyChanged(nameof(ConfigurationWindowTitle));
-            NotifyPropertyChanged(nameof(LogFormatLabel));
-            NotifyPropertyChanged(nameof(ExtensionsToEncryptLabel));
-            NotifyPropertyChanged(nameof(BusinessSoftwareLabel));
-            NotifyPropertyChanged(nameof(ButtonRemove));
-            NotifyPropertyChanged(nameof(ButtonSave));
-            NotifyPropertyChanged(nameof(ButtonCancel));
-            NotifyPropertyChanged(nameof(JobFormWindowTitle));
-            NotifyPropertyChanged(nameof(JobNameLabel));
-            NotifyPropertyChanged(nameof(SourceDirectoryLabel));
-            NotifyPropertyChanged(nameof(TargetDirectoryLabel));
-            NotifyPropertyChanged(nameof(BackupTypeLabel));
-            NotifyPropertyChanged(nameof(MenuItemLanguage));
-            NotifyPropertyChanged(nameof(ChooseYourLanguage));
-            NotifyPropertyChanged(nameof(English));
-            NotifyPropertyChanged(nameof(French));
-
-            // Nouvelle propriété pour la liste des jobs
-            NotifyPropertyChanged(nameof(JobsListTitle));
-            NotifyPropertyChanged(nameof(AllBackupJobsTitle));
-            NotifyPropertyChanged(nameof(AllJobsList));
-            NotifyPropertyChanged(nameof(LabelSource));
-            NotifyPropertyChanged(nameof(LabelTarget));
-            NotifyPropertyChanged(nameof(LabelTimestamp));
-            NotifyPropertyChanged(nameof(LabelFileSize));
-            NotifyPropertyChanged(nameof(LabelTransferTime));
-            NotifyPropertyChanged(nameof(LabelEncryptionTime));
-            NotifyPropertyChanged(nameof(LabelStatus));
-            NotifyPropertyChanged(nameof(LabelStrategy));
+        private void NotifyAllProperties()
+        {
+            // Mise à jour de toutes les propriétés
+            foreach (var property in typeof(LanguageHelper).GetProperties())
+            {
+                NotifyPropertyChanged(property.Name);
+            }
         }
 
         private void NotifyPropertyChanged(string propertyName)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        // Propriétés existantes
+        // Propriétés accessibles
         public string MainWindowTitle => GetMessage("MainWindowTitle");
         public string FileMenuHeader => GetMessage("FileMenuHeader");
         public string MenuItemConfiguration => GetMessage("MenuItemConfiguration");
@@ -197,10 +204,9 @@ namespace EasySave.GUI.Helpers
         public string RealTimeStatusHeader => GetMessage("RealTimeStatusHeader");
         public string JobsTabHeader => GetMessage("JobsTabHeader");
         public string ProgressTabHeader => GetMessage("ProgressTabHeader");
-
-        // Nouveaux
         public string ConfigurationWindowTitle => GetMessage("ConfigurationWindowTitle");
         public string LogFormatLabel => GetMessage("LogFormatLabel");
+        public string LogDirectoryLabel => GetMessage("LogDirectoryLabel");  // Nouvelle propriété
         public string ExtensionsToEncryptLabel => GetMessage("ExtensionsToEncryptLabel");
         public string BusinessSoftwareLabel => GetMessage("BusinessSoftwareLabel");
         public string ButtonRemove => GetMessage("ButtonRemove");
@@ -211,13 +217,10 @@ namespace EasySave.GUI.Helpers
         public string SourceDirectoryLabel => GetMessage("SourceDirectoryLabel");
         public string TargetDirectoryLabel => GetMessage("TargetDirectoryLabel");
         public string BackupTypeLabel => GetMessage("BackupTypeLabel");
-        public string LanguageSelectionWindowTitle => GetMessage("LanguageSelectionWindowTitle");
         public string MenuItemLanguage => GetMessage("MenuItemLanguage");
         public string ChooseYourLanguage => GetMessage("ChooseYourLanguage");
         public string English => GetMessage("English");
         public string French => GetMessage("French");
-
-        // Nouvelle propriété pour la liste des jobs
         public string JobsListTitle => GetMessage("JobsListTitle");
         public string AllBackupJobsTitle => GetMessage("AllBackupJobsTitle");
         public string AllJobsList => GetMessage("AllJobsList");
@@ -229,14 +232,17 @@ namespace EasySave.GUI.Helpers
         public string LabelEncryptionTime => GetMessage("LabelEncryptionTime");
         public string LabelStatus => GetMessage("LabelStatus");
         public string LabelStrategy => GetMessage("LabelStrategy");
+        public string BrowseButton => GetMessage("BrowseButton");
+        public string JobNamePlaceholder => GetMessage("JobNamePlaceholder");
+        public string SourceDirectoryPlaceholder => GetMessage("SourceDirectoryPlaceholder");
+        public string TargetDirectoryPlaceholder => GetMessage("TargetDirectoryPlaceholder");
+        public string ErrorLoadingFiles => GetMessage("ErrorLoadingFiles");
+        public string ButtonAddExtension => GetMessage("ButtonAddExtension");
+        public string ButtonRemoveExtension => GetMessage("ButtonRemoveExtension");
 
-        private string GetMessage(string key)
-        {
-            if (messages.ContainsKey(_language) && messages[_language].ContainsKey(key))
-            {
-                return messages[_language][key];
-            }
-            return $"[MISSING: {key}]";
-        }
+        public string GetMessage(string key) =>
+            messages[_language].TryGetValue(key, out var value)
+                ? value
+                : $"[MISSING: {key}]";
     }
 }

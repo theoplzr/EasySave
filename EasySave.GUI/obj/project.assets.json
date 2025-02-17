@@ -911,10 +911,21 @@
           "lib/net8.0/Tmds.DBus.Protocol.dll": {}
         }
       },
+      "CryptoSoftLib/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "compile": {
+          "bin/placeholder/CryptoSoftLib.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/CryptoSoftLib.dll": {}
+        }
+      },
       "EasySave.Core/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
+          "CryptoSoftLib": "1.0.0",
           "EasySaveLogs": "1.0.0",
           "Microsoft.Extensions.Configuration": "9.0.1",
           "Microsoft.Extensions.Configuration.Binder": "9.0.1",
@@ -2437,6 +2448,11 @@
         "tmds.dbus.protocol.0.20.0.nupkg.sha512",
         "tmds.dbus.protocol.nuspec"
       ]
+    },
+    "CryptoSoftLib/1.0.0": {
+      "type": "project",
+      "path": "../CryptoSoftLib/CryptoSoftLib.csproj",
+      "msbuildProject": "../CryptoSoftLib/CryptoSoftLib.csproj"
     },
     "EasySave.Core/1.0.0": {
       "type": "project",

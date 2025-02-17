@@ -1,10 +1,11 @@
 [
   {
-    "Id": "2c942156-3771-4922-8c19-ae7ee6f6b020",
-    "Name": "TestCrypto",
-    "SourceDirectory": "/Users/tpellizzari/EasySaveTest/source",
-    "TargetDirectory": "/Users/tpellizzari/EasySaveTest/destination",
+    "Id": "57bbdaad-ce2c-490e-b8be-4ee018517011",
+    "Name": "jfjfj",
+    "SourceDirectory": "/Users/tpellizzari/Documents/Source1/",
+    "TargetDirectory": "/Users/tpellizzari/Documents/Target1/",
     "BackupType": 0,
-    "Ordinal": 2
+    "Ordinal": 0,
+    "IsSelected": false
   }
 ]

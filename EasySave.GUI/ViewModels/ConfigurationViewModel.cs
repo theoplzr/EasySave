@@ -11,6 +11,7 @@ using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using EasySave.GUI.Helpers;
+using EasySaveLogs;
 
 namespace EasySave.GUI.ViewModels
 {
@@ -19,8 +20,10 @@ namespace EasySave.GUI.ViewModels
         private string _logFormat = "XML";
         private string _businessSoftware = "Calculator";
         private string _logDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Logs");
-        private string _cryptoTestResult = "Non testé";
         private ObservableCollection<string> _encryptionExtensions = new();
+
+        // Instance du gestionnaire de langue
+        public LanguageHelper LanguageHelperInstance => LanguageHelper.Instance;
 
         public string LogFormat
         {
@@ -40,12 +43,6 @@ namespace EasySave.GUI.ViewModels
             set => this.RaiseAndSetIfChanged(ref _businessSoftware, value);
         }
 
-        public string CryptoTestResult
-        {
-            get => _cryptoTestResult;
-            set => this.RaiseAndSetIfChanged(ref _cryptoTestResult, value);
-        }
-
         public ObservableCollection<string> EncryptionExtensions
         {
             get => _encryptionExtensions;
@@ -56,45 +53,55 @@ namespace EasySave.GUI.ViewModels
 
         public ReactiveCommand<string, Unit> AddExtensionCommand { get; }
         public ReactiveCommand<string, Unit> RemoveExtensionCommand { get; }
-        public ReactiveCommand<Unit, Unit> SaveCommand { get; }
-        public ReactiveCommand<Unit, Unit> TestCryptoSoftCommand { get; }
+        public ReactiveCommand<Window, Unit> SaveCommand { get; }
         public ReactiveCommand<Window, Unit> ChooseLogDirectoryCommand { get; }
+        public ReactiveCommand<Window, Unit> CloseCommand { get; }
 
         public ConfigurationViewModel()
         {
             LoadSettings();
             AddExtensionCommand = ReactiveCommand.Create<string>(AddExtension);
             RemoveExtensionCommand = ReactiveCommand.Create<string>(RemoveExtension);
-            SaveCommand = ReactiveCommand.Create(SaveSettings);
-            TestCryptoSoftCommand = ReactiveCommand.CreateFromTask(TestCryptoSoft);
+            SaveCommand = ReactiveCommand.Create<Window>(window =>
+            {
+                SaveSettings();
+                // Reconfigure le Logger avec le nouveau format choisi
+                Logger.GetInstance(LogDirectory, LogFormat).Reconfigure(LogFormat);
+                window?.Close();
+            });
             ChooseLogDirectoryCommand = ReactiveCommand.CreateFromTask<Window>(ChooseLogDirectory);
+            
+            // Correction de CloseCommand avec vérification de null
+            CloseCommand = ReactiveCommand.Create<Window>(window =>
+            {
+                if (window != null)
+                {
+                    window.Close();
+                }
+            });
         }
 
         public void LoadSettings()
         {
             try
             {
-                string configPath = "appsettings.json";
+                string configPath = "appsettings.GUI.json";
                 if (File.Exists(configPath))
                 {
                     string json = File.ReadAllText(configPath);
                     var config = JsonSerializer.Deserialize<ConfigurationData>(json);
 
-                    LogFormat = config?.LogFormat ?? "JSON";
-                    BusinessSoftware = config?.BusinessSoftware ?? "Calculator";
-                    LogDirectory = !string.IsNullOrWhiteSpace(config?.LogDirectory)
-                        ? config.LogDirectory
-                        : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Logs");
-                    EncryptionExtensions = new ObservableCollection<string>(
-                        config?.EncryptionExtensions ?? new List<string> { ".txt", ".docx" }
-                    );
+                    LogFormat = config?.LogFormat;
+                    BusinessSoftware = config?.BusinessSoftware;
+                    LogDirectory = config?.LogDirectory ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Logs");
+                    EncryptionExtensions = new ObservableCollection<string>(config?.EncryptionExtensions ?? new List<string> { ".txt", ".docx" });
 
-                    Console.WriteLine($"📂 Logs seront enregistrés dans : {LogDirectory}");
+                    Debug.WriteLine($"{LanguageHelperInstance.LogFormatLabel} : {LogDirectory}");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Erreur lors du chargement de la configuration : {ex.Message}");
+                Debug.WriteLine($"{LanguageHelperInstance.ErrorLoadingFiles} {ex.Message}");
             }
         }
 
@@ -102,8 +109,6 @@ namespace EasySave.GUI.ViewModels
         {
             try
             {
-                Console.WriteLine("✅ SaveSettings() appelé");
-
                 var config = new ConfigurationData
                 {
                     LogFormat = LogFormat,
@@ -113,13 +118,13 @@ namespace EasySave.GUI.ViewModels
                 };
 
                 string json = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
-                File.WriteAllText("appsettings.json", json);
+                File.WriteAllText("appsettings.GUI.json", json);
 
-                Console.WriteLine($"✅ Configuration enregistrée avec succès. 📂 Logs seront stockés dans : {LogDirectory}");
+                Debug.WriteLine($"{LanguageHelperInstance.ButtonSave} - {LogDirectory}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Erreur lors de l'enregistrement de la configuration : {ex.Message}");
+                Debug.WriteLine($"{LanguageHelperInstance.ErrorLoadingFiles} {ex.Message}");
             }
         }
 
@@ -139,9 +144,6 @@ namespace EasySave.GUI.ViewModels
             }
         }
 
-        /// <summary>
-        /// Permet de sélectionner un dossier pour enregistrer les logs.
-        /// </summary>
         private async Task ChooseLogDirectory(Window window)
         {
             var folders = await window.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
@@ -154,55 +156,6 @@ namespace EasySave.GUI.ViewModels
                 LogDirectory = folders[0].Path.LocalPath;
             }
         }
-
-        /// <summary>
-        /// Teste l'exécution de CryptoSoft sur un fichier temporaire.
-        /// </summary>
-        private async Task TestCryptoSoft()
-        {
-            // Définir le chemin correct de CryptoSoft
-            string cryptoPath = "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/CryptoSoft/out/CryptoSoft";
-
-            if (!File.Exists(cryptoPath))
-            {
-                CryptoTestResult = "❌ CryptoSoft introuvable ! Vérifie son emplacement.";
-                return;
-            }
-
-            string testFile = "test_crypto.txt";
-            string key = "mysecurekey";
-
-            try
-            {
-                // Créer un fichier test
-                await File.WriteAllTextAsync(testFile, "Test de cryptage EasySave");
-
-                var process = new Process
-                {
-                    StartInfo = new ProcessStartInfo
-                    {
-                        FileName = cryptoPath,
-                        Arguments = $"{testFile} {key}",
-                        RedirectStandardOutput = true,
-                        UseShellExecute = false,
-                        CreateNoWindow = true
-                    }
-                };
-
-                process.Start();
-                string output = await process.StandardOutput.ReadToEndAsync();
-                process.WaitForExit();
-
-                CryptoTestResult = process.ExitCode > 0
-                    ? $"✅ Chiffrement réussi en {process.ExitCode} ms !"
-                    : "❌ Erreur de cryptage !";
-            }
-            catch (Exception ex)
-            {
-                CryptoTestResult = $"❌ Erreur lors du test de CryptoSoft : {ex.Message}";
-            }
-        }
-
     }
 
     public class ConfigurationData
