@@ -22,6 +22,7 @@
                    HorizontalAlignment="Center"/>
       </Border>
       
+      <!-- Champ pour le format du log (garder tel quel) -->
       <StackPanel Orientation="Vertical" Spacing="5">
         <TextBlock Text="{Binding LanguageHelperInstance.LogFormatLabel}" FontWeight="SemiBold" Foreground="#2c3e50"/>
         <ComboBox SelectedItem="{Binding LogFormat}" 
@@ -34,8 +35,9 @@
         <TextBox Text="{Binding BusinessSoftware}" Background="#ecf0f1" Foreground="#2c3e50"/>
       </StackPanel>
       
+      <!-- Champ pour le répertoire des logs -->
       <StackPanel Orientation="Vertical" Spacing="5">
-        <TextBlock Text="{Binding LanguageHelperInstance.LogFormatLabel}" FontWeight="SemiBold"/>
+        <TextBlock Text="{Binding LanguageHelperInstance.LogDirectoryLabel}" FontWeight="SemiBold"/>
         <Grid ColumnDefinitions="*,Auto">
           <TextBox Text="{Binding LogDirectory}" 
                    IsReadOnly="True" 
@@ -56,8 +58,12 @@
       </StackPanel>
       
       <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10">
-        <Button Content="{Binding LanguageHelperInstance.ButtonSave}" Command="{Binding SaveCommand}" Width="100" Background="#2ecc71" Foreground="White"/>
-        <Button Content="{Binding LanguageHelperInstance.ButtonCancel}" Command="{Binding CloseCommand}" 
+        <Button Content="{Binding LanguageHelperInstance.ButtonSave}" 
+                Command="{Binding SaveCommand}" 
+                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                Width="100" Background="#2ecc71" Foreground="White"/>
+        <Button Content="{Binding LanguageHelperInstance.ButtonCancel}" 
+                Command="{Binding CloseCommand}" 
                 CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                 Width="80" Background="#e74c3c" Foreground="White"/>
       </StackPanel>

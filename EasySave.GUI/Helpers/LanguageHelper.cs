@@ -37,6 +37,7 @@ namespace EasySave.GUI.Helpers
                     { "ProgressTabHeader", "Progress" },
                     { "ConfigurationWindowTitle", "Configuration" },
                     { "LogFormatLabel", "Log Format:" },
+                    { "LogDirectoryLabel", "Log Directory:" },  // Nouvelle clé
                     { "ExtensionsToEncryptLabel", "Extensions to Encrypt:" },
                     { "BusinessSoftwareLabel", "Blocking business software:" },
                     { "ButtonRemove", "Remove" },
@@ -61,7 +62,15 @@ namespace EasySave.GUI.Helpers
                     { "SourceDirectoryError", "Please select a source directory." },
                     { "TargetDirectoryError", "Please select a target directory." },
                     { "DirectoryNotExist", "The selected directory does not exist." },
-                    { "ErrorLoadingFiles", "Error loading files: " }
+                    { "ErrorLoadingFiles", "Error loading files: " },
+                    { "ExecutionBlocked", "🚨 Execution blocked:" },
+                    { "IsRunning", "is running." },
+                    { "AllJobsExecuted", "✅ All jobs executed successfully." },
+                    { "JobDeleted", "🗑️ Job deleted." },
+                    { "JobAdded", "✅ Job '{0}' added successfully." },
+                    { "JobModified", "✏️ Job '{0}' modified." },
+                    { "PleaseSelectJobForDeletion", "❌ Please select a job before deleting." },
+                    { "PleaseSelectJobForModification", "❌ Please select a job before modifying." }
                 }
             },
             {
@@ -85,6 +94,7 @@ namespace EasySave.GUI.Helpers
                     { "ProgressTabHeader", "Progression" },
                     { "ConfigurationWindowTitle", "Configuration" },
                     { "LogFormatLabel", "Format du Log :" },
+                    { "LogDirectoryLabel", "Répertoire des logs :" },  // Nouvelle clé
                     { "ExtensionsToEncryptLabel", "Extensions à Chiffrer :" },
                     { "BusinessSoftwareLabel", "Logiciel métier bloquant :" },
                     { "ButtonRemove", "Retirer" },
@@ -109,7 +119,15 @@ namespace EasySave.GUI.Helpers
                     { "SourceDirectoryError", "Veuillez sélectionner un dossier source." },
                     { "TargetDirectoryError", "Veuillez sélectionner un dossier cible." },
                     { "DirectoryNotExist", "Le dossier sélectionné n'existe pas." },
-                    { "ErrorLoadingFiles", "Erreur lors du chargement des fichiers : " }
+                    { "ErrorLoadingFiles", "Erreur lors du chargement des fichiers : " },
+                    { "ExecutionBlocked", "🚨 Exécution bloquée:" },
+                    { "IsRunning", "est en cours d'exécution." },
+                    { "AllJobsExecuted", "✅ Tous les travaux ont été exécutés avec succès." },
+                    { "JobDeleted", "🗑️ Travail supprimé." },
+                    { "JobAdded", "✅ Travail '{0}' ajouté avec succès." },
+                    { "JobModified", "✏️ Travail '{0}' modifié." },
+                    { "PleaseSelectJobForDeletion", "❌ Veuillez sélectionner un travail avant de supprimer." },
+                    { "PleaseSelectJobForModification", "❌ Veuillez sélectionner un travail avant de modifier." }
                 }
             }
         };
@@ -153,6 +171,7 @@ namespace EasySave.GUI.Helpers
         public string ProgressTabHeader => GetMessage("ProgressTabHeader");
         public string ConfigurationWindowTitle => GetMessage("ConfigurationWindowTitle");
         public string LogFormatLabel => GetMessage("LogFormatLabel");
+        public string LogDirectoryLabel => GetMessage("LogDirectoryLabel");  // Nouvelle propriété
         public string ExtensionsToEncryptLabel => GetMessage("ExtensionsToEncryptLabel");
         public string BusinessSoftwareLabel => GetMessage("BusinessSoftwareLabel");
         public string ButtonRemove => GetMessage("ButtonRemove");
@@ -174,6 +193,9 @@ namespace EasySave.GUI.Helpers
         public string TargetDirectoryPlaceholder => GetMessage("TargetDirectoryPlaceholder");
         public string ErrorLoadingFiles => GetMessage("ErrorLoadingFiles");
 
-        public string GetMessage(string key) => messages[_language].TryGetValue(key, out var value) ? value : $"[MISSING: {key}]";
+        public string GetMessage(string key) =>
+            messages[_language].TryGetValue(key, out var value)
+                ? value
+                : $"[MISSING: {key}]";
     }
 }

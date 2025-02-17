@@ -39,9 +39,11 @@ namespace EasySave.Core.Template
             int totalFiles,
             long totalSize)
         {
+            // Déterminer le chemin relatif et la destination du fichier
             var relativePath = Path.GetRelativePath(job.SourceDirectory, filePath);
             var targetFilePath = Path.Combine(job.TargetDirectory, relativePath);
 
+            // Créer le répertoire cible s'il n'existe pas
             var targetDirectory = Path.GetDirectoryName(targetFilePath);
             if (!string.IsNullOrEmpty(targetDirectory) && !Directory.Exists(targetDirectory))
             {
@@ -53,6 +55,7 @@ namespace EasySave.Core.Template
 
             try
             {
+                // Copier le fichier
                 File.Copy(filePath, targetFilePath, true);
                 stopwatch.Stop();
 
@@ -60,7 +63,22 @@ namespace EasySave.Core.Template
                 filesProcessed++;
                 bytesProcessed += fileSize;
 
-                // Vérifier si l'extension du fichier est dans la liste des fichiers à crypter
+                // Mise à jour de l'état : on met à jour TotalFiles et RemainingFiles
+                BackupState updatedState = new BackupState
+                {
+                    JobId = job.Id,
+                    BackupName = job.Name,
+                    Status = "En cours", // Obligatoire
+                    LastActionTime = DateTime.Now,
+                    CurrentSourceFile = filePath,
+                    CurrentTargetFile = targetFilePath,
+                    TotalFiles = totalFiles,
+                    RemainingFiles = totalFiles - filesProcessed
+                };
+                // Notifier les observateurs via la méthode protégée
+                Notify(updatedState);
+
+                // Vérifier si l'extension du fichier doit être cryptée
                 int encryptionTime = 0;
                 var fileExtension = Path.GetExtension(filePath);
                 var encryptionExtensions = ConfigurationProvider.EncryptionExtensions;
@@ -76,7 +94,7 @@ namespace EasySave.Core.Template
                     catch (Exception ex)
                     {
                         Console.WriteLine($"❌ Erreur de cryptage sur {targetFilePath} : {ex.Message}");
-                        encryptionTime = -1; // Code d'erreur pour le log
+                        encryptionTime = -1;
                     }
                 }
                 else
@@ -112,7 +130,6 @@ namespace EasySave.Core.Template
                     EncryptionTimeMs = -1,
                     Status = "Error: " + ex.Message
                 });
-
                 Console.WriteLine($"❌ [Diff] Error copying {filePath}: {ex.Message}");
             }
         }

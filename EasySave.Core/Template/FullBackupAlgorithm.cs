@@ -10,12 +10,11 @@ namespace EasySave.Core.Template
         public FullBackupAlgorithm(Logger logger, Action<BackupState>? notifyObserver, Action? saveChanges)
             : base(logger, notifyObserver, saveChanges)
         {
-            
         }
 
         protected override bool ShouldCopyFile(string filePath, BackupJob job)
         {
-            return true; 
+            return true;
         }
 
         protected override void CopyFile(
@@ -47,7 +46,20 @@ namespace EasySave.Core.Template
                 filesProcessed++;
                 bytesProcessed += fileSize;
 
-                // Vérifier si l'extension du fichier est dans la liste des fichiers à crypter
+                // Mise à jour de l'état (TotalFiles et RemainingFiles mis à jour)
+                BackupState updatedState = new BackupState
+                {
+                    JobId = job.Id,
+                    BackupName = job.Name,
+                    Status = "En cours",
+                    LastActionTime = DateTime.Now,
+                    CurrentSourceFile = filePath,
+                    CurrentTargetFile = targetFilePath,
+                    TotalFiles = totalFiles,
+                    RemainingFiles = totalFiles - filesProcessed
+                };
+                Notify(updatedState);
+
                 int encryptionTime = 0;
                 var fileExtension = Path.GetExtension(filePath);
                 var encryptionExtensions = ConfigurationProvider.EncryptionExtensions;
@@ -58,17 +70,17 @@ namespace EasySave.Core.Template
                     {
                         string encryptionKey = ConfigurationProvider.EncryptionKey;
                         encryptionTime = CryptoSoft.EncryptFile(targetFilePath, encryptionKey);
-                        Console.WriteLine($"🔐 Fichier crypté : {targetFilePath} en {encryptionTime}ms");
+                        Console.WriteLine($"Fichier crypté : {targetFilePath} en {encryptionTime}ms");
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"❌ Erreur de cryptage sur {targetFilePath} : {ex.Message}");
-                        encryptionTime = -1; // Code d'erreur pour le log
+                        Console.WriteLine($"Erreur de cryptage sur {targetFilePath} : {ex.Message}");
+                        encryptionTime = -1;
                     }
                 }
                 else
                 {
-                    Console.WriteLine($"⏩ Fichier ignoré pour cryptage : {targetFilePath}");
+                    Console.WriteLine($"Fichier ignoré pour cryptage : {targetFilePath}");
                 }
 
                 LogAction(new LogEntry
@@ -83,7 +95,7 @@ namespace EasySave.Core.Template
                     Status = "Success"
                 });
 
-                Console.WriteLine($"✅ [Full] Copied {filePath} -> {targetFilePath}");
+                Console.WriteLine($"[Full] Copied {filePath} -> {targetFilePath}");
             }
             catch (Exception ex)
             {
@@ -100,7 +112,7 @@ namespace EasySave.Core.Template
                     Status = "Error: " + ex.Message
                 });
 
-                Console.WriteLine($"❌ [Full] Error copying {filePath}: {ex.Message}");
+                Console.WriteLine($"[Full] Error copying {filePath}: {ex.Message}");
             }
         }
     }

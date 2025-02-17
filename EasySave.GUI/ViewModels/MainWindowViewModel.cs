@@ -123,7 +123,7 @@ namespace EasySave.GUI.ViewModels
         {
             if (IsBusinessSoftwareRunning())
             {
-                RealTimeStatus = $"🚨 Execution blocked: {_businessSoftware} is running.";
+                RealTimeStatus = $"{LanguageHelperInstance.GetMessage("ExecutionBlocked")} {_businessSoftware} {LanguageHelperInstance.GetMessage("IsRunning")}";
                 return;
             }
 
@@ -134,7 +134,7 @@ namespace EasySave.GUI.ViewModels
             }
 
             _facade.ExecuteAllJobs();
-            RealTimeStatus = "✅ All jobs executed successfully.";
+            RealTimeStatus = LanguageHelperInstance.GetMessage("AllJobsExecuted");
             await Task.CompletedTask;
         }
 
@@ -142,7 +142,7 @@ namespace EasySave.GUI.ViewModels
         {
             if (SelectedJob == null)
             {
-                RealTimeStatus = "❌ Please select a job before deleting.";
+                RealTimeStatus = LanguageHelperInstance.GetMessage("PleaseSelectJobForDeletion");
                 return;
             }
 
@@ -153,9 +153,10 @@ namespace EasySave.GUI.ViewModels
             _facade.RemoveJob(index);
             BackupJobs.RemoveAt(index);
             SelectedJob = null;
-            RealTimeStatus = $"🗑️ Job deleted.";
+            RealTimeStatus = LanguageHelperInstance.GetMessage("JobDeleted");
             await Task.CompletedTask;
         }
+
 
         private void OpenConfiguration()
         {
@@ -189,7 +190,7 @@ namespace EasySave.GUI.ViewModels
                     _facade.AddJob(result);
                     result.PropertyChanged += Job_PropertyChanged;
                     BackupJobs.Add(result);
-                    RealTimeStatus = $"✅ Job '{result.Name}' ajouté avec succès.";
+                    RealTimeStatus = string.Format(LanguageHelperInstance.GetMessage("JobAdded"), result.Name);
                 }
             }
         }
@@ -198,7 +199,7 @@ namespace EasySave.GUI.ViewModels
         {
             if (SelectedJob == null)
             {
-                RealTimeStatus = "❌ Please select a job before modifying.";
+                RealTimeStatus = LanguageHelperInstance.GetMessage("PleaseSelectJobForModification");
                 return;
             }
 
@@ -216,7 +217,7 @@ namespace EasySave.GUI.ViewModels
                     {
                         _facade.UpdateJob(index, result.Name, result.SourceDirectory, result.TargetDirectory, result.BackupType);
                         BackupJobs[index] = result;
-                        RealTimeStatus = $"✏️ Job '{result.Name}' modified.";
+                        RealTimeStatus = string.Format(LanguageHelperInstance.GetMessage("JobModified"), result.Name);
                     }
                 }
             }

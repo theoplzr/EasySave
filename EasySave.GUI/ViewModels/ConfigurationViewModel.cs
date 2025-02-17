@@ -52,7 +52,7 @@ namespace EasySave.GUI.ViewModels
 
         public ReactiveCommand<string, Unit> AddExtensionCommand { get; }
         public ReactiveCommand<string, Unit> RemoveExtensionCommand { get; }
-        public ReactiveCommand<Unit, Unit> SaveCommand { get; }
+        public ReactiveCommand<Window, Unit> SaveCommand { get; }
         public ReactiveCommand<Window, Unit> ChooseLogDirectoryCommand { get; }
         public ReactiveCommand<Window, Unit> CloseCommand { get; }
 
@@ -61,7 +61,11 @@ namespace EasySave.GUI.ViewModels
             LoadSettings();
             AddExtensionCommand = ReactiveCommand.Create<string>(AddExtension);
             RemoveExtensionCommand = ReactiveCommand.Create<string>(RemoveExtension);
-            SaveCommand = ReactiveCommand.Create(SaveSettings);
+            SaveCommand = ReactiveCommand.Create<Window>(window =>
+            {
+                SaveSettings();
+                window?.Close();
+            });
             ChooseLogDirectoryCommand = ReactiveCommand.CreateFromTask<Window>(ChooseLogDirectory);
             
             // Correction de CloseCommand avec vérification de null
@@ -84,17 +88,17 @@ namespace EasySave.GUI.ViewModels
                     string json = File.ReadAllText(configPath);
                     var config = JsonSerializer.Deserialize<ConfigurationData>(json);
 
-                    LogFormat = config?.LogFormat ?? "JSON";
-                    BusinessSoftware = config?.BusinessSoftware ?? "Calculator";
+                    LogFormat = config?.LogFormat;
+                    BusinessSoftware = config?.BusinessSoftware;
                     LogDirectory = config?.LogDirectory ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Logs");
                     EncryptionExtensions = new ObservableCollection<string>(config?.EncryptionExtensions ?? new List<string> { ".txt", ".docx" });
 
-                    Debug.WriteLine($"📂 {LanguageHelperInstance.LogFormatLabel} : {LogDirectory}");
+                    Debug.WriteLine($"{LanguageHelperInstance.LogFormatLabel} : {LogDirectory}");
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"❌ {LanguageHelperInstance.ErrorLoadingFiles} {ex.Message}");
+                Debug.WriteLine($"{LanguageHelperInstance.ErrorLoadingFiles} {ex.Message}");
             }
         }
 
@@ -113,11 +117,11 @@ namespace EasySave.GUI.ViewModels
                 string json = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText("appsettings.GUI.json", json);
 
-                Debug.WriteLine($"✅ {LanguageHelperInstance.ButtonSave} - {LogDirectory}");
+                Debug.WriteLine($"{LanguageHelperInstance.ButtonSave} - {LogDirectory}");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"❌ {LanguageHelperInstance.ErrorLoadingFiles} {ex.Message}");
+                Debug.WriteLine($"{LanguageHelperInstance.ErrorLoadingFiles} {ex.Message}");
             }
         }
 

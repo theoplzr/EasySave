@@ -26,7 +26,7 @@ namespace CryptoSoftLib
             if (File.Exists(FilePath))
                 return true;
 
-            Console.WriteLine("❌ Fichier introuvable.");
+            Console.WriteLine("Fichier introuvable.");
             Thread.Sleep(1000);
             return false;
         }
@@ -38,13 +38,13 @@ namespace CryptoSoftLib
         {
             if (!CheckFile()) return -1;
 
-            Console.WriteLine($"🔍 Début du chiffrement du fichier : {FilePath}");
+            Console.WriteLine($"Début du chiffrement du fichier : {FilePath}");
 
             byte[] originalBytes = File.ReadAllBytes(FilePath);
-            Console.WriteLine($"📏 Taille du fichier avant chiffrement : {originalBytes.Length} octets");
+            Console.WriteLine($"Taille du fichier avant chiffrement : {originalBytes.Length} octets");
 
             Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start(); // ⏳ Démarrer la mesure du temps AVANT toute opération
+            stopwatch.Start(); 
 
             var keyBytes = ConvertToByte(Key);
             var encryptedBytes = XorMethod(originalBytes, keyBytes);
@@ -52,24 +52,24 @@ namespace CryptoSoftLib
             File.WriteAllBytes(FilePath, encryptedBytes);
 
             stopwatch.Stop();
-            long elapsedTicks = stopwatch.ElapsedTicks; // 🔍 Mesurer en ticks pour plus de précision
+            long elapsedTicks = stopwatch.ElapsedTicks; 
             int elapsedMilliseconds = (int)stopwatch.ElapsedMilliseconds;
 
-            // 🔍 Vérifie si le fichier a bien été modifié après chiffrement
+            // Vérifie si le fichier a bien été modifié après chiffrement
             byte[] newBytes = File.ReadAllBytes(FilePath);
             if (originalBytes.SequenceEqual(newBytes))
             {
-                Console.WriteLine("⚠️ Problème : Le fichier semble inchangé après cryptage !");
+                Console.WriteLine("Problème : Le fichier semble inchangé après cryptage !");
             }
             else
             {
-                Console.WriteLine("✅ Le fichier a bien été modifié après cryptage.");
+                Console.WriteLine("Le fichier a bien été modifié après cryptage.");
             }
 
-            Console.WriteLine($"✅ Fichier {FilePath} chiffré et sauvegardé.");
-            Console.WriteLine($"⏳ Temps mesuré dans TransformFile(): {elapsedMilliseconds}ms ({elapsedTicks} ticks)");
+            Console.WriteLine($"Fichier {FilePath} chiffré et sauvegardé.");
+            Console.WriteLine($"Temps mesuré dans TransformFile(): {elapsedMilliseconds}ms ({elapsedTicks} ticks)");
 
-            return elapsedMilliseconds > 0 ? elapsedMilliseconds : 1; // ✅ Évite les valeurs à 0
+            return elapsedMilliseconds > 0 ? elapsedMilliseconds : 1; 
         }
 
         /// <summary>

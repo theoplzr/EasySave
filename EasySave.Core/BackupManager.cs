@@ -29,12 +29,11 @@ namespace EasySave.Core
             _backupJobs = _jobRepository.Load() ?? new List<BackupJob>();
             _observers = new List<IBackupObserver>();
 
-            // Charger les paramètres de configuration
             _maxJobs = int.TryParse(configuration["MaxBackupJobs"], out int maxJobs) ? maxJobs : 5;
-            _cryptoSoftPath = configuration["CryptoSoftPath"] ?? "/Applications/CryptoSoft.app/Contents/MacOS/CryptoSoft";
-            _businessSoftwareName = configuration["BusinessSoftware"] ?? "Calculator";
+            _cryptoSoftPath = "/Applications/CryptoSoft.app/Contents/MacOS/CryptoSoft";
+            _businessSoftwareName = configuration["BusinessSoftware"] ?? "Spotify";
             _encryptionExtensions = configuration.GetSection("EncryptionExtensions").Get<string[]>() ?? Array.Empty<string>();
-            _encryptionKey = configuration["EncryptionKey"] ?? "DefaultKey123";
+            _encryptionKey = "DefaultKey123";
 
             // Initialisation du logger
             string logFormat = configuration["LogFormat"] ?? "JSON";
@@ -186,6 +185,7 @@ namespace EasySave.Core
                 LastActionTime = DateTime.Now,
                 CurrentSourceFile = "En attente...",
                 CurrentTargetFile = "En attente...",
+                TotalFiles = Directory.GetFiles(job.SourceDirectory, "*", SearchOption.AllDirectories).Length
             };
 
             NotifyObservers(state);
@@ -199,19 +199,19 @@ namespace EasySave.Core
             {
                 algorithm.Execute(job);
 
-                // 🔍 Vérification AVANT cryptage pour éviter tout chiffrement non désiré
+                // Vérification AVANT cryptage pour éviter tout chiffrement non désiré
                 foreach (var file in Directory.GetFiles(job.TargetDirectory))
                 {
                     var fileExtension = Path.GetExtension(file);
                     if (!_encryptionExtensions.Contains(fileExtension, StringComparer.OrdinalIgnoreCase))
                     {
-                        Console.WriteLine($"⏩ Fichier ignoré pour cryptage : {file}");
+                        Console.WriteLine($"Fichier ignoré pour cryptage : {file}");
                         continue;
                     }
 
-                    Console.WriteLine($"🔐 Chiffrement du fichier : {file}");
+                    Console.WriteLine($"Chiffrement du fichier : {file}");
                     int encryptionTime = CryptoSoft.EncryptFile(file, _encryptionKey);
-                    Console.WriteLine($"✅ Fichier {file} crypté en {encryptionTime}ms");
+                    Console.WriteLine($"Fichier {file} crypté en {encryptionTime}ms");
 
                     _logger.LogAction(new LogEntry
                     {
@@ -230,7 +230,7 @@ namespace EasySave.Core
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Erreur lors de l'exécution de la sauvegarde : {ex.Message}");
+                Console.WriteLine($"Erreur lors de l'exécution de la sauvegarde : {ex.Message}");
             }
         }
 
