@@ -59,6 +59,14 @@ namespace EasySave.GUI.Helpers
                     // Clé ajoutée pour la liste de tous les jobs
                     {"AllBackupJobsTitle", "All Backup Jobs"},
                     {"AllJobsList", "All Jobs List"},
+                    {"LabelSource", "📂 Source:"},
+                    {"LabelTarget", "🎯 Target:"},
+                    {"LabelTimestamp", "🕒 Timestamp:"},
+                    {"LabelFileSize", "📏 File Size:"},
+                    {"LabelTransferTime", "⚡ Transfer Time:"},
+                    {"LabelEncryptionTime", "🔒 Encryption Time:"},
+                    {"LabelStatus", "✅ Status:"},
+                    {"LabelStrategy", "📊 Strategy:"},
                 }
             },
             {
@@ -102,6 +110,14 @@ namespace EasySave.GUI.Helpers
                     // Clé ajoutée pour la liste de tous les jobs
                     {"AllBackupJobsTitle", "Tous les travaux"},
                     {"AllJobsList", "Liste des travaux effectués"},
+                    {"LabelSource", "📂 Source:"},
+                    {"LabelTarget", "🎯 Destination:"},
+                    {"LabelTimestamp", "🕒 Horaire:"},
+                    {"LabelFileSize", "📏 Taille du fichier:"},
+                    {"LabelTransferTime", "⚡ Temps de transfert:"},
+                    {"LabelEncryptionTime", "🔒 Temps de cryptage:"},
+                    {"LabelStatus", "✅ Status:"},
+                    {"LabelStrategy", "📊 Stratégie:"},
                 }
             }
         };
@@ -151,6 +167,14 @@ namespace EasySave.GUI.Helpers
             NotifyPropertyChanged(nameof(JobsListTitle));
             NotifyPropertyChanged(nameof(AllBackupJobsTitle));
             NotifyPropertyChanged(nameof(AllJobsList));
+            NotifyPropertyChanged(nameof(LabelSource));
+            NotifyPropertyChanged(nameof(LabelTarget));
+            NotifyPropertyChanged(nameof(LabelTimestamp));
+            NotifyPropertyChanged(nameof(LabelFileSize));
+            NotifyPropertyChanged(nameof(LabelTransferTime));
+            NotifyPropertyChanged(nameof(LabelEncryptionTime));
+            NotifyPropertyChanged(nameof(LabelStatus));
+            NotifyPropertyChanged(nameof(LabelStrategy));
         }
 
         private void NotifyPropertyChanged(string propertyName)
@@ -197,6 +221,14 @@ namespace EasySave.GUI.Helpers
         public string JobsListTitle => GetMessage("JobsListTitle");
         public string AllBackupJobsTitle => GetMessage("AllBackupJobsTitle");
         public string AllJobsList => GetMessage("AllJobsList");
+        public string LabelSource => GetMessage("LabelSource");
+        public string LabelTarget => GetMessage("LabelTarget");
+        public string LabelTimestamp => GetMessage("LabelTimestamp");
+        public string LabelFileSize => GetMessage("LabelFileSize");
+        public string LabelTransferTime => GetMessage("LabelTransferTime");
+        public string LabelEncryptionTime => GetMessage("LabelEncryptionTime");
+        public string LabelStatus => GetMessage("LabelStatus");
+        public string LabelStrategy => GetMessage("LabelStrategy");
 
         private string GetMessage(string key)
         {
