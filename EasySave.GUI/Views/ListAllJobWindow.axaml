@@ -89,10 +89,7 @@
                                         Grid.Row="6" 
                                         Grid.Column="1" 
                                         Foreground="{Binding Status, Converter={StaticResource StatusToColorConverter}}"/>
-<!--
-                                    <TextBlock Text="✅ Status:" FontWeight="Bold" Foreground="LightGray" Grid.Row="6" Grid.Column="0"/>
-                                    <TextBlock Text="{Binding Status}" FontSize="12" Foreground="LightGreen" Grid.Row="6" Grid.Column="1"/>
--->
+
                                     <!-- Backup Level -->
                                     <TextBlock Text="📊 Level:" FontWeight="Bold" Foreground="LightGray" Grid.Row="7" Grid.Column="0"/>
                                     <TextBlock Text="{Binding Level}" FontSize="12" Foreground="White" Grid.Row="7" Grid.Column="1"/>
