@@ -52,8 +52,7 @@ namespace EasySave.GUI.Helpers
                     { "ChooseYourLanguage", "Choose your language:" },
 
                     // Clé ajoutée pour la liste des jobs
-                    { "JobsListTitle", "Job List" },
-                    { "ButtonListAllJobs", "List All Jobs" },
+                    { "JobsListAllTitle", "Job List" },
                     // Clé ajoutée pour la liste de tous les jobs
                     {"AllBackupJobsTitle", "All Backup Jobs"},
                     {"AllJobsList", "All Jobs List"},
@@ -126,8 +125,7 @@ namespace EasySave.GUI.Helpers
                     { "ChooseYourLanguage", "Choisissez votre langue :" },
 
                     // Clé ajoutée pour la liste des jobs
-                    { "Jobs List", "Liste des Travaux en cours" },
-                    { "ButtonListAllJobs", "Lister tous les Travaux" },
+                    { "JobsListAllTitle", "Liste des Travaux en cours" },
                     // Clé ajoutée pour la liste de tous les jobs
                     {"AllBackupJobsTitle", "Tous les travaux"},
                     {"AllJobsList", "Liste des travaux effectués"},
@@ -221,6 +219,7 @@ namespace EasySave.GUI.Helpers
         public string ChooseYourLanguage => GetMessage("ChooseYourLanguage");
         public string English => GetMessage("English");
         public string French => GetMessage("French");
+        public string ButtonListAllJobs => GetMessage("ButtonListAllJobs");
         public string JobsListTitle => GetMessage("JobsListTitle");
         public string AllBackupJobsTitle => GetMessage("AllBackupJobsTitle");
         public string AllJobsList => GetMessage("AllJobsList");

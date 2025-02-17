@@ -4,7 +4,6 @@
              x:Class="EasySave.GUI.App">
   <Application.Resources>
         <converters:StringToBoolConverter x:Key="StringToBoolConverter"/>
-        <converters:NullToBoolConverter x:Key="NullToBoolConverter"/>
   </Application.Resources>
   
   <Application.Styles>
