@@ -50,6 +50,20 @@ namespace EasySave.GUI.Helpers
                     { "BackupTypeLabel", "Backup Type:" },
                     { "MenuItemLanguage", "Language" },
                     { "ChooseYourLanguage", "Choose your language:" },
+
+                    // Clé ajoutée pour la liste des jobs
+                    { "JobsListAllTitle", "Job List" },
+                    // Clé ajoutée pour la liste de tous les jobs
+                    {"AllBackupJobsTitle", "All Backup Jobs"},
+                    {"AllJobsList", "All Jobs List"},
+                    {"LabelSource", "📂 Source:"},
+                    {"LabelTarget", "🎯 Target:"},
+                    {"LabelTimestamp", "🕒 Timestamp:"},
+                    {"LabelFileSize", "📏 File Size:"},
+                    {"LabelTransferTime", "⚡ Transfer Time:"},
+                    {"LabelEncryptionTime", "🔒 Encryption Time:"},
+                    {"LabelStatus", "✅ Status:"},
+                    {"LabelStrategy", "📊 Strategy:"},
                     { "English", "English" },
                     { "French", "French" },
                     { "JobsListTitle", "Here are your backup jobs created in progress!" },
@@ -109,6 +123,21 @@ namespace EasySave.GUI.Helpers
                     { "BackupTypeLabel", "Type de Sauvegarde :" },
                     { "MenuItemLanguage", "Langue" },
                     { "ChooseYourLanguage", "Choisissez votre langue :" },
+
+                    // Clé ajoutée pour la liste des jobs
+                    { "JobsListAllTitle", "Liste des Travaux en cours" },
+                    // Clé ajoutée pour la liste de tous les jobs
+                    {"AllBackupJobsTitle", "Tous les travaux"},
+                    {"AllJobsList", "Liste des travaux effectués"},
+                    {"LabelSource", "📂 Source:"},
+                    {"LabelTarget", "🎯 Destination:"},
+                    {"LabelTimestamp", "🕒 Horaire:"},
+                    {"LabelFileSize", "📏 Taille du fichier:"},
+                    {"LabelTransferTime", "⚡ Temps de transfert:"},
+                    {"LabelEncryptionTime", "🔒 Temps de cryptage:"},
+                    {"LabelStatus", "✅ Status:"},
+                    {"LabelStrategy", "📊 Stratégie:"},
+
                     { "English", "Anglais" },
                     { "French", "Français" },
                     { "JobsListTitle", "Voici vos travaux de sauvegarde créés en cours !" },
@@ -190,7 +219,18 @@ namespace EasySave.GUI.Helpers
         public string ChooseYourLanguage => GetMessage("ChooseYourLanguage");
         public string English => GetMessage("English");
         public string French => GetMessage("French");
+        public string ButtonListAllJobs => GetMessage("ButtonListAllJobs");
         public string JobsListTitle => GetMessage("JobsListTitle");
+        public string AllBackupJobsTitle => GetMessage("AllBackupJobsTitle");
+        public string AllJobsList => GetMessage("AllJobsList");
+        public string LabelSource => GetMessage("LabelSource");
+        public string LabelTarget => GetMessage("LabelTarget");
+        public string LabelTimestamp => GetMessage("LabelTimestamp");
+        public string LabelFileSize => GetMessage("LabelFileSize");
+        public string LabelTransferTime => GetMessage("LabelTransferTime");
+        public string LabelEncryptionTime => GetMessage("LabelEncryptionTime");
+        public string LabelStatus => GetMessage("LabelStatus");
+        public string LabelStrategy => GetMessage("LabelStrategy");
         public string BrowseButton => GetMessage("BrowseButton");
         public string JobNamePlaceholder => GetMessage("JobNamePlaceholder");
         public string SourceDirectoryPlaceholder => GetMessage("SourceDirectoryPlaceholder");

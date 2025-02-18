@@ -16,7 +16,6 @@
   <Window.Resources>
     <conv:JobOrdinalConverter x:Key="JobOrdinalConverter"/>
     <conv:BoolToJobBackgroundConverter x:Key="BoolToJobBackgroundConverter"/>
-    <conv:NullToBoolConverter x:Key="NullToBoolConverter"/>
     <conv:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
   </Window.Resources>
 

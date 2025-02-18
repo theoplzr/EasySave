@@ -4,8 +4,15 @@ using ReactiveUI;
 using Avalonia.Controls;
 using EasySave.Core.Models;
 using EasySave.Core.Facade;
+using EasySave.GUI.Helpers;
 using System.Reactive.Linq;
 using System;
+using System.IO;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using System.Linq;
+using System.Xml.Linq;
+
 
 namespace EasySave.GUI.ViewModels
 {
@@ -29,17 +36,17 @@ namespace EasySave.GUI.ViewModels
         /// </summary>
         private BackupJob? _selectedBackupJob;
         /// <summary>
+        /// Gets the singleton instance of the LanguageHelper class.
+        /// </summary>
+        public LanguageHelper LanguageHelperInstance => LanguageHelper.Instance;
+        /// <summary>
         /// Collection of backup jobs to be displayed in the UI.
         /// </summary>
-        public ObservableCollection<BackupJob> BackupJobs { get; }
+        public ObservableCollection<FinishedBackupJob> BackupJobs { get; }
         /// <summary>
         /// Command to close the window.
         /// </summary>
         public ReactiveCommand<Unit, Unit> CancelCommand { get; }
-        /// <summary>
-        /// Command to remove the selected backup job.
-        /// </summary>
-        public ReactiveCommand<Unit, Unit> RemoveCommand { get; }
         /// <summary>
         /// Gets or sets the currently selected backup job.
         /// When a job is selected in the UI, this property is updated.
@@ -59,10 +66,151 @@ namespace EasySave.GUI.ViewModels
         {
             _window = window;
             _facade = facade;
-            BackupJobs = new ObservableCollection<BackupJob>(_facade.ListBackupJobs());
+
+            string _logDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Logs");
+            BackupJobs = new ObservableCollection<FinishedBackupJob>();
+            LoadBackupJobsFromJson(); // Load the jobs
+            LoadBackupJobsFromXml();
 
             CancelCommand = ReactiveCommand.Create(Cancel);
-            RemoveCommand = ReactiveCommand.Create(Remove, this.WhenAnyValue(x => x.SelectedBackupJob).Select(job => job != null));
+        }
+
+        /// <summary>
+        /// Loads backup jobs from JSON files stored in the "Logs" directory.
+        /// It reads all JSON files, deserializes them into FinishedBackupJob objects,
+        /// and adds them to the BackupJobs collection while avoiding duplicates.
+        /// </summary>
+        public void LoadBackupJobsFromJson()
+        {
+            // Define the logs directory path
+            string logDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Logs");
+
+            // Check if the directory exists
+            if (!Directory.Exists(logDirectory))
+            {
+                Console.WriteLine($"The directory {logDirectory} does not exist.");
+                return;
+            }
+
+            // Retrieve all JSON files from the directory
+            var jsonFiles = Directory.GetFiles(logDirectory, "*.json");
+
+            foreach (var file in jsonFiles)
+            {
+                try
+                {
+                    // Read the content of the JSON file
+                    string jsonContent = File.ReadAllText(file);
+
+                    // Deserialize the JSON into a list of FinishedBackupJob objects
+                    List<FinishedBackupJob> finishedBackupJobs = ParseFinishedBackupJobs(jsonContent);
+
+                    // If the parsed jobs are not null, process them
+                    if (finishedBackupJobs != null)
+                    {
+                        foreach (var job in finishedBackupJobs)
+                        {
+                            // Check if the job already exists to prevent duplicates
+                            if (!BackupJobs.Any(b => b.Name == job.Name && 
+                                                    b.SourceDirectory == job.SourceDirectory && 
+                                                    b.TargetDirectory == job.TargetDirectory))
+                            {
+                                BackupJobs.Add(job);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error reading file {file}: {ex.Message}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Deserialize JSON and convert it into a list of FinishedBackupJob objects.
+        /// </summary>
+        public List<FinishedBackupJob> ParseFinishedBackupJobs(string jsonContent)
+        {
+            try
+            {
+                // Deserialize JSON into a list of anonymous objects
+                var rawJobs = JsonConvert.DeserializeObject<List<dynamic>>(jsonContent);
+
+                // Create a list to store the converted objects
+                List<FinishedBackupJob> finishedJobs = new List<FinishedBackupJob>();
+
+                foreach (var job in rawJobs)
+                {
+                    FinishedBackupJob finishedJob = new FinishedBackupJob(
+                        job.BackupName.ToString(),
+                        job.SourceFilePath.ToString(),
+                        job.TargetFilePath.ToString(),
+                        Convert.ToInt64(job.FileSize),
+                        Convert.ToInt32(job.TransferTimeMs),
+                        Convert.ToInt32(job.EncryptionTimeMs),
+                        job.Status.ToString(),
+                        job.Level.ToString(),
+                        DateTime.Parse(job.Timestamp.ToString()) 
+                    );
+
+                    finishedJobs.Add(finishedJob);
+                }
+
+                return finishedJobs;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error parsing JSON: {ex.Message}");
+                return new List<FinishedBackupJob>(); // Return empty list if error
+            }
+        }
+
+        /// <summary>
+        /// Loads backup jobs from XML logs.
+        /// </summary>
+        private void LoadBackupJobsFromXml()
+        {
+            string logDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Logs");
+
+            if (!Directory.Exists(logDirectory))
+            {
+                Console.WriteLine($"The directory {logDirectory} does not exist.");
+                return;
+            }
+
+            var xmlFiles = Directory.GetFiles(logDirectory, "*.xml");
+
+            foreach (var file in xmlFiles)
+            {
+                try
+                {
+                    XDocument xmlDoc = XDocument.Load(file);
+                    var logEntries = xmlDoc.Descendants("LogEntry");
+
+                    foreach (var entry in logEntries)
+                    {
+                        FinishedBackupJob finishedJob = new FinishedBackupJob
+                        (
+                            entry.Element("BackupName")?.Value ?? "Unknown",
+                            entry.Element("SourceFilePath")?.Value ?? "Unknown",
+                            entry.Element("TargetFilePath")?.Value ?? "Unknown",
+                            Convert.ToInt64(entry.Element("FileSize")?.Value ?? "0"),
+                            Convert.ToInt32(entry.Element("TransferTimeMs")?.Value ?? "0"),
+                            Convert.ToInt32(entry.Element("EncryptionTimeMs")?.Value ?? "0"),
+                            entry.Element("Status")?.Value ?? "Unknown",
+                            entry.Element("Level")?.Value ?? "Info",
+                            DateTime.TryParse(entry.Element("Timestamp")?.Value, out DateTime timestamp) ? timestamp : DateTime.Now
+                        );
+
+                        BackupJobs.Add(finishedJob);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error reading XML file {file}: {ex.Message}");
+                }
+            }
         }
 
         /// <summary>
@@ -71,32 +219,6 @@ namespace EasySave.GUI.ViewModels
         private void Cancel()
         {
             _window?.Close();
-        }
-
-        /// <summary>
-        /// Removes the selected backup job from the list.
-        /// If a job is selected, it finds the index and removes it from the facade and UI.
-        /// </summary>
-        private void Remove()
-        {
-            if (SelectedBackupJob != null)
-            {
-                if (SelectedBackupJob != null)
-                {
-                    Guid jobId = SelectedBackupJob.Id;
-                    int index = _facade.GetJobIndexById(jobId);
-
-                    if (index != -1)
-                    {
-                        _facade.RemoveJob(index); // Suppression du job
-                        BackupJobs.RemoveAt(index); // Mise à jour de la liste affichée
-                    }
-                    else
-                    {
-                        Console.WriteLine("Job non trouvé.");
-                    }
-                }
-            }
         }
     }
 }
