@@ -1,4 +1,8 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Xml.Linq;
 
 namespace EasySaveLogs
@@ -32,33 +36,33 @@ namespace EasySaveLogs
         {
             string userHomeDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
-            // Vérifier si le chemin récupéré est vide ou null; utiliser logDirectory en fallback
+            // Use user's home directory if available, otherwise fallback to provided logDirectory.
             if (string.IsNullOrWhiteSpace(userHomeDirectory))
             {
                 _logDirectory = logDirectory;
             }
             else
             {
-                _logDirectory = System.IO.Path.Combine(userHomeDirectory, "Logs");
+                _logDirectory = Path.Combine(userHomeDirectory, "Logs");
             }
-            // Vérifier et créer le dossier si nécessaire
+            // Ensure the log directory exists
             try
             {
-                if (!System.IO.Directory.Exists(_logDirectory))
+                if (!Directory.Exists(_logDirectory))
                 {
-                    System.IO.Directory.CreateDirectory(_logDirectory);
+                    Directory.CreateDirectory(_logDirectory);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Erreur lors de la création du dossier de logs : {ex.Message}");
-                _logDirectory = logDirectory; // Fallback vers le dossier spécifié 
+                _logDirectory = logDirectory; // Fallback to specified folder.
             }
             _logFormat = logFormat;
 
-            if (!System.IO.Directory.Exists(_logDirectory))
+            if (!Directory.Exists(_logDirectory))
             {
-                System.IO.Directory.CreateDirectory(_logDirectory);
+                Directory.CreateDirectory(_logDirectory);
             }
         }
 
@@ -114,17 +118,17 @@ namespace EasySaveLogs
         private void LogToJson(LogEntry logEntry)
         {
             // Utilisation de l'heure pour créer un nom de fichier unique
-            string logFilePath = System.IO.Path.Combine(_logDirectory, $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.json");
+            string logFilePath = Path.Combine(_logDirectory, $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.json");
             var logEntries = new List<LogEntry>();
 
-            if (System.IO.File.Exists(logFilePath))
+            if (File.Exists(logFilePath))
             {
-                var existingLogs = System.IO.File.ReadAllText(logFilePath);
+                var existingLogs = File.ReadAllText(logFilePath);
                 logEntries = JsonConvert.DeserializeObject<List<LogEntry>>(existingLogs) ?? new List<LogEntry>();
             }
 
             logEntries.Add(logEntry);
-            System.IO.File.WriteAllText(logFilePath, JsonConvert.SerializeObject(logEntries, Formatting.Indented));
+            File.WriteAllText(logFilePath, JsonConvert.SerializeObject(logEntries, Formatting.Indented));
         }
 
         /// <summary>
@@ -134,10 +138,10 @@ namespace EasySaveLogs
         private void LogToXml(LogEntry logEntry)
         {
             // Utilisation de l'heure pour créer un nom de fichier unique
-            string logFilePath = System.IO.Path.Combine(_logDirectory, $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.xml");
+            string logFilePath = Path.Combine(_logDirectory, $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.xml");
             XDocument xmlDoc;
 
-            if (System.IO.File.Exists(logFilePath))
+            if (File.Exists(logFilePath))
                 xmlDoc = XDocument.Load(logFilePath);
             else
                 xmlDoc = new XDocument(new XElement("Logs"));
@@ -206,6 +210,7 @@ namespace EasySaveLogs
         /// <summary>
         /// The log level associated with this entry.
         /// </summary>
+        [JsonConverter(typeof(StringEnumConverter))]
         public Logger.LogLevel Level { get; set; } = Logger.LogLevel.Info;
     }
 }

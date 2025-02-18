@@ -59,7 +59,7 @@ namespace EasySave.Core.Models
         /// Indicates the backup priority level.
         /// </summary>
         [JsonProperty("Level")]
-        public int Level { get; set; }
+        public string Level { get; set; }
 
         /// <summary>
         /// The timestamp of when the backup was completed.
@@ -80,7 +80,7 @@ namespace EasySave.Core.Models
         /// <param name="level">The backup level.</param>
         /// <param name="completionTime">The timestamp of completion.</param>
         public FinishedBackupJob(string name, string sourceDirectory, string targetDirectory, long fileSize, 
-                                int transferTimeMs, int encryptionTimeMs, string status, int level, DateTime completionTime)
+                                int transferTimeMs, int encryptionTimeMs, string status, string level, DateTime completionTime)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name), "Backup name cannot be null.");
             SourceDirectory = sourceDirectory ?? throw new ArgumentNullException(nameof(sourceDirectory), "Source directory cannot be null.");
