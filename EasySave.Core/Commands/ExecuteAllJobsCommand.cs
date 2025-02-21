@@ -20,7 +20,7 @@ namespace EasySave.Core.Commands
         /// </summary>
         public override void Execute()
         {
-            _backupManager.ExecuteAllJobs();
+            Task.Run(() => _backupManager.ExecuteAllJobsAsync());
         }
     }
 }

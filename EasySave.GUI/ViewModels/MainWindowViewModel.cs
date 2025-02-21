@@ -124,7 +124,10 @@ namespace EasySave.GUI.ViewModels
             if (IsBusinessSoftwareRunning())
             {
                 RealTimeStatus = $"{LanguageHelperInstance.GetMessage("ExecutionBlocked")} {_businessSoftware} {LanguageHelperInstance.GetMessage("IsRunning")}";
-                return;
+
+                // Start the background check without blocking execution
+                _ = WaitForBusinessSoftwareToCloseAsync();
+                Console.WriteLine("Test");
             }
 
             if (!_isObserverActive)
@@ -134,8 +137,17 @@ namespace EasySave.GUI.ViewModels
             }
 
             _facade.ExecuteAllJobs();
+        }
+
+        private async Task WaitForBusinessSoftwareToCloseAsync()
+        {
+            while (IsBusinessSoftwareRunning()) // Keep checking while the business software is running
+            {
+                await Task.Delay(3000); // Wait for 3 seconds before checking again
+            }
+
+            // Once the software is stopped, update RealTimeStatus
             RealTimeStatus = LanguageHelperInstance.GetMessage("AllJobsExecuted");
-            await Task.CompletedTask;
         }
 
         private async Task DeleteJobAsync()

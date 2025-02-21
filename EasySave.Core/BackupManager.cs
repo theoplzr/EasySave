@@ -86,6 +86,12 @@ namespace EasySave.Core
                 ExecuteBackup(job);
             }
         }
+        
+        public async Task ExecuteAllJobsAsync()
+        {
+            var tasks = _backupJobs.Select(job => Task.Run(() => ExecuteBackup(job)));
+            await Task.WhenAll(tasks);
+        }
 
         public int GetBackupJobCount()
         {
@@ -163,18 +169,24 @@ namespace EasySave.Core
             }
         }
 
-        private void ExecuteBackup(BackupJob job)
+        private async void ExecuteBackup(BackupJob job)
         {
-            if (IsBusinessSoftwareRunning())
+            bool alreadyLog = false;
+            // Tant que le logiciel métier est actif, on attend
+            while (IsBusinessSoftwareRunning())
             {
-                _logger.LogAction(new LogEntry
+                if (!alreadyLog)
                 {
-                    Timestamp = DateTime.Now,
-                    BackupName = job.Name,
-                    Status = $"Stopped: Business software '{_businessSoftwareName}' detected"
-                });
-                Console.WriteLine($"Backup job '{job.Name}' stopped: business software '{_businessSoftwareName}' is running.");
-                return;
+                    alreadyLog = true;
+                    _logger.LogAction(new LogEntry
+                    {
+                        Timestamp = DateTime.Now,
+                        BackupName = job.Name,
+                        Status = $"Pause: Business software '{_businessSoftwareName}' detected"
+                    });
+                    Console.WriteLine($"Backup job '{job.Name}' stopped: business software '{_businessSoftwareName}' is running.");
+                }
+                await Task.Delay(2000); // Attend 2 secondes avant de re-vérifier
             }
 
             BackupState state = new BackupState
