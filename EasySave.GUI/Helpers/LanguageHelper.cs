@@ -87,6 +87,7 @@ namespace EasySave.GUI.Helpers
                     { "PleaseSelectJobForModification", "❌ Please select a job before modifying." },
                     { "ButtonAddExtension", "Add" },
                     { "ButtonRemoveExtension", "Remove" },
+                    { "PriorityExtensions", "Priority extensions" },
                 }
             },
             {
@@ -161,6 +162,7 @@ namespace EasySave.GUI.Helpers
                     { "PleaseSelectJobForModification", "❌ Veuillez sélectionner un travail avant de modifier." },
                     { "ButtonAddExtension", "Ajouter" },
                     { "ButtonRemoveExtension", "Retirer" },
+                    { "PriorityExtensions", "Extensions prioritaires" },
                 }
             }
         };
@@ -238,6 +240,8 @@ namespace EasySave.GUI.Helpers
         public string ErrorLoadingFiles => GetMessage("ErrorLoadingFiles");
         public string ButtonAddExtension => GetMessage("ButtonAddExtension");
         public string ButtonRemoveExtension => GetMessage("ButtonRemoveExtension");
+        public string PriorityExtensionsLabel => "PriorityExtensions:";
+
 
         public string GetMessage(string key) =>
             messages[_language].TryGetValue(key, out var value)
