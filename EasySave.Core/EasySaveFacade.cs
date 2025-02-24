@@ -126,11 +126,19 @@ namespace EasySave.Core.Facade
             return _backupManager.GetAllJobs(); // Assurez-vous que cette méthode existe dans BackupManager
         }
 
+        /// <summary>
+        /// Adds an observer to the backup manager to monitor backup state changes.
+        /// </summary>
+        /// <param name="observer">The observer implementing the IBackupObserver interface.</param>
         public void AddObserver(IBackupObserver observer)
         {
             _backupManager.AddObserver(observer);
         }
 
+        /// <summary>
+        /// Retrieves the current status of the backup manager.
+        /// </summary>
+        /// <returns>A string representing the current backup status.</returns>
         public string GetStatus()
         {
             return _backupManager.GetStatus();
