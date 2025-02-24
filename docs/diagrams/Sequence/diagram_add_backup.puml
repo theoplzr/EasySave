@@ -1,0 +1,44 @@
+@startuml
+skinparam participantPadding 15
+title Sequence Diagram – Add Backup Job
+
+actor User
+participant "MainWindowViewModel" as ViewModel
+participant "JobFormWindow" as JobWindow
+participant "JobFormViewModel" as JobVM
+participant "BackupJob" as Job
+participant "Validation" as Validation
+
+' 1) L'utilisateur clique sur "Ajouter un Job"
+User -> ViewModel: OpenAddJobWindow()
+
+' 2) Création et affichage de la fenêtre de formulaire
+ViewModel -> JobWindow: new JobFormWindow()
+ViewModel -> JobVM: new JobFormViewModel(JobWindow)
+JobWindow -> JobVM: Set DataContext
+
+' 3) L'utilisateur remplit le formulaire (nom, source, target, type)
+User -> JobVM: Remplir les champs
+
+' 4) L'utilisateur clique sur "Save"
+User -> JobVM: SaveCommand.Execute()
+
+' 5) Validation du formulaire
+JobVM -> Validation: ValidateForm()
+
+' 6) Si des erreurs sont détectées
+Validation -> JobVM: Afficher messages d'erreur
+note right
+  - Vérification des champs obligatoires
+  - Affichage des erreurs sur le formulaire
+end note
+
+' 7) Si validation réussie, création du job
+Validation -> JobVM: Validation OK
+JobVM -> Job: new BackupJob(Name, Source, Target, Type)
+
+' 8) Fermeture de la fenêtre et retour du job
+JobVM -> JobWindow: Close(job)
+JobWindow --> ViewModel: Retour du BackupJob
+
+@enduml
