@@ -20,6 +20,10 @@ using Avalonia.Controls.ApplicationLifetimes;
 
 namespace EasySave.GUI.ViewModels
 {
+    /// <summary>
+    /// ViewModel for the main application window. 
+    /// Manages backup jobs, configuration, and execution commands.
+    /// </summary>
     public class MainWindowViewModel : ViewModelBase
     {
         private readonly EasySaveFacade _facade;
@@ -28,11 +32,20 @@ namespace EasySave.GUI.ViewModels
         private string _businessSoftware;
         private bool _isObserverActive = false;
 
+        /// <summary>
+        /// Gets the instance of the language helper.
+        /// </summary>
         public LanguageHelper LanguageHelperInstance => LanguageHelper.Instance;
 
+        /// <summary>
+        /// Collection of backup jobs displayed in the UI.
+        /// </summary>
         public ObservableCollection<BackupJob> BackupJobs { get; }
 
         private BackupJob? _selectedJob;
+        /// <summary>
+        /// Gets or sets the selected backup job.
+        /// </summary>
         public BackupJob? SelectedJob
         {
             get => _selectedJob;
@@ -40,6 +53,9 @@ namespace EasySave.GUI.ViewModels
         }
 
         private string _realTimeStatus = "Idle";
+        /// <summary>
+        /// Gets or sets the real-time execution status.
+        /// </summary>
         public string RealTimeStatus
         {
             get => _realTimeStatus;
@@ -56,6 +72,10 @@ namespace EasySave.GUI.ViewModels
         public ReactiveCommand<Unit, Unit> ExitCommand { get; }
         public ReactiveCommand<string, Unit> ChangeLanguageCommand { get; }
 
+        /// <summary>
+        /// Initializes the main window ViewModel.
+        /// Loads configuration settings and backup jobs.
+        /// </summary>
         public MainWindowViewModel()
         {
             _configuration = new ConfigurationBuilder()
@@ -97,6 +117,10 @@ namespace EasySave.GUI.ViewModels
             ChangeLanguageCommand = ReactiveCommand.Create<string>(ChangeLanguage);
         }
 
+        /// <summary>
+        /// Handles the property changed event for backup jobs.
+        /// Ensures only one job is selected at a time.
+        /// </summary>
         private void Job_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (sender is BackupJob job && e.PropertyName == nameof(BackupJob.IsSelected))
@@ -119,6 +143,9 @@ namespace EasySave.GUI.ViewModels
             }
         }
 
+        /// <summary>
+        /// Executes all backup jobs asynchronously.
+        /// </summary>
         private async Task ExecuteAllJobsAsync()
         {
             if (IsBusinessSoftwareRunning())
@@ -168,6 +195,9 @@ namespace EasySave.GUI.ViewModels
 
         }
 
+        /// <summary>
+        /// Delete jobs asynchronously.
+        /// </summary>
         private async Task DeleteJobAsync()
         {
             if (SelectedJob == null)
@@ -187,24 +217,35 @@ namespace EasySave.GUI.ViewModels
             await Task.CompletedTask;
         }
 
-
+        /// <summary>
+        /// Opens the configuration window.
+        /// </summary>
         private void OpenConfiguration()
         {
             var configWindow = new ConfigurationWindow();
             configWindow.Show();
         }
 
+        /// <summary>
+        /// Change the language.
+        /// </summary>
         private void ChangeLanguage(string languageCode)
         {
             LanguageHelper.Instance.SetLanguage(languageCode);
         }
 
+        /// <summary>
+        /// Checks if the business software is currently running.
+        /// </summary>
         private bool IsBusinessSoftwareRunning()
         {
             var processes = Process.GetProcesses();
             return processes.Any(p => p.ProcessName.Contains(_businessSoftware, StringComparison.OrdinalIgnoreCase));
         }
 
+        /// <summary>
+        /// Opens the add job window.
+        /// </summary>
         private async void OpenAddJobWindow()
         {
             var jobWindow = new JobFormWindow();
@@ -225,6 +266,9 @@ namespace EasySave.GUI.ViewModels
             }
         }
 
+        /// <summary>
+        /// Opens the modify job window.
+        /// </summary>
         private async void OpenModifyJobWindow()
         {
             if (SelectedJob == null)
@@ -253,6 +297,9 @@ namespace EasySave.GUI.ViewModels
             }
         }
 
+        /// <summary>
+        /// Opens the list all jobs window.
+        /// </summary>
         private async void OpenAllJobWindow()
         {
             var listWindow = new ListAllJobWindow();
