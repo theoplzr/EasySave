@@ -7,6 +7,9 @@ using Avalonia.Controls.ApplicationLifetimes;
 
 namespace EasySave.GUI.ViewModels
 {
+    /// <summary>
+    /// Manages language of the application.
+    /// </summary>
     public class LanguageSelectionViewModel : ViewModelBase
     {
         private readonly Window _window;
@@ -14,6 +17,9 @@ namespace EasySave.GUI.ViewModels
         public ReactiveCommand<Unit, Unit> SelectFrenchCommand { get; }
         public LanguageHelper LanguageHelperInstance => LanguageHelper.Instance;
 
+        /// <summary>
+        /// Initializes the window Language selection menu.
+        /// </summary>
         public LanguageSelectionViewModel(Window window)
         {
             _window = window;
@@ -31,6 +37,9 @@ namespace EasySave.GUI.ViewModels
             });
         }
 
+        /// <summary>
+        /// Opens the main window.
+        /// </summary>
         private void OpenMainWindow()
         {
             var mainWindow = new MainWindow();
