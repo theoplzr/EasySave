@@ -12,6 +12,10 @@ using EasySave.GUI.Helpers;
 
 namespace EasySave.GUI.ViewModels
 {
+    /// <summary>
+    /// ViewModel for the job creation form.
+    /// Handles user input, validation, and job creation.
+    /// </summary>
     public class JobFormViewModel : ReactiveObject
     {
         private string _name;
@@ -22,10 +26,20 @@ namespace EasySave.GUI.ViewModels
         private string? _sourceDirectoryError = string.Empty;
         private string? _targetDirectoryError = string.Empty;
         private bool _hasAttemptedSave = false;
+
+        /// <summary>
+        /// Collection of available backup types.
+        /// </summary>
         public ObservableCollection<BackupType> BackupTypes { get; }
 
+        /// <summary>
+        /// Gets the language helper instance.
+        /// </summary>
         public LanguageHelper LanguageHelperInstance => LanguageHelper.Instance;
 
+        /// <summary>
+        /// Gets or sets the job name.
+        /// </summary>
         public string Name
         {
             get => _name;
@@ -37,6 +51,9 @@ namespace EasySave.GUI.ViewModels
             }
         }
 
+        /// <summary>
+        /// Gets or sets the source directory path.
+        /// </summary>
         public string SourceDirectory
         {
             get => _sourceDirectory;
@@ -48,6 +65,9 @@ namespace EasySave.GUI.ViewModels
             }
         }
 
+        /// <summary>
+        /// Gets or sets the target directory path.
+        /// </summary>
         public string TargetDirectory
         {
             get => _targetDirectory;
@@ -59,44 +79,59 @@ namespace EasySave.GUI.ViewModels
             }
         }
 
+        /// <summary>
+        /// Gets or sets the selected backup type.
+        /// </summary>
         public BackupType BackupType
         {
             get => _backupType;
             set => this.RaiseAndSetIfChanged(ref _backupType, value);
         }
-
+        /// <summary>
+        /// Gets or sets the error message for the job name field.
+        /// </summary>
         public string? NameError
         {
             get => _nameError;
             private set => this.RaiseAndSetIfChanged(ref _nameError, value);
         }
 
+        /// <summary>
+        /// Gets or sets the error message for the source directory field.
+        /// </summary>
         public string? SourceDirectoryError
         {
             get => _sourceDirectoryError;
             private set => this.RaiseAndSetIfChanged(ref _sourceDirectoryError, value);
         }
 
+        /// <summary>
+        /// Gets or sets the error message for the target directory field.
+        /// </summary>
         public string? TargetDirectoryError
         {
             get => _targetDirectoryError;
             private set => this.RaiseAndSetIfChanged(ref _targetDirectoryError, value);
         }
 
+        /// <summary>
+        /// Determines whether the form can be saved.
+        /// </summary>
         public bool CanSave => string.IsNullOrEmpty(NameError) &&
                                string.IsNullOrEmpty(SourceDirectoryError) &&
                                string.IsNullOrEmpty(TargetDirectoryError);
 
-        // On modifie le type du SaveCommand en BackupJob? pour refléter un retour possible null.
+        // Commands
         public ReactiveCommand<Unit, BackupJob?> SaveCommand { get; } 
         public ReactiveCommand<Unit, Unit> CancelCommand { get; }
-
-        // Commandes pour ouvrir l'explorateur de dossiers
         public ReactiveCommand<Unit, Unit> BrowseSourceCommand { get; }
         public ReactiveCommand<Unit, Unit> BrowseTargetCommand { get; }
 
         private readonly Window? _window; 
 
+        /// <summary>
+        /// Initializes a new instance of the JobFormViewModel class.
+        /// </summary>
         public JobFormViewModel(Window window, BackupJob? existingJob = null)
         {
             _window = window ?? throw new ArgumentNullException(nameof(window));
@@ -126,6 +161,9 @@ namespace EasySave.GUI.ViewModels
             BrowseTargetCommand = ReactiveCommand.CreateFromTask(BrowseTargetDirectoryAsync);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the JobFormViewModel class.
+        /// </summary>
         public JobFormViewModel()
         {
             BackupTypes = new ObservableCollection<BackupType>(Enum.GetValues(typeof(BackupType)).Cast<BackupType>());
@@ -142,6 +180,9 @@ namespace EasySave.GUI.ViewModels
             BrowseTargetCommand = ReactiveCommand.CreateFromTask(() => Task.CompletedTask);
         }
 
+        /// <summary>
+        /// Saves the job if the form is valid.
+        /// </summary>
         private BackupJob? SaveJob()
         {
             _hasAttemptedSave = true; 
@@ -159,6 +200,9 @@ namespace EasySave.GUI.ViewModels
             }
         }
 
+        /// <summary>
+        /// Validates the form fields and updates error messages accordingly.
+        /// </summary>
         private void ValidateForm()
         {
             // Vérification du champ Name
@@ -191,6 +235,9 @@ namespace EasySave.GUI.ViewModels
             this.RaisePropertyChanged(nameof(CanSave)); // Met à jour l'état du bouton Save
         }
 
+        /// <summary>
+        /// Cancels the job creation process and closes the window.
+        /// </summary>
         private void Cancel()
         {
             _window?.Close(); 
