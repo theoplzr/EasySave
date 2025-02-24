@@ -1,0 +1,330 @@
+@startuml
+skinparam classAttributeIcon hide
+skinparam classMethodIcon hide
+skinparam wrapWidth 200
+title EasySave - Class Diagram (Simplifié)
+
+
+package EasySave.Logs {
+class Logger {
+    - static instance: Logger
+    - logDirectory: string
+    - lock: object
+    - logFormat: string
+    --
+    + Logger(logDirectory: string, logFormat: string)
+    + static GetInstance(logDirectory: string, logFormat: string): Logger
+    + Reconfigure(newLogFormat: string): void
+    + LogAction(entry: LogEntry): void
+    + LogToJson(logEntry: LogEntry): void
+    + LogToXml(logEntry: LogEntry): void
+  }
+
+  class LogEntry {
+    + Timestamp: DateTime
+    + BackupName: string
+    + SourceFilePath: string
+    + TargetFilePath: string
+    + FileSize: long
+    + TransferTimeMs: long
+    + Status: string
+  }
+}
+
+package EasySave.Core {
+
+  '-----------------------
+  ' Les Classes Principales
+  '-----------------------
+
+  class Program {
+    + Main(args: string[]): void
+    --
+    - ExecuteBackupFromArgs(facade: EasySaveFacade, args: string[]): void
+    - CreateJobFromConsole(language: string): BackupJob?
+  }
+
+  class EasySaveFacade {
+    - backupManager: BackupManager
+    --
+    + EasySaveFacade(repo: IBackupJobRepository, logDir: string, obs?: IBackupObserver)
+    + AddJob(job: BackupJob): void
+    + RemoveJob(index: int): void
+    + UpdateJob(index: int, name?: string, src?: string, tgt?: string, type?: BackupType): void
+    + ExecuteAllJobs(): void
+    + ExecuteJobByIndex(index: int): void
+    + ListJobs(): void
+    + GetJobCount(): int
+    + ListBackupJobs(): List<BackupJob>
+  }
+
+  class BackupManager {
+    - jobRepository: IBackupJobRepository
+    - backupJobs: List<BackupJob>
+    - logger: Logger
+    - observers: List<IBackupObserver>
+    - cryptoSoftPath: string
+    - businessSoftwareName: string
+    - encryptionExtensions: string[]
+    - priorityExtensions: string[]
+    - observersLock: object
+    - status: string
+    --
+    + BackupManager(repo: IBackupJobRepository, logDir: string)
+    + AddBackupJob(job: BackupJob): void
+    + async ExecuteAllJobsAsync(): Task
+    + ExecuteBackupByIndex(index: int): void
+    + RemoveBackupJob(index: int): void
+    + UpdateBackupJob(index: int, name?: string, src?: string, tgt?: string, type?: BackupType?): void
+    + ListBackupJobs(): void
+    - async ExecuteBackup(job: BackupJob, isPriorityPass: bool): Task
+    + IsBusinessSoftwareRunning(): bool
+  }
+
+  class BackupJob {
+    - id: Guid
+    - name: string
+    - sourceDirectory: string
+    - targetDirectory: string
+    - backupType: BackupType
+    - _backupStrategy: IBackupStrategy
+    + _isSelected: bool
+    --
+    + BackupJob(name: string, src: string, tgt: string, type: BackupType)
+    + ToString(): string
+  }
+
+  enum BackupType {
+    Complete
+    Differential
+  }
+
+  interface IBackupStrategy {
+    + ShouldCopyFile(srcFile: string, tgtFile: string): bool
+  }
+
+  class FullBackupStrategy {
+    + ShouldCopyFile(...): bool
+  }
+
+  class DifferentialBackupStrategy {
+    + ShouldCopyFile(...): bool
+  }
+
+  interface IBackupObserver {
+    + Update(state: BackupState): void
+  }
+
+  class FileStateObserver {
+    - stateFilePath: string
+    - states: Dictionary<Guid, BackupState>
+    --
+    + FileStateObserver(path: string)
+    + Update(state: BackupState): void
+  }
+
+  class BackupState {
+    + BackupName: string
+    + LastActionTime: DateTime
+    + Status: string
+    + TotalFiles: int
+    + TotalSize: long
+    + RemainingFiles: int
+    + RemainingSize: long
+    + CurrentSourceFile: string
+    + CurrentTargetFile: string
+    + JobId: Guid
+    + Progress: int
+    --
+    + SaveState(states: List<BackupState>, filePath: string): void
+  }
+  
+  class FinishedBackupJob {
+    + id: Guid
+    + Name: string
+    + SourceDirectory: string
+    + TargetDirectory: string
+    + FileSize: long
+    + TransferTimeMs: int
+    + EncryptionTimeMs: int
+    + Status: string
+    + Level: string
+    + CompletionTime: DateTime
+    --
+    + FinishedBackupJob(name:string, sourceDirectory:string, targetDirectory:string, fileSize:long, transferTimeMs:int, encryptionTimeMs:int, status:string, level:string, completionTime:DateTime)
+  }
+
+  interface IBackupJobRepository {
+    + Load(): List<BackupJob>
+    + Save(jobs: List<BackupJob>): void
+  }
+
+  class JsonBackupJobRepository {
+    - filePath: string
+    --
+    + JsonBackupJobRepository(filePath: string)
+    + Load(): List<BackupJob>
+    + Save(jobs: List<BackupJob>): void
+  }
+
+  
+
+  '-----------------------
+  ' Relations
+  '-----------------------
+
+  Program --> EasySaveFacade : "facade"
+
+  EasySaveFacade --> BackupManager : "backupManager"
+
+  BackupManager --> IBackupJobRepository : "jobRepository"
+  BackupManager --> Logger : "logger"
+  BackupManager "1" *-- "many" BackupJob : "backupJobs"
+  BackupManager --> IBackupObserver : "observers"
+
+  BackupJob --> IBackupStrategy : "_backupStrategy"
+
+  IBackupStrategy <|-- FullBackupStrategy
+  IBackupStrategy <|-- DifferentialBackupStrategy
+
+  IBackupObserver <|-- FileStateObserver
+
+  IBackupJobRepository <|-- JsonBackupJobRepository
+
+  Logger --> LogEntry : "LogAction()"
+  FileStateObserver --> BackupState : "Update()"
+
+}
+
+package EasySave.GUI {
+  class MainWindowViewModel {
+    - _facade: EasySaveFacade
+    - _configuration: IConfiguration
+    - _fileStateObserver: FileStateObserver
+    - _businessSoftware: string
+    - _isObserverActive: bool
+    + LanguageHelperInstance: LanguageHelper
+    + BackupJobs: ObservableCollection<BackupJob>
+    - _selectedJob: BackupJob
+    + SelectedJob: BackuoJob
+    - _realTimeStatus: string
+    -- 
+    + MainWindowViewModel()
+    - Job_PropertyChanged(sender: object, e: PropertyChangedEventArgs): void
+    - async ExecuteAllJobsAsync(): Task
+    - async DeleteJobAsync(): Task
+    - OpenConfiguration(): void
+    - ChangeLanguage(): void
+    - IsBusinessSoftwareRunning(): bool
+    - async OpenAddJobWindow(): void
+    - async OpenModifyJobWindow(): void
+    - async OpenAllJobWindow(): void
+  }
+
+  class ListAllJobViewModel {
+    - _window: Window
+    - _facade: EasySaveFacade
+    - _selectedBackupJob: BackupJob
+    + LanguageHelperInstance: LanguageHelper
+    + BackupJobs: ObservableCollection<FinishedBackupJob>
+    + CancelCommand: ReactiveCommand<Unit, Unit>
+    + SelectedBackupJob: BackupJob
+    -- 
+    + ListAllJobViewModel(window: Window, facade: EasySaveFacade)
+    + LoadBackupJobs(): void
+    - LoadBackupJobsFromJson(filePath: string):void
+    - ParseFinishedBackupJobs(jsonContent: string): List<FinishedBackupJob>
+    - LoadBackupJobsFromXml(filePath: string):void
+    - Cancel(): void
+  }
+
+  class LanguageSelectionViewModel {
+    - _window: Window
+    + SelectEnglishCommand: ReactiveCommand<Unit, Unit>
+    + SelectFrenchCommand: ReactiveCommand<Unit, Unit>
+    + LanguageHelperInstance: LanguageHelper
+    -- 
+    + LanguageSelectionViewModel(window: Window)
+    - OpenMainWindow(): void
+  }
+
+  class JobFormViewModel {
+    - _name: string
+    - _sourceDirectory: string
+    - string _targetDirectory
+    - _backupType: BackupType
+    - _nameError: string
+    - _sourceDirectoryError: string
+    - _targetDirectoryError: string
+    - _hasAttemptedSave: bool
+    + BackupTypes: ObservableCollection<BackupType> 
+    + LanguageHelperInstance: LanguageHelper
+    + Name: string
+    + SourceDirectory: string
+    + TargetDirectory: string
+    + BackupType: BackupType
+    + NameError: string
+    + SourceDirectoryError: string
+    + TargetDirectoryError: string
+    + CanSave: bool
+    + SaveCommand: ReactiveCommand<Unit, BackupJob?>
+    + CancelCommand: ReactiveCommand<Unit, Unit>
+    + BrowseSourceCommand: ReactiveCommand<Unit, Unit>
+    + BrowseTargetCommand: ReactiveCommand<Unit, Unit>
+    - Window? _window
+    --
+    + JobFormViewModel(Window window, BackupJob? existingJob)
+    + JobFormViewModel()
+    - SaveJob(): BackupJob
+    - void ValidateForm()
+    - Cancel(): void
+    - BrowseSourceDirectoryAsync(): Task
+    - BrowseTargetDirectoryAsync(): Task
+  }
+
+  class ConfigurationViewModel {
+      - _logFormat: string
+      - _businessSoftware: string
+      - _logDirectory: string
+      - _encryptionExtensions: ObservableCollection<string>
+      - _newPriorityExtension: string
+      - _priorityExtensions: ObservableCollection<string>
+      + LanguageHelperInstance: LanguageHelper
+      + LogFormat: string
+      + LogDirectory: string
+      + BusinessSoftware: string
+      + EncryptionExtensions: ObservableCollection<string>
+      + NewPriorityExtension: string
+      + PriorityExtensions: ObservableCollection<string>
+      + LogFormatOptions: List<string>
+      + AddExtensionCommand: ReactiveCommand<string, Unit>
+      + RemoveExtensionCommand: ReactiveCommand<string, Unit>
+      + SaveCommand: ReactiveCommand<Window, Unit>
+      + ChooseLogDirectoryCommand: ReactiveCommand<Window, Unit>
+      + CloseCommand: ReactiveCommand<Window, Unit>
+      + AddPriorityExtensionCommand: ReactiveCommand<string, Unit>
+      + RemovePriorityExtensionCommand: ReactiveCommand<string, Unit>
+      --
+      + ConfigurationViewModel()
+      + LoadSettings(): void
+      + SaveSettings(): void
+      + AddExtension(extension: string): void
+      + RemoveExtension(extension: string): void
+      - ChooseLogDirectory(window: Window): Task
+  }
+  
+}
+JobFormViewModel --> "1" BackupType
+JobFormViewModel --> "1" BackupJob
+
+MainWindowViewModel --> EasySaveFacade
+MainWindowViewModel --> FileStateObserver
+MainWindowViewModel --> BackupJob
+MainWindowViewModel --> JsonBackupJobRepository
+MainWindowViewModel --> ListAllJobViewModel
+ListAllJobViewModel --> "1" EasySaveFacade
+ListAllJobViewModel --> "1" BackupJob
+ListAllJobViewModel --> "1" FinishedBackupJob
+
+
+@enduml
