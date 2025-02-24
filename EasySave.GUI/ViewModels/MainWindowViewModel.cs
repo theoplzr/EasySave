@@ -135,7 +135,16 @@ namespace EasySave.GUI.ViewModels
                 _isObserverActive = true;
             }
 
-            _facade.ExecuteAllJobs();
+            try
+            {
+                _facade.ExecuteAllJobs();
+                RealTimeStatus = $"{LanguageHelperInstance.GetMessage("AllJobsExecuted")}";
+            }
+            catch (Exception ex)
+            {
+                RealTimeStatus = $"{LanguageHelperInstance.GetMessage("ExecutionFailed")}";
+            }
+
         }
 
         private async Task WaitForBusinessSoftwareToCloseAsync()
