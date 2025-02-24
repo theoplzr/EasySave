@@ -11,6 +11,9 @@ using System.IO;
 
 namespace EasySave.Core
 {
+    /// <summary>
+    /// Manages backup jobs, observers, logging, and execution logic.
+    /// </summary>
     public class BackupManager
     {
         private readonly IBackupJobRepository _jobRepository;
@@ -26,7 +29,12 @@ namespace EasySave.Core
         private readonly object _observersLock = new(); 
         private string _status;
 
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BackupManager"/> class.
+        /// </summary>
+        /// <param name="jobRepository">Repository for storing backup jobs.</param>
+        /// <param name="logDirectory">Directory for storing log files.</param>
+        /// <param name="configuration">Application configuration settings.</param>
         public BackupManager(IBackupJobRepository jobRepository, string logDirectory, IConfiguration configuration)
         {
             _jobRepository = jobRepository ?? throw new ArgumentNullException(nameof(jobRepository));
@@ -40,13 +48,17 @@ namespace EasySave.Core
             _priorityExtensions = configuration.GetSection("PriorityExtensions").Get<string[]>() ?? Array.Empty<string>();
             _encryptionKey = "DefaultKey123";
 
-            // Initialisation du logger
+            // Initialize logger
             string logFormat = configuration["LogFormat"] ?? "JSON";
             _logger = Logger.GetInstance(logDirectory, logFormat);
         }
 
         // ------------------------- Gestion des Observateurs -------------------------
 
+        /// <summary>
+        /// Adds an observer to monitor backup state changes.
+        /// </summary>
+        /// <param name="observer">The observer implementing IBackupObserver.</param>
         public void AddObserver(IBackupObserver observer)
         {
             if (!_observers.Contains(observer))
@@ -55,11 +67,19 @@ namespace EasySave.Core
             }
         }
 
+        /// <summary>
+        /// Removes an observer from the list.
+        /// </summary>
+        /// <param name="observer">The observer to remove.</param>
         public void RemoveObserver(IBackupObserver observer)
         {
             _observers.Remove(observer);
         }
 
+        /// <summary>
+        /// Notifies all observers about the backup state change.
+        /// </summary>
+        /// <param name="state">The current backup state.</param>
         private void NotifyObservers(BackupState state)
         {
             lock (_observersLock) 
@@ -71,6 +91,9 @@ namespace EasySave.Core
             }
         }
 
+        /// <summary>
+        /// Saves the current state of backup jobs.
+        /// </summary>
         private void SaveChanges()
         {
             _jobRepository.Save(_backupJobs);
@@ -78,6 +101,10 @@ namespace EasySave.Core
 
         // ------------------------- Gestion des Jobs de Sauvegarde -------------------------
 
+        /// <summary>
+        /// Adds a new backup job to the list.
+        /// </summary>
+        /// <param name="job">The backup job to add.</param>
         public void AddBackupJob(BackupJob job)
         {
             if (job == null) throw new ArgumentNullException(nameof(job));
@@ -87,14 +114,9 @@ namespace EasySave.Core
             Console.WriteLine($"✅ Backup job '{job.Name}' added successfully.");
         }
 
-        /*public void ExecuteAllJobs()
-        {
-            foreach (var job in _backupJobs)
-            {
-                ExecuteBackup(job);
-            }
-        }*/
-        
+        /// <summary>
+        /// Executes all backup jobs asynchronously.
+        /// </summary>
         public async Task ExecuteAllJobsAsync()
         {
             // Exécuter d'abord tous les fichiers prioritaires en parallèle
@@ -106,16 +128,28 @@ namespace EasySave.Core
             await Task.WhenAll(normalTasks); // Attendre la fin de tous les fichiers normaux
         }
 
+        /// <summary>
+        /// Gets the total number of backup jobs.
+        /// </summary>
+        /// <returns>The number of backup jobs.</returns>
         public int GetBackupJobCount()
         {
             return _backupJobs.Count;
         }
 
+        /// <summary>
+        /// Retrieves the list of all backup jobs.
+        /// </summary>
+        /// <returns>List of backup jobs.</returns>
         public List<BackupJob> GetAllJobs()
         {
             return _backupJobs;
         }
 
+        /// <summary>
+        /// Executes a specific backup job by its index.
+        /// </summary>
+        /// <param name="index">Index of the backup job.</param>
         public void ExecuteBackupByIndex(int index)
         {
             if (IsBusinessSoftwareRunning())
@@ -131,6 +165,10 @@ namespace EasySave.Core
             ExecuteBackup(_backupJobs[index], false);
         }
 
+        /// <summary>
+        /// Remove a specific backup job by its index.
+        /// </summary>
+        /// <param name="index">Index of the backup job.</param>
         public void RemoveBackupJob(int index)
         {
             if (index < 0 || index >= _backupJobs.Count)
@@ -142,6 +180,14 @@ namespace EasySave.Core
             Console.WriteLine($"Backup job '{jobToRemove.Name}' removed.");
         }
 
+        /// <summary>
+        /// Update a specific backup job by its index.
+        /// </summary>
+        /// <param name="index">Index of the backup job.</param>
+        /// <param name="newName">New name of the backup job.</param>
+        /// <param name="newSource">New source of the backup job.</param>
+        /// <param name="newTarget">New target of the backup job.</param>
+        /// <param name="newType">New type of the backup job.</param>
         public void UpdateBackupJob(int index, string? newName, string? newSource, string? newTarget, BackupType? newType)
         {
             if (index < 0 || index >= _backupJobs.Count)
@@ -168,6 +214,9 @@ namespace EasySave.Core
             Console.WriteLine($"Job '{job.Name}' updated successfully.");
         }
 
+        /// <summary>
+        /// List all backup job.
+        /// </summary>
         public void ListBackupJobs()
         {
             if (_backupJobs.Count == 0)
@@ -183,6 +232,11 @@ namespace EasySave.Core
             }
         }
 
+        /// <summary>
+        /// Execute a specific backup job by its priority.
+        /// </summary>
+        /// <param name="job">Backup job.</param>
+        /// <param name="isPriorityPass">If its the priority time for the backup.</param>
         private async Task ExecuteBackup(BackupJob job, bool isPriorityPass)
         {
             bool alreadyLog = false;
@@ -266,6 +320,11 @@ namespace EasySave.Core
             }
         }
 
+        /// <summary>
+        /// Saves a file using encryption if it matches the encryption extensions list.
+        /// </summary>
+        /// <param name="file">The file path.</param>
+        /// <param name="job">The backup job associated with the file.</param>
         public void SaveFile(string file, BackupJob job) 
         {
             var fileExtension = Path.GetExtension(file);
@@ -293,11 +352,19 @@ namespace EasySave.Core
             });
         }
 
+        /// <summary>
+        /// Checks if a business software is running.
+        /// </summary>
+        /// <returns>True if the business software is running; otherwise, false.</returns>
         public bool IsBusinessSoftwareRunning()
         {
             return Process.GetProcessesByName(_businessSoftwareName).Any();
         }
 
+        /// <summary>
+        /// Gets the current status of the backup process.
+        /// </summary>
+        /// <returns>A string representing the current status.</returns>
         public string GetStatus()
         {
             return _status;
