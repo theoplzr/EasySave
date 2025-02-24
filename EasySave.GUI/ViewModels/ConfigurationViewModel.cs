@@ -79,6 +79,12 @@ namespace EasySave.GUI.ViewModels
             get => _priorityExtensions;
             set => this.RaiseAndSetIfChanged(ref _priorityExtensions, value);
         }
+        private string _newExtension;
+        public string NewExtension
+        {
+            get => _newExtension;
+            set => this.RaiseAndSetIfChanged(ref _newExtension, value);
+        }
 
         public List<string> LogFormatOptions { get; } = new() { "JSON", "XML" };
 
@@ -120,6 +126,10 @@ namespace EasySave.GUI.ViewModels
             {
                 if (!string.IsNullOrWhiteSpace(extension) && !_priorityExtensions.Contains(extension))
                 {
+                    if (!extension.StartsWith("."))
+                    {
+                        extension = "." + extension; 
+                    }
                     PriorityExtensions.Add(extension);
                 }
                 
@@ -198,8 +208,13 @@ namespace EasySave.GUI.ViewModels
         {
             if (!string.IsNullOrWhiteSpace(extension) && !EncryptionExtensions.Contains(extension))
             {
+                if (!extension.StartsWith("."))
+                {
+                    extension = "." + extension; 
+                }
                 EncryptionExtensions.Add(extension);
             }
+            NewExtension = string.Empty; // Vide le champ après l'ajout
         }
 
         /// <summary>

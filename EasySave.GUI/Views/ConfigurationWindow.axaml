@@ -80,13 +80,14 @@
             <!-- Boutons Add et Remove pour gérer les extensions -->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Spacing="5">
               <TextBox x:Name="NewExtensionTextBox" 
-                       Width="100" 
-                       Watermark="Extension" 
-                       Background="#ecf0f1" 
-                       Foreground="#2c3e50"/>
+                      Width="100" 
+                      Watermark="Extension" 
+                      Text="{Binding NewExtension, UpdateSourceTrigger=PropertyChanged}"
+                      Background="#ecf0f1" 
+                      Foreground="#2c3e50"/>
               <Button Content="{Binding LanguageHelperInstance.ButtonAddExtension}" 
                       Command="{Binding AddExtensionCommand}" 
-                      CommandParameter="{Binding Text, ElementName=NewExtensionTextBox}"
+                      CommandParameter="{Binding NewExtension}"
                       Background="#27AE60" 
                       Foreground="White"/>
               <Button Content="{Binding LanguageHelperInstance.ButtonRemoveExtension}" 
