@@ -5,60 +5,43 @@ using EasySave.Core.Observers;
 using EasySave.Core.Repositories;
 using EasySave.Core.Template;
 using Microsoft.Extensions.Configuration;
+using System.Diagnostics;
+using CryptoSoftLib;
+using System.IO;
 
 namespace EasySave.Core
 {
-    /// <summary>
-    /// Manages backup jobs, including execution, addition, removal, and updates.
-    /// Uses the Observer pattern to notify registered observers of state changes.
-    /// Implements the Template Method pattern to execute backups with different strategies.
-    /// </summary>
     public class BackupManager
     {
-        /// <summary>
-        /// Repository interface for storing and retrieving backup jobs.
-        /// </summary>
         private readonly IBackupJobRepository _jobRepository;
-
-        /// <summary>
-        /// List of backup jobs managed by this instance.
-        /// </summary>
         private readonly List<BackupJob> _backupJobs;
-
-        /// <summary>
-        /// Logger instance for recording backup activities.
-        /// </summary>
         private readonly Logger _logger;
-
-        /// <summary>
-        /// List of registered observers monitoring backup state changes.
-        /// </summary>
         private readonly List<IBackupObserver> _observers;
-
         private readonly int _maxJobs;
+        private readonly string _cryptoSoftPath;
+        private readonly string _businessSoftwareName;
+        private readonly string[] _encryptionExtensions;
+        private readonly string _encryptionKey;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BackupManager"/> class.
-        /// </summary>
-        /// <param name="jobRepository">Repository instance for loading and saving backup jobs.</param>
-        /// <param name="logDirectory">Path to the directory where logs will be stored.</param>
         public BackupManager(IBackupJobRepository jobRepository, string logDirectory, IConfiguration configuration)
         {
-            _jobRepository = jobRepository;
-            _logger = Logger.GetInstance(logDirectory);
-            _backupJobs = _jobRepository.Load();
+            _jobRepository = jobRepository ?? throw new ArgumentNullException(nameof(jobRepository));
+            _backupJobs = _jobRepository.Load() ?? new List<BackupJob>();
             _observers = new List<IBackupObserver>();
 
-            // Charger MaxBackupJobs depuis appsettings.json (valeur par défaut : 5)
             _maxJobs = int.TryParse(configuration["MaxBackupJobs"], out int maxJobs) ? maxJobs : 5;
+            _cryptoSoftPath = "/Applications/CryptoSoft.app/Contents/MacOS/CryptoSoft";
+            _businessSoftwareName = configuration["BusinessSoftware"] ?? "Spotify";
+            _encryptionExtensions = configuration.GetSection("EncryptionExtensions").Get<string[]>() ?? Array.Empty<string>();
+            _encryptionKey = "DefaultKey123";
+
+            // Initialisation du logger
+            string logFormat = configuration["LogFormat"] ?? "JSON";
+            _logger = Logger.GetInstance(logDirectory, logFormat);
         }
 
-        // ------------------------- Observer Methods -------------------------
+        // ------------------------- Gestion des Observateurs -------------------------
 
-        /// <summary>
-        /// Adds an observer to monitor backup job state changes.
-        /// </summary>
-        /// <param name="observer">Observer instance to be added.</param>
         public void AddObserver(IBackupObserver observer)
         {
             if (!_observers.Contains(observer))
@@ -67,22 +50,11 @@ namespace EasySave.Core
             }
         }
 
-        /// <summary>
-        /// Removes an observer from the list of registered observers.
-        /// </summary>
-        /// <param name="observer">Observer instance to be removed.</param>
         public void RemoveObserver(IBackupObserver observer)
         {
-            if (_observers.Contains(observer))
-            {
-                _observers.Remove(observer);
-            }
+            _observers.Remove(observer);
         }
 
-        /// <summary>
-        /// Notifies all registered observers of a backup state change.
-        /// </summary>
-        /// <param name="state">The current state of the backup process.</param>
         private void NotifyObservers(BackupState state)
         {
             foreach (var obs in _observers)
@@ -91,36 +63,22 @@ namespace EasySave.Core
             }
         }
 
-        /// <summary>
-        /// Saves the current state of backup jobs to persistent storage.
-        /// </summary>
         private void SaveChanges()
         {
             _jobRepository.Save(_backupJobs);
         }
 
-        // ------------------------- Backup Job Management -------------------------
+        // ------------------------- Gestion des Jobs de Sauvegarde -------------------------
 
-        /// <summary>
-        /// Adds a new backup job to the list.
-        /// </summary>
-        /// <param name="job">The backup job to add.</param>
-        /// <exception cref="InvalidOperationException">Thrown if the maximum number of jobs (5) is exceeded.</exception>
         public void AddBackupJob(BackupJob job)
         {
-            if (_backupJobs.Count >= _maxJobs) 
-            {
-                throw new InvalidOperationException($"Maximum of {_maxJobs} backup jobs allowed.");
-            }
+            if (job == null) throw new ArgumentNullException(nameof(job));
 
             _backupJobs.Add(job);
             SaveChanges();
             Console.WriteLine($"✅ Backup job '{job.Name}' added successfully.");
         }
 
-        /// <summary>
-        /// Executes all configured backup jobs.
-        /// </summary>
         public void ExecuteAllJobs()
         {
             foreach (var job in _backupJobs)
@@ -129,30 +87,30 @@ namespace EasySave.Core
             }
         }
 
-        /// <summary>
-        /// Gets the total number of configured backup jobs.
-        /// </summary>
-        /// <returns>The number of backup jobs.</returns>
         public int GetBackupJobCount()
         {
             return _backupJobs.Count;
         }
 
-        /// <summary>
-        /// Executes a specific backup job by its index.
-        /// </summary>
-        /// <param name="index">Index of the backup job in the list.</param>
-        public void ExecuteBackupByIndex(int index)
+        public List<BackupJob> GetAllJobs()
         {
-            if (index < 0 || index >= _backupJobs.Count)
-            throw new ArgumentOutOfRangeException(nameof(index), $"Index {index} is out of range.");
+            return _backupJobs;
         }
 
-        /// <summary>
-        /// Removes a backup job from the list.
-        /// </summary>
-        /// <param name="index">Index of the job to be removed.</param>
-        /// <exception cref="IndexOutOfRangeException">Thrown if the provided index is invalid.</exception>
+        public void ExecuteBackupByIndex(int index)
+        {
+            if (IsBusinessSoftwareRunning())
+            {
+                Console.WriteLine("⚠️ Un logiciel métier est en cours d'exécution. Sauvegarde interdite !");
+                return;
+            }
+
+            if (index < 0 || index >= _backupJobs.Count)
+                throw new ArgumentOutOfRangeException(nameof(index), $"Index {index} is out of range.");
+
+            ExecuteBackup(_backupJobs[index]);
+        }
+
         public void RemoveBackupJob(int index)
         {
             if (index < 0 || index >= _backupJobs.Count)
@@ -164,16 +122,6 @@ namespace EasySave.Core
             Console.WriteLine($"Backup job '{jobToRemove.Name}' removed.");
         }
 
-        /// <summary>
-        /// Updates an existing backup job with new details.
-        /// Only non-null values will be updated.
-        /// </summary>
-        /// <param name="index">Index of the job to be updated.</param>
-        /// <param name="newName">New name for the job (nullable).</param>
-        /// <param name="newSource">New source directory (nullable).</param>
-        /// <param name="newTarget">New target directory (nullable).</param>
-        /// <param name="newType">New backup type (nullable).</param>
-        /// <exception cref="IndexOutOfRangeException">Thrown if the provided index is invalid.</exception>
         public void UpdateBackupJob(int index, string? newName, string? newSource, string? newTarget, BackupType? newType)
         {
             if (index < 0 || index >= _backupJobs.Count)
@@ -200,9 +148,6 @@ namespace EasySave.Core
             Console.WriteLine($"Job '{job.Name}' updated successfully.");
         }
 
-        /// <summary>
-        /// Lists all configured backup jobs.
-        /// </summary>
         public void ListBackupJobs()
         {
             if (_backupJobs.Count == 0)
@@ -218,31 +163,80 @@ namespace EasySave.Core
             }
         }
 
-        // ------------------------- Backup Execution -------------------------
-
-        /// <summary>
-        /// Executes a backup job using the appropriate backup strategy.
-        /// Implements the Template Method pattern.
-        /// </summary>
-        /// <param name="job">The backup job to execute.</param>
         private void ExecuteBackup(BackupJob job)
         {
-            // Choose the appropriate backup strategy based on the backup type
+            if (IsBusinessSoftwareRunning())
+            {
+                _logger.LogAction(new LogEntry
+                {
+                    Timestamp = DateTime.Now,
+                    BackupName = job.Name,
+                    Status = $"Stopped: Business software '{_businessSoftwareName}' detected"
+                });
+                Console.WriteLine($"Backup job '{job.Name}' stopped: business software '{_businessSoftwareName}' is running.");
+                return;
+            }
+
+            BackupState state = new BackupState
+            {
+                JobId = job.Id,
+                BackupName = job.Name,
+                Status = "En cours",
+                LastActionTime = DateTime.Now,
+                CurrentSourceFile = "En attente...",
+                CurrentTargetFile = "En attente...",
+                TotalFiles = Directory.GetFiles(job.SourceDirectory, "*", SearchOption.AllDirectories).Length
+            };
+
+            NotifyObservers(state);
+
+            // Choisir l’algorithme de sauvegarde
             AbstractBackupAlgorithm algorithm = job.BackupType == BackupType.Complete
                 ? new FullBackupAlgorithm(_logger, state => NotifyObservers(state), () => SaveChanges())
                 : new DifferentialBackupAlgorithm(_logger, state => NotifyObservers(state), () => SaveChanges());
-            try{
-                 algorithm.Execute(job);
+
+            try
+            {
+                algorithm.Execute(job);
+
+                // Vérification AVANT cryptage pour éviter tout chiffrement non désiré
+                foreach (var file in Directory.GetFiles(job.TargetDirectory))
+                {
+                    var fileExtension = Path.GetExtension(file);
+                    if (!_encryptionExtensions.Contains(fileExtension, StringComparer.OrdinalIgnoreCase))
+                    {
+                        Console.WriteLine($"Fichier ignoré pour cryptage : {file}");
+                        continue;
+                    }
+
+                    Console.WriteLine($"Chiffrement du fichier : {file}");
+                    int encryptionTime = CryptoSoft.EncryptFile(file, _encryptionKey);
+                    Console.WriteLine($"Fichier {file} crypté en {encryptionTime}ms");
+
+                    _logger.LogAction(new LogEntry
+                    {
+                        Timestamp = DateTime.Now,
+                        BackupName = job.Name,
+                        SourceFilePath = file,
+                        TargetFilePath = file,
+                        FileSize = new FileInfo(file).Length,
+                        TransferTimeMs = 0,
+                        EncryptionTimeMs = encryptionTime,
+                        Status = "Fichier crypté avec succès",
+                        Level = Logger.LogLevel.Info
+                    });
+                }
+
             }
-            catch (Exception ex){
-                Console.WriteLine($"Error executing backup job '{job.Name}': {ex.Message}");
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erreur lors de l'exécution de la sauvegarde : {ex.Message}");
             }
         }
 
-        public List<BackupJob> GetAllJobs()
+        public bool IsBusinessSoftwareRunning()
         {
-            return _jobRepository.GetAllJobs();
+            return Process.GetProcessesByName(_businessSoftwareName).Any();
         }
-
     }
 }

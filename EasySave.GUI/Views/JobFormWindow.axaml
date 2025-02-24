@@ -1,0 +1,103 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:EasySave.GUI.ViewModels"
+        xmlns:converters="clr-namespace:EasySave.GUI.Converters"
+        x:Class="EasySave.GUI.Views.JobFormWindow"
+        x:DataType="vm:JobFormViewModel"
+        Title="{Binding LanguageHelperInstance.JobFormWindowTitle}" Width="500" Height="450">
+
+  <Window.Background>
+    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+      <GradientStop Color="#2C3E50" Offset="0"/>
+      <GradientStop Color="#34495E" Offset="1"/>
+    </LinearGradientBrush>
+  </Window.Background>
+
+  <Window.Resources>
+    <converters:StringToBoolConverter x:Key="StringToBoolConverter"/>
+  </Window.Resources>
+
+  <Grid>
+    <Border Background="White" CornerRadius="12" Padding="25"
+            Width="400" HorizontalAlignment="Center" VerticalAlignment="Center"
+            BoxShadow="0 8 15 #00000050">
+      
+      <StackPanel Spacing="12">
+        <!-- Titre de la fenêtre -->
+        <TextBlock Text="{Binding LanguageHelperInstance.JobFormWindowTitle}" 
+                   FontSize="22" FontWeight="Bold" Foreground="#2C3E50" 
+                   HorizontalAlignment="Center" Margin="0,0,0,15"/>
+
+        <!-- Nom du job -->
+        <TextBlock Text="{Binding LanguageHelperInstance.JobNameLabel}" 
+                   FontWeight="Bold" Foreground="#2C3E50"/>
+        <TextBox Text="{Binding Name}" 
+                 Watermark="{Binding LanguageHelperInstance.JobNamePlaceholder}" 
+                 Background="#F8F8F8" BorderBrush="#BDC3C7" CornerRadius="8" Padding="8"/>
+        <TextBlock Text="{Binding NameError}" Foreground="Red" FontSize="12"
+                   IsVisible="{Binding NameError, Converter={StaticResource StringToBoolConverter}}"/>
+
+        <!-- Répertoire source avec bouton Browse -->
+        <TextBlock Text="{Binding LanguageHelperInstance.SourceDirectoryLabel}" 
+                   FontWeight="Bold" Foreground="#2C3E50"/>
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <TextBox Text="{Binding SourceDirectory}" 
+                   Watermark="{Binding LanguageHelperInstance.SourceDirectoryPlaceholder}" 
+                   Background="#F8F8F8" BorderBrush="#BDC3C7" CornerRadius="8" Padding="8"
+                   HorizontalAlignment="Stretch" Width="260"/>
+          <Button Content="{Binding LanguageHelperInstance.BrowseButton}" 
+                  Command="{Binding BrowseSourceCommand}" 
+                  Background="#BDC3C7" Foreground="White" Padding="8" CornerRadius="8"/>
+        </StackPanel>
+        <TextBlock Text="{Binding SourceDirectoryError}" Foreground="Red" FontSize="12"
+                   IsVisible="{Binding SourceDirectoryError, Converter={StaticResource StringToBoolConverter}}"/>
+
+        <!-- Répertoire cible avec bouton Browse -->
+        <TextBlock Text="{Binding LanguageHelperInstance.TargetDirectoryLabel}" 
+                   FontWeight="Bold" Foreground="#2C3E50"/>
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <TextBox Text="{Binding TargetDirectory}" 
+                   Watermark="{Binding LanguageHelperInstance.TargetDirectoryPlaceholder}" 
+                   Background="#F8F8F8" BorderBrush="#BDC3C7" CornerRadius="8" Padding="8"
+                   HorizontalAlignment="Stretch" Width="260"/>
+          <Button Content="{Binding LanguageHelperInstance.BrowseButton}" 
+                  Command="{Binding BrowseTargetCommand}" 
+                  Background="#BDC3C7" Foreground="White" Padding="8" CornerRadius="8"/>
+        </StackPanel>
+        <TextBlock Text="{Binding TargetDirectoryError}" Foreground="Red" FontSize="12"
+                   IsVisible="{Binding TargetDirectoryError, Converter={StaticResource StringToBoolConverter}}"/>
+
+        <!-- Type de backup -->
+        <TextBlock Text="{Binding LanguageHelperInstance.BackupTypeLabel}" 
+                   FontWeight="Bold" Foreground="#2C3E50"/>
+        <ComboBox SelectedItem="{Binding BackupType}" ItemsSource="{Binding BackupTypes}" 
+                  Background="#F8F8F8" BorderBrush="#BDC3C7" CornerRadius="8" Padding="8"/>
+
+        <!-- Boutons Save / Cancel -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="15" Margin="0,20,0,0">
+          <Button Content="{Binding LanguageHelperInstance.ButtonSave}" 
+                  Command="{Binding SaveCommand}" 
+                  Foreground="White" Padding="10,6" Width="120" FontWeight="Bold"
+                  Background="#27AE60" CornerRadius="8">
+            <Button.Styles>
+              <Style Selector="Button:hover">
+                <Setter Property="Background" Value="#1E8449"/>
+              </Style>
+            </Button.Styles>
+          </Button>
+
+          <Button Content="{Binding LanguageHelperInstance.ButtonCancel}" 
+                  Command="{Binding CancelCommand}" 
+                  Foreground="White" Padding="10,6" Width="90" FontWeight="Bold"
+                  Background="#E74C3C" CornerRadius="8">
+            <Button.Styles>
+              <Style Selector="Button:hover">
+                <Setter Property="Background" Value="#C0392B"/>
+              </Style>
+            </Button.Styles>
+          </Button>
+        </StackPanel>
+      </StackPanel>
+    </Border>
+  </Grid>
+</Window>

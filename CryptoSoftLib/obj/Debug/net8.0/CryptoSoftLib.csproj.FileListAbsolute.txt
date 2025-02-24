@@ -1,0 +1,12 @@
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/CryptoSoftLib/bin/Debug/net8.0/CryptoSoftLib.deps.json
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/CryptoSoftLib/bin/Debug/net8.0/CryptoSoftLib.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/CryptoSoftLib/bin/Debug/net8.0/CryptoSoftLib.pdb
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/CryptoSoftLib/obj/Debug/net8.0/CryptoSoftLib.GeneratedMSBuildEditorConfig.editorconfig
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/CryptoSoftLib/obj/Debug/net8.0/CryptoSoftLib.AssemblyInfoInputs.cache
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/CryptoSoftLib/obj/Debug/net8.0/CryptoSoftLib.AssemblyInfo.cs
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/CryptoSoftLib/obj/Debug/net8.0/CryptoSoftLib.csproj.CoreCompileInputs.cache
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/CryptoSoftLib/obj/Debug/net8.0/CryptoSoftLib.sourcelink.json
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/CryptoSoftLib/obj/Debug/net8.0/CryptoSoftLib.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/CryptoSoftLib/obj/Debug/net8.0/refint/CryptoSoftLib.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/CryptoSoftLib/obj/Debug/net8.0/CryptoSoftLib.pdb
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/CryptoSoftLib/obj/Debug/net8.0/ref/CryptoSoftLib.dll

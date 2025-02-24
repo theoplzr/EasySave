@@ -1,0 +1,15 @@
+[
+  {
+    "BackupName": "Théo",
+    "LastActionTime": "2025-02-17T17:07:03.531302+01:00",
+    "Status": "En cours",
+    "TotalFiles": 3,
+    "TotalSize": 0,
+    "RemainingFiles": 0,
+    "RemainingSize": 0,
+    "Progress": 100,
+    "CurrentSourceFile": "/Users/tpellizzari/Documents/Source1/test_6mo.txt",
+    "CurrentTargetFile": "/Users/tpellizzari/Documents/Target1/test_6mo.txt",
+    "JobId": "e21297df-86ee-4939-a2aa-abe30713b2c9"
+  }
+]

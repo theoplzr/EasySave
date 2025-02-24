@@ -1,71 +1,44 @@
 using System.Diagnostics;
 using EasySave.Core.Models;
 using EasySaveLogs;
+using CryptoSoftLib;
 
 namespace EasySave.Core.Template
 {
-    /// <summary>
-    /// Implements a full backup algorithm.
-    /// Copies all files from the source directory to the target directory.
-    /// </summary>
     public class FullBackupAlgorithm : AbstractBackupAlgorithm
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FullBackupAlgorithm"/> class.
-        /// </summary>
-        /// <param name="logger">Logger instance for recording actions.</param>
-        /// <param name="notifyObserver">Action to notify observers of backup state changes.</param>
-        /// <param name="saveChanges">Action to persist backup state changes.</param>
         public FullBackupAlgorithm(Logger logger, Action<BackupState>? notifyObserver, Action? saveChanges)
             : base(logger, notifyObserver, saveChanges)
         {
         }
 
-        /// <summary>
-        /// Determines whether a file should be copied.
-        /// Since this is a full backup, all files are always copied.
-        /// </summary>
-        /// <param name="filePath">The path of the file to check.</param>
-        /// <param name="job">The backup job being processed.</param>
-        /// <returns>Always returns true to copy all files.</returns>
         protected override bool ShouldCopyFile(string filePath, BackupJob job)
         {
-            return true; // In a full backup, all files are copied.
+            return true;
         }
 
-        /// <summary>
-        /// Copies a file from the source directory to the target directory while logging its progress.
-        /// </summary>
-        /// <param name="job">The backup job being executed.</param>
-        /// <param name="filePath">The path of the file to copy.</param>
-        /// <param name="filesProcessed">Reference to the count of processed files.</param>
-        /// <param name="bytesProcessed">Reference to the total size of processed files.</param>
-        /// <param name="totalFiles">Total number of files to be processed.</param>
-        /// <param name="totalSize">Total size of files to be backed up.</param>
         protected override void CopyFile(
-            BackupJob job, 
-            string filePath, 
-            ref int filesProcessed, 
+            BackupJob job,
+            string filePath,
+            ref int filesProcessed,
             ref long bytesProcessed,
             int totalFiles,
-            long totalSize
-        )
+            long totalSize)
         {
             var relativePath = Path.GetRelativePath(job.SourceDirectory, filePath);
             var targetFilePath = Path.Combine(job.TargetDirectory, relativePath);
 
             var targetDirectory = Path.GetDirectoryName(targetFilePath);
             if (!string.IsNullOrEmpty(targetDirectory) && !Directory.Exists(targetDirectory))
-                {
-                    Directory.CreateDirectory(targetDirectory);
-                }
+            {
+                Directory.CreateDirectory(targetDirectory);
+            }
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
             try
             {
-                // Perform the file copy operation
                 File.Copy(filePath, targetFilePath, true);
                 stopwatch.Stop();
 
@@ -73,7 +46,43 @@ namespace EasySave.Core.Template
                 filesProcessed++;
                 bytesProcessed += fileSize;
 
-                // Log the file transfer details
+                // Mise à jour de l'état (TotalFiles et RemainingFiles mis à jour)
+                BackupState updatedState = new BackupState
+                {
+                    JobId = job.Id,
+                    BackupName = job.Name,
+                    Status = "En cours",
+                    LastActionTime = DateTime.Now,
+                    CurrentSourceFile = filePath,
+                    CurrentTargetFile = targetFilePath,
+                    TotalFiles = totalFiles,
+                    RemainingFiles = totalFiles - filesProcessed
+                };
+                Notify(updatedState);
+
+                int encryptionTime = 0;
+                var fileExtension = Path.GetExtension(filePath);
+                var encryptionExtensions = ConfigurationProvider.EncryptionExtensions;
+
+                if (encryptionExtensions.Any(ext => ext.Equals(fileExtension, StringComparison.OrdinalIgnoreCase)))
+                {
+                    try
+                    {
+                        string encryptionKey = ConfigurationProvider.EncryptionKey;
+                        encryptionTime = CryptoSoft.EncryptFile(targetFilePath, encryptionKey);
+                        Console.WriteLine($"Fichier crypté : {targetFilePath} en {encryptionTime}ms");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Erreur de cryptage sur {targetFilePath} : {ex.Message}");
+                        encryptionTime = -1;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"Fichier ignoré pour cryptage : {targetFilePath}");
+                }
+
                 LogAction(new LogEntry
                 {
                     Timestamp = DateTime.Now,
@@ -82,31 +91,15 @@ namespace EasySave.Core.Template
                     TargetFilePath = targetFilePath,
                     FileSize = fileSize,
                     TransferTimeMs = stopwatch.ElapsedMilliseconds,
+                    EncryptionTimeMs = encryptionTime,
                     Status = "Success"
                 });
 
                 Console.WriteLine($"[Full] Copied {filePath} -> {targetFilePath}");
-
-                // Notify observers about the backup state update
-                Notify(new BackupState
-                {
-                    JobId = job.Id,
-                    BackupName = job.Name,
-                    LastActionTime = DateTime.Now,
-                    Status = "Active",
-                    TotalFiles = totalFiles,
-                    TotalSize = totalSize,
-                    RemainingFiles = totalFiles - filesProcessed,
-                    RemainingSize = totalSize - bytesProcessed,
-                    CurrentSourceFile = filePath,
-                    CurrentTargetFile = targetFilePath
-                });
             }
             catch (Exception ex)
             {
                 stopwatch.Stop();
-
-                // Log the error if file copying fails
                 LogAction(new LogEntry
                 {
                     Timestamp = DateTime.Now,
@@ -115,6 +108,7 @@ namespace EasySave.Core.Template
                     TargetFilePath = targetFilePath,
                     FileSize = 0,
                     TransferTimeMs = -1,
+                    EncryptionTimeMs = -1,
                     Status = "Error: " + ex.Message
                 });
 
