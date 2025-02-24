@@ -159,7 +159,7 @@ namespace EasySave.GUI.ViewModels
                     }
                 });
                 
-                RealTimeStatus = $"{LanguageHelperInstance.GetMessage("AllJobsExecuted")}";
+                RealTimeStatus = $"{LanguageHelperInstance.GetMessage("ExecutionRunning")}";
             }
             catch (Exception ex)
             {
