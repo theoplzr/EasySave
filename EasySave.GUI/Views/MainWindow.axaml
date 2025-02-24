@@ -76,10 +76,6 @@
                   Classes="sidebar"
                   ToolTip.Tip="Exécuter tous les jobs"/>
         </StackPanel>
-        <!-- Partie inférieure : logo de l'école agrandi et aligné en bas à gauche -->
-        <StackPanel DockPanel.Dock="Bottom" HorizontalAlignment="Left" Margin="10">
-          <Image Source="avares://EasySave.GUI/Assets/icone-ecole.webp" Width="180" Height="165" Margin="10"/>
-        </StackPanel>
       </DockPanel>
 
       <!-- Contenu principal -->
