@@ -131,5 +131,10 @@ namespace EasySave.Core.Facade
             _backupManager.AddObserver(observer);
         }
 
+        public string GetStatus()
+        {
+            return _backupManager.GetStatus();
+        }
+
     }
 }

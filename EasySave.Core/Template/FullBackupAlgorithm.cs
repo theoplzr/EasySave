@@ -7,8 +7,8 @@ namespace EasySave.Core.Template
 {
     public class FullBackupAlgorithm : AbstractBackupAlgorithm
     {
-        public FullBackupAlgorithm(Logger logger, Action<BackupState>? notifyObserver, Action? saveChanges)
-            : base(logger, notifyObserver, saveChanges)
+        public FullBackupAlgorithm(Logger logger, Action<BackupState>? notifyObserver, Action? saveChanges, string businessSoftwareName)
+            : base(logger, notifyObserver, saveChanges, businessSoftwareName)
         {
         }
 

@@ -24,6 +24,7 @@ namespace EasySave.Core
         private readonly string[] _priorityExtensions;
         private readonly string _encryptionKey;
         private readonly object _observersLock = new(); 
+        private string _status;
 
 
         public BackupManager(IBackupJobRepository jobRepository, string logDirectory, IConfiguration configuration)
@@ -197,7 +198,7 @@ namespace EasySave.Core
                         BackupName = job.Name,
                         Status = $"Pause: Business software '{_businessSoftwareName}' detected"
                     });
-                    Console.WriteLine($"Backup job '{job.Name}' stopped: business software '{_businessSoftwareName}' is running.");
+                    Console.WriteLine($"Backup job '{job.Name}' paused: business software '{_businessSoftwareName}' is running.");
                 }
                 await Task.Delay(2000); // Attend 2 secondes avant de re-vérifier
             }
@@ -217,12 +218,18 @@ namespace EasySave.Core
             
             // Choisir l’algorithme de sauvegarde
             AbstractBackupAlgorithm algorithm = job.BackupType == BackupType.Complete
-                ? new FullBackupAlgorithm(_logger, state => NotifyObservers(state), () => SaveChanges())
-                : new DifferentialBackupAlgorithm(_logger, state => NotifyObservers(state), () => SaveChanges());
+                ? new FullBackupAlgorithm(_logger, state => NotifyObservers(state), () => SaveChanges(), _businessSoftwareName)
+                : new DifferentialBackupAlgorithm(_logger, state => NotifyObservers(state), () => SaveChanges(), _businessSoftwareName);
 
             try
             {
-                algorithm.Execute(job);
+                var executionTask = Task.Run(() => algorithm.Execute(job));
+
+                while (!executionTask.IsCompleted) // Tant que `Execute(job)` n'est pas terminé
+                {
+                    _status = algorithm.GetStatus();
+                    await Task.Delay(1000);
+                }
 
                 // Récupérer tous les fichiers dans le dossier cible
                 var allFiles = Directory.GetFiles(job.TargetDirectory);
@@ -236,11 +243,19 @@ namespace EasySave.Core
                 {
                     foreach (var file in priorityFiles)
                     {
+                        while(IsBusinessSoftwareRunning())
+                        {
+                            await Task.Delay(2000); // Attend 2 secondes avant de re-vérifier
+                        }
                         SaveFile(file, job);
                     }
                 } else {
                     foreach (var file in normalFiles)
                     {
+                        while(IsBusinessSoftwareRunning())
+                        {
+                            await Task.Delay(2000); // Attend 2 secondes avant de re-vérifier
+                        }
                         SaveFile(file, job);
                     }
                 }
@@ -281,6 +296,11 @@ namespace EasySave.Core
         public bool IsBusinessSoftwareRunning()
         {
             return Process.GetProcessesByName(_businessSoftwareName).Any();
+        }
+
+        public string GetStatus()
+        {
+            return _status;
         }
     }
 }

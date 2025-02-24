@@ -8,8 +8,8 @@ namespace EasySave.Core.Template
 {
     public class DifferentialBackupAlgorithm : AbstractBackupAlgorithm
     {
-        public DifferentialBackupAlgorithm(Logger logger, Action<BackupState>? notifyObserver, Action? saveChanges)
-            : base(logger, notifyObserver, saveChanges)
+        public DifferentialBackupAlgorithm(Logger logger, Action<BackupState>? notifyObserver, Action? saveChanges, string businessSoftwareName)
+            : base(logger, notifyObserver, saveChanges, businessSoftwareName)
         {
         }
 

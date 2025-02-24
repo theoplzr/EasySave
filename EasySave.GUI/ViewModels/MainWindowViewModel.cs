@@ -124,9 +124,6 @@ namespace EasySave.GUI.ViewModels
             if (IsBusinessSoftwareRunning())
             {
                 RealTimeStatus = $"{LanguageHelperInstance.GetMessage("ExecutionBlocked")} {_businessSoftware} {LanguageHelperInstance.GetMessage("IsRunning")}";
-
-                // Start the background check without blocking execution
-                _ = WaitForBusinessSoftwareToCloseAsync();
             }
 
             if (!_isObserverActive)
@@ -137,7 +134,30 @@ namespace EasySave.GUI.ViewModels
 
             try
             {
-                _facade.ExecuteAllJobs();
+                // Lancer l'exécution en parallèle
+                var executionTask = Task.Run(() => _facade.ExecuteAllJobs());
+
+                // Pendant que l'exécution est en cours, surveiller son état
+                while (_facade.GetStatus() != "finished")
+                {
+                    switch (_facade.GetStatus())
+                    {
+                        case "paused":
+                            RealTimeStatus = $"{LanguageHelperInstance.GetMessage("ExecutionPaused")}";
+                            break;
+                        case "running":
+                            RealTimeStatus = $"{LanguageHelperInstance.GetMessage("ExecutionRunning")}";
+                            break;
+                        default:
+                            break;
+                    }
+
+                    await Task.Delay(1000); // Wait for 1 second before checking again
+                }
+
+                // Attendre la fin de l'exécution au cas où elle prendrait plus de temps que prévu
+                await executionTask;
+
                 RealTimeStatus = $"{LanguageHelperInstance.GetMessage("AllJobsExecuted")}";
             }
             catch (Exception ex)
@@ -145,17 +165,6 @@ namespace EasySave.GUI.ViewModels
                 RealTimeStatus = $"{LanguageHelperInstance.GetMessage("ExecutionFailed")}";
             }
 
-        }
-
-        private async Task WaitForBusinessSoftwareToCloseAsync()
-        {
-            while (IsBusinessSoftwareRunning()) // Keep checking while the business software is running
-            {
-                await Task.Delay(3000); // Wait for 3 seconds before checking again
-            }
-
-            // Once the software is stopped, update RealTimeStatus
-            RealTimeStatus = LanguageHelperInstance.GetMessage("AllJobsExecuted");
         }
 
         private async Task DeleteJobAsync()

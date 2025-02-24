@@ -3,6 +3,7 @@ using EasySaveLogs;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Diagnostics;
 
 namespace EasySave.Core.Template
 {
@@ -27,6 +28,9 @@ namespace EasySave.Core.Template
         /// </summary>
         private readonly Action? _saveChanges;
 
+        private string _status;
+        private readonly string _businessSoftwareName;
+
         /// <summary>
         /// Constructeur de l'algorithme de sauvegarde.
         /// </summary>
@@ -36,12 +40,15 @@ namespace EasySave.Core.Template
         protected AbstractBackupAlgorithm(
             Logger logger,
             Action<BackupState>? notifyObserver,
-            Action? saveChanges
+            Action? saveChanges,
+            string businessSoftwareName
         )
         {
             _logger = logger;
             _notifyObserver = notifyObserver;
             _saveChanges = saveChanges;
+            _businessSoftwareName = businessSoftwareName;
+            _status = "waiting";
         }
 
         /// <summary>
@@ -62,6 +69,13 @@ namespace EasySave.Core.Template
             // Traiter chaque fichier
             foreach (var file in files)
             {
+                while (IsBusinessSoftwareRunning())
+                {
+                    _status = "paused";
+                    Thread.Sleep(2000);
+                }
+
+                _status = "running";
                 if (ShouldCopyFile(file, job))
                 {
                     CopyFile(job, file, ref filesProcessed, ref bytesProcessed, totalFiles, totalSize);
@@ -80,6 +94,7 @@ namespace EasySave.Core.Template
         /// <param name="job">Le job de sauvegarde courant.</param>
         protected virtual void Prepare(BackupJob job)
         {
+            _status = "preparation";
             Console.WriteLine($"[Template] Démarrage de la sauvegarde {job.Name} ...");
 
             if (!Directory.Exists(job.SourceDirectory))
@@ -138,6 +153,7 @@ namespace EasySave.Core.Template
         /// <param name="job">Le job de sauvegarde terminé.</param>
         protected virtual void FinalizeBackup(BackupJob job)
         {
+            _status = "finished";
             Console.WriteLine($"[Template] Sauvegarde '{job.Name}' terminée.");
         }
 
@@ -157,6 +173,16 @@ namespace EasySave.Core.Template
         protected void LogAction(LogEntry entry)
         {
             _logger.LogAction(entry);
+        }
+
+        public string GetStatus()
+        {
+            return _status;
+        }
+
+        public bool IsBusinessSoftwareRunning()
+        {
+            return Process.GetProcessesByName(_businessSoftwareName).Any();
         }
     }
 }
