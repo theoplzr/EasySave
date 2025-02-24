@@ -127,7 +127,6 @@ namespace EasySave.GUI.ViewModels
 
                 // Start the background check without blocking execution
                 _ = WaitForBusinessSoftwareToCloseAsync();
-                Console.WriteLine("Test");
             }
 
             if (!_isObserverActive)
