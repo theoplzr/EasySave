@@ -125,6 +125,7 @@ namespace EasySave.GUI.ViewModels
             {
                 RealTimeStatus = $"{LanguageHelperInstance.GetMessage("ExecutionBlocked")} {_businessSoftware} {LanguageHelperInstance.GetMessage("IsRunning")}";
             }
+            RealTimeStatus = $"{LanguageHelperInstance.GetMessage("ExecutionRunning")}";
 
             if (!_isObserverActive)
             {
@@ -135,29 +136,29 @@ namespace EasySave.GUI.ViewModels
             try
             {
                 // Lancer l'exécution en parallèle
-                var executionTask = Task.Run(() => _facade.ExecuteAllJobs());
-
-                // Pendant que l'exécution est en cours, surveiller son état
-                while (_facade.GetStatus() != "finished")
+                Task.Run(async () =>
                 {
-                    switch (_facade.GetStatus())
+                    _facade.ExecuteAllJobs(); // Lancer l'exécution des sauvegardes
+
+                    // Pendant que l'exécution est en cours, surveiller son état
+                    while (_facade.GetStatus() != "finished")
                     {
-                        case "paused":
-                            RealTimeStatus = $"{LanguageHelperInstance.GetMessage("ExecutionPaused")}";
-                            break;
-                        case "running":
-                            RealTimeStatus = $"{LanguageHelperInstance.GetMessage("ExecutionRunning")}";
-                            break;
-                        default:
-                            break;
+                        switch (_facade.GetStatus())
+                        {
+                            case "paused":
+                                RealTimeStatus = $"{LanguageHelperInstance.GetMessage("ExecutionPaused")}";
+                                break;
+                            case "running":
+                                RealTimeStatus = $"{LanguageHelperInstance.GetMessage("ExecutionRunning")}";
+                                break;
+                            default:
+                                break;
+                        }
+
+                        await Task.Delay(1000); // Attendre 1 seconde avant de vérifier à nouveau
                     }
-
-                    await Task.Delay(1000); // Wait for 1 second before checking again
-                }
-
-                // Attendre la fin de l'exécution au cas où elle prendrait plus de temps que prévu
-                await executionTask;
-
+                });
+                
                 RealTimeStatus = $"{LanguageHelperInstance.GetMessage("AllJobsExecuted")}";
             }
             catch (Exception ex)
