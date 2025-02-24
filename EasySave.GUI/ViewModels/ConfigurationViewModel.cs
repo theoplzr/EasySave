@@ -15,6 +15,9 @@ using EasySaveLogs;
 
 namespace EasySave.GUI.ViewModels
 {
+    /// <summary>
+    /// ViewModel responsible for managing application configuration settings.
+    /// </summary>
     public class ConfigurationViewModel : ReactiveObject
     {
         private string _logFormat = "XML";
@@ -22,27 +25,41 @@ namespace EasySave.GUI.ViewModels
         private string _logDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Logs");
         private ObservableCollection<string> _encryptionExtensions = new();
 
-        // Instance du gestionnaire de langue
+        /// <summary>
+        /// Instance of the language helper for multi-language support.
+        /// </summary>
         public LanguageHelper LanguageHelperInstance => LanguageHelper.Instance;
 
+        /// <summary>
+        /// Gets or sets the log format (JSON or XML).
+        /// </summary>
         public string LogFormat
         {
             get => _logFormat;
             set => this.RaiseAndSetIfChanged(ref _logFormat, value);
         }
 
+        /// <summary>
+        /// Gets or sets the log directory path.
+        /// </summary>
         public string LogDirectory
         {
             get => _logDirectory;
             set => this.RaiseAndSetIfChanged(ref _logDirectory, value);
         }
 
+        /// <summary>
+        /// Gets or sets the name of the business software that may pause operations.
+        /// </summary>
         public string BusinessSoftware
         {
             get => _businessSoftware;
             set => this.RaiseAndSetIfChanged(ref _businessSoftware, value);
         }
 
+        /// <summary>
+        /// Gets or sets the list of file extensions that require encryption.
+        /// </summary>
         public ObservableCollection<string> EncryptionExtensions
         {
             get => _encryptionExtensions;
@@ -73,6 +90,9 @@ namespace EasySave.GUI.ViewModels
         public ReactiveCommand<string, Unit> AddPriorityExtensionCommand { get; }
         public ReactiveCommand<string, Unit> RemovePriorityExtensionCommand { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the ConfigurationViewModel class.
+        /// </summary>
         public ConfigurationViewModel()
         {
             LoadSettings();
@@ -116,6 +136,9 @@ namespace EasySave.GUI.ViewModels
             });
         }
 
+        /// <summary>
+        /// Loads configuration settings from a file.
+        /// </summary>
         public void LoadSettings()
         {
             try
@@ -141,6 +164,9 @@ namespace EasySave.GUI.ViewModels
             }
         }
 
+        /// <summary>
+        /// Saves configuration settings to a file.
+        /// </summary>
         public void SaveSettings()
         {
             try
@@ -165,6 +191,9 @@ namespace EasySave.GUI.ViewModels
             }
         }
 
+        /// <summary>
+        /// Add an extension to encrypt.
+        /// </summary>
         public void AddExtension(string extension)
         {
             if (!string.IsNullOrWhiteSpace(extension) && !EncryptionExtensions.Contains(extension))
@@ -173,6 +202,9 @@ namespace EasySave.GUI.ViewModels
             }
         }
 
+        /// <summary>
+        /// Remove an extension to encrypt.
+        /// </summary>
         public void RemoveExtension(string extension)
         {
             if (!string.IsNullOrWhiteSpace(extension) && EncryptionExtensions.Contains(extension))
@@ -181,6 +213,9 @@ namespace EasySave.GUI.ViewModels
             }
         }
 
+        /// <summary>
+        /// Choose the log directory.
+        /// </summary>
         private async Task ChooseLogDirectory(Window window)
         {
             var folders = await window.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
