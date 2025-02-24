@@ -1,0 +1,70 @@
+@startuml
+skinparam participantPadding 15
+title Sequence Diagram – Execute All Jobs (Mise à jour)
+
+actor User
+participant "MainWindowViewModel" as ViewModel
+participant "EasySaveFacade" as Facade
+participant "ExecuteAllJobsCommand" as ExecCmd
+participant "BackupManager" as BM
+participant "BackupAlgorithm" as Algo
+participant "SaveFile" as CryptoSoft
+
+' 1) L'utilisateur choisit d'exécuter toutes les sauvegardes
+User -> ViewModel: Choix: "Execute all jobs"
+
+' 2) Attente si un logiciel métier est en cours d'exécution
+ViewModel -> ViewModel: while (IsBusinessSoftwareRunning())\nAttente (2s)
+
+' 3) Appel à EasySaveFacade
+ViewModel -> Facade: ExecuteAllJobs()
+
+' 4) La Façade crée la commande et l'exécute
+Facade -> ExecCmd: new ExecuteAllJobsCommand(BM)
+Facade -> ExecCmd: Execute()
+
+' 5) Commande lance l'exécution asynchrone
+ExecCmd -> BM: ExecuteAllJobsAsync()
+
+' 6) Attente si un logiciel métier est en cours d'exécution
+BM -> BM: while (IsBusinessSoftwareRunning())\nAttente (2s)
+
+' 7) Vérification des fichiers prioritaires
+BM -> BM: Séparer fichiers prioritaires et normaux
+BM -> BM: Exécuter d'abord les fichiers prioritaires
+
+
+' 8) Création et exécution de l'algorithme de sauvegarde
+BM -> Algo: new FullBackupAlgorithm / DiffAlgorithm
+BM -> Algo: Execute(job)
+
+' 9) Parcours des fichiers et copie après vérification
+note right
+  - Attente si logiciel métier actif
+  - Vérification du fichier
+  - Copie si nécessaire
+end note
+
+Algo -> Algo: while (IsBusinessSoftwareRunning())\n_status = "paused"\nThread.Sleep(2s)
+Algo -> Algo: _status = "running"
+Algo -> Algo: CopyFile(job, file)
+
+' 10) Chiffrement des fichiers prioritaires
+BM -> CryptoSoft: SaveFile(file, job)
+
+' 11) Vérification des extensions à chiffrer
+CryptoSoft -> CryptoSoft: if (!contains(fileExtension))\nreturn
+CryptoSoft -> CryptoSoft: EncryptFile(file)
+
+' 12) Enregistrement des logs
+CryptoSoft -> CryptoSoft: LogAction(BackupName, SourceFile, TargetFile, Status)
+
+' 13) Exécution des fichiers non prioritaires après les prioritaires
+BM -> CryptoSoft: SaveFile(file, job)
+
+' 14) Retour en cascade après exécution complète
+CryptoSoft --> BM: Fin du chiffrement
+BM --> ExecCmd: Fin de la sauvegarde
+ExecCmd --> Facade: (term)
+Facade --> ViewModel: (fin)
+@enduml
