@@ -96,6 +96,40 @@
                       Foreground="White"/>
             </StackPanel>
           </StackPanel>
+
+          <!-- Priority Extensions Section -->
+          <StackPanel Orientation="Vertical" Spacing="5">
+              <TextBlock Text="{Binding LanguageHelperInstance.PriorityExtensionsLabel}" 
+                        FontWeight="SemiBold" 
+                        Foreground="#2c3e50"/>
+              
+              <!-- List of priority extensions -->
+              <ListBox x:Name="PriorityExtensionsListBox"
+                      ItemsSource="{Binding PriorityExtensions}" 
+                      Height="80" 
+                      Background="#ecf0f1" 
+                      Foreground="#2c3e50"/>
+              
+              <!-- Add and Remove buttons for priority extensions -->
+              <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Spacing="5">
+                  <TextBox Text="{Binding NewPriorityExtension, Mode=TwoWay}" 
+                      Width="100" 
+                      Watermark="Extension" 
+                      Background="#ecf0f1" 
+                      Foreground="#2c3e50"/>
+                  <Button Content="{Binding LanguageHelperInstance.ButtonAddExtension}" 
+                      Command="{Binding AddPriorityExtensionCommand}" 
+                      CommandParameter="{Binding NewPriorityExtension}"
+                      Background="#27AE60" 
+                      Foreground="White"/>
+                  <Button Content="{Binding LanguageHelperInstance.ButtonRemoveExtension}" 
+                          Command="{Binding RemovePriorityExtensionCommand}" 
+                          CommandParameter="{Binding SelectedItem, ElementName=PriorityExtensionsListBox}"
+                          Background="#E74C3C" 
+                          Foreground="White"/>
+              </StackPanel>
+          </StackPanel>
+
           
         </StackPanel>
       </ScrollViewer>

@@ -16,6 +16,7 @@ namespace EasySaveLogs
         private static readonly object _lock = new object();
         private readonly string _logDirectory;
         private string _logFormat; 
+        private static readonly object _logFileLock = new();
 
         /// <summary>
         /// Enum representing log levels.
@@ -117,18 +118,22 @@ namespace EasySaveLogs
         /// <param name="logEntry">The log entry to be recorded.</param>
         private void LogToJson(LogEntry logEntry)
         {
-            // Utilisation de l'heure pour créer un nom de fichier unique
-            string logFilePath = Path.Combine(_logDirectory, $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.json");
-            var logEntries = new List<LogEntry>();
-
-            if (File.Exists(logFilePath))
+            lock (_logFileLock)
             {
-                var existingLogs = File.ReadAllText(logFilePath);
-                logEntries = JsonConvert.DeserializeObject<List<LogEntry>>(existingLogs) ?? new List<LogEntry>();
-            }
+                // Utilisation de l'heure pour créer un nom de fichier unique
+                string logFilePath = Path.Combine(_logDirectory, $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.json");
+            
+                var logEntries = new List<LogEntry>();
 
-            logEntries.Add(logEntry);
-            File.WriteAllText(logFilePath, JsonConvert.SerializeObject(logEntries, Formatting.Indented));
+                if (File.Exists(logFilePath))
+                {
+                    var existingLogs = File.ReadAllText(logFilePath);
+                    logEntries = JsonConvert.DeserializeObject<List<LogEntry>>(existingLogs) ?? new List<LogEntry>();
+                }
+
+                logEntries.Add(logEntry);
+                File.WriteAllText(logFilePath, JsonConvert.SerializeObject(logEntries, Formatting.Indented));
+            }
         }
 
         /// <summary>
@@ -137,28 +142,31 @@ namespace EasySaveLogs
         /// <param name="logEntry">The log entry to be recorded.</param>
         private void LogToXml(LogEntry logEntry)
         {
-            // Utilisation de l'heure pour créer un nom de fichier unique
-            string logFilePath = Path.Combine(_logDirectory, $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.xml");
-            XDocument xmlDoc;
+            lock (_logFileLock)
+            {
+                // Utilisation de l'heure pour créer un nom de fichier unique
+                string logFilePath = Path.Combine(_logDirectory, $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.xml");
+                XDocument xmlDoc;
 
-            if (File.Exists(logFilePath))
-                xmlDoc = XDocument.Load(logFilePath);
-            else
-                xmlDoc = new XDocument(new XElement("Logs"));
+                if (File.Exists(logFilePath))
+                    xmlDoc = XDocument.Load(logFilePath);
+                else
+                    xmlDoc = new XDocument(new XElement("Logs"));
 
-            xmlDoc.Root!.Add(new XElement("LogEntry",
-                new XElement("Timestamp", logEntry.Timestamp),
-                new XElement("BackupName", logEntry.BackupName),
-                new XElement("SourceFilePath", logEntry.SourceFilePath),
-                new XElement("TargetFilePath", logEntry.TargetFilePath),
-                new XElement("FileSize", logEntry.FileSize),
-                new XElement("TransferTimeMs", logEntry.TransferTimeMs),
-                new XElement("EncryptionTimeMs", logEntry.EncryptionTimeMs),
-                new XElement("Status", logEntry.Status),
-                new XElement("Level", logEntry.Level.ToString())
-            ));
+                xmlDoc.Root!.Add(new XElement("LogEntry",
+                    new XElement("Timestamp", logEntry.Timestamp),
+                    new XElement("BackupName", logEntry.BackupName),
+                    new XElement("SourceFilePath", logEntry.SourceFilePath),
+                    new XElement("TargetFilePath", logEntry.TargetFilePath),
+                    new XElement("FileSize", logEntry.FileSize),
+                    new XElement("TransferTimeMs", logEntry.TransferTimeMs),
+                    new XElement("EncryptionTimeMs", logEntry.EncryptionTimeMs),
+                    new XElement("Status", logEntry.Status),
+                    new XElement("Level", logEntry.Level.ToString())
+                ));
 
-            xmlDoc.Save(logFilePath);
+                xmlDoc.Save(logFilePath);
+            }
         }
     }
 

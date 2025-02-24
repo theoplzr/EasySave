@@ -21,7 +21,10 @@ namespace EasySave.Core
         private readonly string _cryptoSoftPath;
         private readonly string _businessSoftwareName;
         private readonly string[] _encryptionExtensions;
+        private readonly string[] _priorityExtensions;
         private readonly string _encryptionKey;
+        private readonly object _observersLock = new(); 
+
 
         public BackupManager(IBackupJobRepository jobRepository, string logDirectory, IConfiguration configuration)
         {
@@ -33,6 +36,7 @@ namespace EasySave.Core
             _cryptoSoftPath = "/Applications/CryptoSoft.app/Contents/MacOS/CryptoSoft";
             _businessSoftwareName = configuration["BusinessSoftware"] ?? "Spotify";
             _encryptionExtensions = configuration.GetSection("EncryptionExtensions").Get<string[]>() ?? Array.Empty<string>();
+            _priorityExtensions = configuration.GetSection("PriorityExtensions").Get<string[]>() ?? Array.Empty<string>();
             _encryptionKey = "DefaultKey123";
 
             // Initialisation du logger
@@ -57,9 +61,12 @@ namespace EasySave.Core
 
         private void NotifyObservers(BackupState state)
         {
-            foreach (var obs in _observers)
+            lock (_observersLock) 
             {
-                obs.Update(state);
+                foreach (var obs in _observers)
+                {
+                    obs.Update(state);
+                }
             }
         }
 
@@ -79,12 +86,23 @@ namespace EasySave.Core
             Console.WriteLine($"✅ Backup job '{job.Name}' added successfully.");
         }
 
-        public void ExecuteAllJobs()
+        /*public void ExecuteAllJobs()
         {
             foreach (var job in _backupJobs)
             {
                 ExecuteBackup(job);
             }
+        }*/
+        
+        public async Task ExecuteAllJobsAsync()
+        {
+            // Exécuter d'abord tous les fichiers prioritaires en parallèle
+            var priorityTasks = _backupJobs.Select(job => Task.Run(() => ExecuteBackup(job, true)));
+            await Task.WhenAll(priorityTasks); // Attendre que toutes les tâches prioritaires soient terminées
+
+            // Ensuite, exécuter tous les fichiers normaux en parallèle
+            var normalTasks = _backupJobs.Select(job => Task.Run(() => ExecuteBackup(job, false)));
+            await Task.WhenAll(normalTasks); // Attendre la fin de tous les fichiers normaux
         }
 
         public int GetBackupJobCount()
@@ -108,7 +126,8 @@ namespace EasySave.Core
             if (index < 0 || index >= _backupJobs.Count)
                 throw new ArgumentOutOfRangeException(nameof(index), $"Index {index} is out of range.");
 
-            ExecuteBackup(_backupJobs[index]);
+            ExecuteBackup(_backupJobs[index], true);
+            ExecuteBackup(_backupJobs[index], false);
         }
 
         public void RemoveBackupJob(int index)
@@ -163,18 +182,24 @@ namespace EasySave.Core
             }
         }
 
-        private void ExecuteBackup(BackupJob job)
+        private async Task ExecuteBackup(BackupJob job, bool isPriorityPass)
         {
-            if (IsBusinessSoftwareRunning())
+            bool alreadyLog = false;
+            // Tant que le logiciel métier est actif, on attend
+            while (IsBusinessSoftwareRunning())
             {
-                _logger.LogAction(new LogEntry
+                if (!alreadyLog)
                 {
-                    Timestamp = DateTime.Now,
-                    BackupName = job.Name,
-                    Status = $"Stopped: Business software '{_businessSoftwareName}' detected"
-                });
-                Console.WriteLine($"Backup job '{job.Name}' stopped: business software '{_businessSoftwareName}' is running.");
-                return;
+                    alreadyLog = true;
+                    _logger.LogAction(new LogEntry
+                    {
+                        Timestamp = DateTime.Now,
+                        BackupName = job.Name,
+                        Status = $"Pause: Business software '{_businessSoftwareName}' detected"
+                    });
+                    Console.WriteLine($"Backup job '{job.Name}' stopped: business software '{_businessSoftwareName}' is running.");
+                }
+                await Task.Delay(2000); // Attend 2 secondes avant de re-vérifier
             }
 
             BackupState state = new BackupState
@@ -189,7 +214,7 @@ namespace EasySave.Core
             };
 
             NotifyObservers(state);
-
+            
             // Choisir l’algorithme de sauvegarde
             AbstractBackupAlgorithm algorithm = job.BackupType == BackupType.Complete
                 ? new FullBackupAlgorithm(_logger, state => NotifyObservers(state), () => SaveChanges())
@@ -199,39 +224,58 @@ namespace EasySave.Core
             {
                 algorithm.Execute(job);
 
+                // Récupérer tous les fichiers dans le dossier cible
+                var allFiles = Directory.GetFiles(job.TargetDirectory);
+
+                // Séparer les fichiers prioritaires et non prioritaires
+                var priorityFiles = allFiles.Where(file => _priorityExtensions.Any(ext => file.EndsWith(ext, StringComparison.OrdinalIgnoreCase))).ToList();
+                var normalFiles = allFiles.Except(priorityFiles).ToList();
+
                 // Vérification AVANT cryptage pour éviter tout chiffrement non désiré
-                foreach (var file in Directory.GetFiles(job.TargetDirectory))
+                if (isPriorityPass)
                 {
-                    var fileExtension = Path.GetExtension(file);
-                    if (!_encryptionExtensions.Contains(fileExtension, StringComparer.OrdinalIgnoreCase))
+                    foreach (var file in priorityFiles)
                     {
-                        Console.WriteLine($"Fichier ignoré pour cryptage : {file}");
-                        continue;
+                        SaveFile(file, job);
                     }
-
-                    Console.WriteLine($"Chiffrement du fichier : {file}");
-                    int encryptionTime = CryptoSoft.EncryptFile(file, _encryptionKey);
-                    Console.WriteLine($"Fichier {file} crypté en {encryptionTime}ms");
-
-                    _logger.LogAction(new LogEntry
+                } else {
+                    foreach (var file in normalFiles)
                     {
-                        Timestamp = DateTime.Now,
-                        BackupName = job.Name,
-                        SourceFilePath = file,
-                        TargetFilePath = file,
-                        FileSize = new FileInfo(file).Length,
-                        TransferTimeMs = 0,
-                        EncryptionTimeMs = encryptionTime,
-                        Status = "Fichier crypté avec succès",
-                        Level = Logger.LogLevel.Info
-                    });
+                        SaveFile(file, job);
+                    }
                 }
-
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Erreur lors de l'exécution de la sauvegarde : {ex.Message}");
             }
+        }
+
+        public void SaveFile(string file, BackupJob job) 
+        {
+            var fileExtension = Path.GetExtension(file);
+            if (!_encryptionExtensions.Contains(fileExtension, StringComparer.OrdinalIgnoreCase))
+            {
+                Console.WriteLine($"Fichier ignoré pour cryptage : {file}");
+                return;
+            }
+
+            Console.WriteLine($"Chiffrement du fichier : {file}");
+            int encryptionTime = CryptoSoft.EncryptFile(file, _encryptionKey);
+            Console.WriteLine($"Fichier {file} crypté en {encryptionTime}ms");
+
+            _logger.LogAction(new LogEntry
+            {
+                Timestamp = DateTime.Now,
+                BackupName = job.Name,
+                SourceFilePath = file,
+                TargetFilePath = file,
+                FileSize = new FileInfo(file).Length,
+                TransferTimeMs = 0,
+                EncryptionTimeMs = encryptionTime,
+                Status = "Fichier crypté avec succès",
+                Level = Logger.LogLevel.Info
+            });
         }
 
         public bool IsBusinessSoftwareRunning()

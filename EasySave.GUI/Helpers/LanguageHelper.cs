@@ -80,6 +80,7 @@ namespace EasySave.GUI.Helpers
                     { "ExecutionBlocked", "🚨 Execution blocked:" },
                     { "IsRunning", "is running." },
                     { "AllJobsExecuted", "✅ All jobs executed successfully." },
+                    { "ExecutionFailed", "❌ Error in the execution." },
                     { "JobDeleted", "🗑️ Job deleted." },
                     { "JobAdded", "✅ Job '{0}' added successfully." },
                     { "JobModified", "✏️ Job '{0}' modified." },
@@ -87,6 +88,7 @@ namespace EasySave.GUI.Helpers
                     { "PleaseSelectJobForModification", "❌ Please select a job before modifying." },
                     { "ButtonAddExtension", "Add" },
                     { "ButtonRemoveExtension", "Remove" },
+                    { "PriorityExtensions", "Priority extensions" },
                 }
             },
             {
@@ -154,6 +156,7 @@ namespace EasySave.GUI.Helpers
                     { "ExecutionBlocked", "🚨 Exécution bloquée:" },
                     { "IsRunning", "est en cours d'exécution." },
                     { "AllJobsExecuted", "✅ Tous les travaux ont été exécutés avec succès." },
+                    { "ExecutionFailed", "❌ Erreur lors de l'exécution." },
                     { "JobDeleted", "🗑️ Travail supprimé." },
                     { "JobAdded", "✅ Travail '{0}' ajouté avec succès." },
                     { "JobModified", "✏️ Travail '{0}' modifié." },
@@ -161,6 +164,7 @@ namespace EasySave.GUI.Helpers
                     { "PleaseSelectJobForModification", "❌ Veuillez sélectionner un travail avant de modifier." },
                     { "ButtonAddExtension", "Ajouter" },
                     { "ButtonRemoveExtension", "Retirer" },
+                    { "PriorityExtensions", "Extensions prioritaires" },
                 }
             }
         };
@@ -238,6 +242,8 @@ namespace EasySave.GUI.Helpers
         public string ErrorLoadingFiles => GetMessage("ErrorLoadingFiles");
         public string ButtonAddExtension => GetMessage("ButtonAddExtension");
         public string ButtonRemoveExtension => GetMessage("ButtonRemoveExtension");
+        public string PriorityExtensionsLabel => "PriorityExtensions:";
+
 
         public string GetMessage(string key) =>
             messages[_language].TryGetValue(key, out var value)

@@ -49,6 +49,20 @@ namespace EasySave.GUI.ViewModels
             set => this.RaiseAndSetIfChanged(ref _encryptionExtensions, value);
         }
 
+        private string _newPriorityExtension;
+        public string NewPriorityExtension
+        {
+            get => _newPriorityExtension;
+            set => this.RaiseAndSetIfChanged(ref _newPriorityExtension, value);
+        }
+
+        private ObservableCollection<string> _priorityExtensions = new();
+        public ObservableCollection<string> PriorityExtensions
+        {
+            get => _priorityExtensions;
+            set => this.RaiseAndSetIfChanged(ref _priorityExtensions, value);
+        }
+
         public List<string> LogFormatOptions { get; } = new() { "JSON", "XML" };
 
         public ReactiveCommand<string, Unit> AddExtensionCommand { get; }
@@ -56,6 +70,8 @@ namespace EasySave.GUI.ViewModels
         public ReactiveCommand<Window, Unit> SaveCommand { get; }
         public ReactiveCommand<Window, Unit> ChooseLogDirectoryCommand { get; }
         public ReactiveCommand<Window, Unit> CloseCommand { get; }
+        public ReactiveCommand<string, Unit> AddPriorityExtensionCommand { get; }
+        public ReactiveCommand<string, Unit> RemovePriorityExtensionCommand { get; }
 
         public ConfigurationViewModel()
         {
@@ -79,6 +95,25 @@ namespace EasySave.GUI.ViewModels
                     window.Close();
                 }
             });
+
+            AddPriorityExtensionCommand = ReactiveCommand.Create<string>(extension =>
+            {
+                if (!string.IsNullOrWhiteSpace(extension) && !_priorityExtensions.Contains(extension))
+                {
+                    PriorityExtensions.Add(extension);
+                }
+                
+                // Clear the input field after adding
+                NewPriorityExtension = string.Empty;
+            });
+
+            RemovePriorityExtensionCommand = ReactiveCommand.Create<string>(extension =>
+            {
+                if (!string.IsNullOrEmpty(extension) && PriorityExtensions.Contains(extension))
+                {
+                    PriorityExtensions.Remove(extension);
+                }
+            });
         }
 
         public void LoadSettings()
@@ -95,6 +130,7 @@ namespace EasySave.GUI.ViewModels
                     BusinessSoftware = config?.BusinessSoftware;
                     LogDirectory = config?.LogDirectory ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Logs");
                     EncryptionExtensions = new ObservableCollection<string>(config?.EncryptionExtensions ?? new List<string> { ".txt", ".docx" });
+                    PriorityExtensions = new ObservableCollection<string>(config?.PriorityExtensions ?? new List<string> { ".txt", ".docx" });
 
                     Debug.WriteLine($"{LanguageHelperInstance.LogFormatLabel} : {LogDirectory}");
                 }
@@ -114,7 +150,8 @@ namespace EasySave.GUI.ViewModels
                     LogFormat = LogFormat,
                     BusinessSoftware = BusinessSoftware,
                     LogDirectory = LogDirectory,
-                    EncryptionExtensions = EncryptionExtensions.ToList()
+                    EncryptionExtensions = EncryptionExtensions.ToList(),
+                    PriorityExtensions = PriorityExtensions.ToList()
                 };
 
                 string json = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
@@ -164,5 +201,6 @@ namespace EasySave.GUI.ViewModels
         public string BusinessSoftware { get; set; } = "Calculator";
         public string LogDirectory { get; set; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Logs");
         public List<string> EncryptionExtensions { get; set; } = new();
+        public List<string> PriorityExtensions { get; set; } = new();
     }
 }
