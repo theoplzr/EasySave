@@ -1,15 +1,15 @@
 [
   {
-    "BackupName": "Ilias",
-    "LastActionTime": "2025-02-20T12:22:09.079285+01:00",
+    "BackupName": "Test",
+    "LastActionTime": "2025-02-25T13:38:44.815166+01:00",
     "Status": "En cours",
-    "TotalFiles": 3,
+    "TotalFiles": 5,
     "TotalSize": 0,
     "RemainingFiles": 0,
     "RemainingSize": 0,
     "Progress": 100,
-    "CurrentSourceFile": "/Users/tpellizzari/Documents/Source1/test_6mo.txt",
-    "CurrentTargetFile": "/Users/tpellizzari/Documents/Target1/test_6mo.txt",
-    "JobId": "d054cbd1-4816-4020-835a-74a7f9eb5c78"
+    "CurrentSourceFile": "/Users/tpellizzari/Documents/Source2/test_large1.txt",
+    "CurrentTargetFile": "/Users/tpellizzari/Documents/Target2/test_large1.txt",
+    "JobId": "e3089f06-3ef0-446c-9019-3ae1b8f05cee"
   }
 ]

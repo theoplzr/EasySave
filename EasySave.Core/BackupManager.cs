@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
 using CryptoSoftLib;
 using System.IO;
+using System.Threading;
 
 namespace EasySave.Core
 {
@@ -26,15 +27,15 @@ namespace EasySave.Core
         private readonly string[] _encryptionExtensions;
         private readonly string[] _priorityExtensions;
         private readonly string _encryptionKey;
-        private readonly object _observersLock = new(); 
-        private string _status;
+        private readonly object _observersLock = new();
+        private string _status = string.Empty; // Initialisation du statut
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BackupManager"/> class.
-        /// </summary>
-        /// <param name="jobRepository">Repository for storing backup jobs.</param>
-        /// <param name="logDirectory">Directory for storing log files.</param>
-        /// <param name="configuration">Application configuration settings.</param>
+        // Seuil configurable en kilo-octets pour le transfert de gros fichiers
+        private readonly int _transferThresholdInKiloBytes;
+        // Verrou pour la synchronisation des transferts de gros fichiers
+        private static readonly object _bigFileLock = new();
+        private static bool _bigFileTransferInProgress = false;
+
         public BackupManager(IBackupJobRepository jobRepository, string logDirectory, IConfiguration configuration)
         {
             _jobRepository = jobRepository ?? throw new ArgumentNullException(nameof(jobRepository));
@@ -48,6 +49,9 @@ namespace EasySave.Core
             _priorityExtensions = configuration.GetSection("PriorityExtensions").Get<string[]>() ?? Array.Empty<string>();
             _encryptionKey = "DefaultKey123";
 
+            // Récupération du seuil de transfert en kilo-octets (n Ko)
+            _transferThresholdInKiloBytes = int.TryParse(configuration["TransferThreshold"], out int threshold) ? threshold : 1024;
+
             // Initialize logger
             string logFormat = configuration["LogFormat"] ?? "JSON";
             _logger = Logger.GetInstance(logDirectory, logFormat);
@@ -55,10 +59,6 @@ namespace EasySave.Core
 
         // ------------------------- Gestion des Observateurs -------------------------
 
-        /// <summary>
-        /// Adds an observer to monitor backup state changes.
-        /// </summary>
-        /// <param name="observer">The observer implementing IBackupObserver.</param>
         public void AddObserver(IBackupObserver observer)
         {
             if (!_observers.Contains(observer))
@@ -67,22 +67,14 @@ namespace EasySave.Core
             }
         }
 
-        /// <summary>
-        /// Removes an observer from the list.
-        /// </summary>
-        /// <param name="observer">The observer to remove.</param>
         public void RemoveObserver(IBackupObserver observer)
         {
             _observers.Remove(observer);
         }
 
-        /// <summary>
-        /// Notifies all observers about the backup state change.
-        /// </summary>
-        /// <param name="state">The current backup state.</param>
         private void NotifyObservers(BackupState state)
         {
-            lock (_observersLock) 
+            lock (_observersLock)
             {
                 foreach (var obs in _observers)
                 {
@@ -91,9 +83,6 @@ namespace EasySave.Core
             }
         }
 
-        /// <summary>
-        /// Saves the current state of backup jobs.
-        /// </summary>
         private void SaveChanges()
         {
             _jobRepository.Save(_backupJobs);
@@ -101,10 +90,6 @@ namespace EasySave.Core
 
         // ------------------------- Gestion des Jobs de Sauvegarde -------------------------
 
-        /// <summary>
-        /// Adds a new backup job to the list.
-        /// </summary>
-        /// <param name="job">The backup job to add.</param>
         public void AddBackupJob(BackupJob job)
         {
             if (job == null) throw new ArgumentNullException(nameof(job));
@@ -114,42 +99,26 @@ namespace EasySave.Core
             Console.WriteLine($"✅ Backup job '{job.Name}' added successfully.");
         }
 
-        /// <summary>
-        /// Executes all backup jobs asynchronously.
-        /// </summary>
         public async Task ExecuteAllJobsAsync()
         {
-            // Exécuter d'abord tous les fichiers prioritaires en parallèle
-            var priorityTasks = _backupJobs.Select(job => Task.Run(() => ExecuteBackup(job, true)));
-            await Task.WhenAll(priorityTasks); // Attendre que toutes les tâches prioritaires soient terminées
-
-            // Ensuite, exécuter tous les fichiers normaux en parallèle
-            var normalTasks = _backupJobs.Select(job => Task.Run(() => ExecuteBackup(job, false)));
-            await Task.WhenAll(normalTasks); // Attendre la fin de tous les fichiers normaux
+            // Lancer une seule tâche par job
+            var tasks = _backupJobs.Select(job => Task.Run(() => ExecuteBackup(job)));
+            await Task.WhenAll(tasks);
         }
 
-        /// <summary>
-        /// Gets the total number of backup jobs.
-        /// </summary>
-        /// <returns>The number of backup jobs.</returns>
         public int GetBackupJobCount()
         {
             return _backupJobs.Count;
         }
 
-        /// <summary>
-        /// Retrieves the list of all backup jobs.
-        /// </summary>
-        /// <returns>List of backup jobs.</returns>
         public List<BackupJob> GetAllJobs()
         {
             return _backupJobs;
         }
 
         /// <summary>
-        /// Executes a specific backup job by its index.
+        /// Exécute le job à l'index spécifié en une seule passe.
         /// </summary>
-        /// <param name="index">Index of the backup job.</param>
         public void ExecuteBackupByIndex(int index)
         {
             if (IsBusinessSoftwareRunning())
@@ -161,14 +130,9 @@ namespace EasySave.Core
             if (index < 0 || index >= _backupJobs.Count)
                 throw new ArgumentOutOfRangeException(nameof(index), $"Index {index} is out of range.");
 
-            ExecuteBackup(_backupJobs[index], true);
-            ExecuteBackup(_backupJobs[index], false);
+            ExecuteBackup(_backupJobs[index]);
         }
 
-        /// <summary>
-        /// Remove a specific backup job by its index.
-        /// </summary>
-        /// <param name="index">Index of the backup job.</param>
         public void RemoveBackupJob(int index)
         {
             if (index < 0 || index >= _backupJobs.Count)
@@ -180,14 +144,6 @@ namespace EasySave.Core
             Console.WriteLine($"Backup job '{jobToRemove.Name}' removed.");
         }
 
-        /// <summary>
-        /// Update a specific backup job by its index.
-        /// </summary>
-        /// <param name="index">Index of the backup job.</param>
-        /// <param name="newName">New name of the backup job.</param>
-        /// <param name="newSource">New source of the backup job.</param>
-        /// <param name="newTarget">New target of the backup job.</param>
-        /// <param name="newType">New type of the backup job.</param>
         public void UpdateBackupJob(int index, string? newName, string? newSource, string? newTarget, BackupType? newType)
         {
             if (index < 0 || index >= _backupJobs.Count)
@@ -214,9 +170,6 @@ namespace EasySave.Core
             Console.WriteLine($"Job '{job.Name}' updated successfully.");
         }
 
-        /// <summary>
-        /// List all backup job.
-        /// </summary>
         public void ListBackupJobs()
         {
             if (_backupJobs.Count == 0)
@@ -233,14 +186,12 @@ namespace EasySave.Core
         }
 
         /// <summary>
-        /// Execute a specific backup job by its priority.
+        /// Exécute le job en une seule passe, traitant d'abord les fichiers prioritaires puis les non-prioritaires.
         /// </summary>
-        /// <param name="job">Backup job.</param>
-        /// <param name="isPriorityPass">If its the priority time for the backup.</param>
-        private async Task ExecuteBackup(BackupJob job, bool isPriorityPass)
+        private async Task ExecuteBackup(BackupJob job)
         {
             bool alreadyLog = false;
-            // Tant que le logiciel métier est actif, on attend
+            // Attendre tant que le logiciel métier est actif
             while (IsBusinessSoftwareRunning())
             {
                 if (!alreadyLog)
@@ -252,11 +203,12 @@ namespace EasySave.Core
                         BackupName = job.Name,
                         Status = $"Pause: Business software '{_businessSoftwareName}' detected"
                     });
-                    Console.WriteLine($"Backup job '{job.Name}' paused: business software '{_businessSoftwareName}' is running.");
+                    Console.WriteLine($"Backup job '{job.Name}' stopped: business software '{_businessSoftwareName}' is running.");
                 }
-                await Task.Delay(2000); // Attend 2 secondes avant de re-vérifier
+                await Task.Delay(2000);
             }
 
+            // Mise à jour de l'état de sauvegarde
             BackupState state = new BackupState
             {
                 JobId = job.Id,
@@ -269,49 +221,31 @@ namespace EasySave.Core
             };
 
             NotifyObservers(state);
-            
-            // Choisir l’algorithme de sauvegarde
+
+            // Choisir l’algorithme de sauvegarde en passant _businessSoftwareName au constructeur
             AbstractBackupAlgorithm algorithm = job.BackupType == BackupType.Complete
                 ? new FullBackupAlgorithm(_logger, state => NotifyObservers(state), () => SaveChanges(), _businessSoftwareName)
                 : new DifferentialBackupAlgorithm(_logger, state => NotifyObservers(state), () => SaveChanges(), _businessSoftwareName);
 
             try
             {
-                var executionTask = Task.Run(() => algorithm.Execute(job));
-
-                while (!executionTask.IsCompleted) // Tant que `Execute(job)` n'est pas terminé
-                {
-                    _status = algorithm.GetStatus();
-                    await Task.Delay(1000);
-                }
+                algorithm.Execute(job);
 
                 // Récupérer tous les fichiers dans le dossier cible
                 var allFiles = Directory.GetFiles(job.TargetDirectory);
-
                 // Séparer les fichiers prioritaires et non prioritaires
                 var priorityFiles = allFiles.Where(file => _priorityExtensions.Any(ext => file.EndsWith(ext, StringComparison.OrdinalIgnoreCase))).ToList();
                 var normalFiles = allFiles.Except(priorityFiles).ToList();
 
-                // Vérification AVANT cryptage pour éviter tout chiffrement non désiré
-                if (isPriorityPass)
+                // Traiter d'abord les fichiers prioritaires
+                foreach (var file in priorityFiles)
                 {
-                    foreach (var file in priorityFiles)
-                    {
-                        while(IsBusinessSoftwareRunning())
-                        {
-                            await Task.Delay(2000); // Attend 2 secondes avant de re-vérifier
-                        }
-                        SaveFile(file, job);
-                    }
-                } else {
-                    foreach (var file in normalFiles)
-                    {
-                        while(IsBusinessSoftwareRunning())
-                        {
-                            await Task.Delay(2000); // Attend 2 secondes avant de re-vérifier
-                        }
-                        SaveFile(file, job);
-                    }
+                    SaveFile(file, job);
+                }
+                // Puis les fichiers non prioritaires
+                foreach (var file in normalFiles)
+                {
+                    SaveFile(file, job);
                 }
             }
             catch (Exception ex)
@@ -321,50 +255,92 @@ namespace EasySave.Core
         }
 
         /// <summary>
-        /// Saves a file using encryption if it matches the encryption extensions list.
+        /// Sauvegarde et chiffre le fichier en fonction de sa taille.
         /// </summary>
-        /// <param name="file">The file path.</param>
-        /// <param name="job">The backup job associated with the file.</param>
-        public void SaveFile(string file, BackupJob job) 
+        public void SaveFile(string file, BackupJob job)
         {
+            var fileInfo = new FileInfo(file);
             var fileExtension = Path.GetExtension(file);
+
+            // Vérifier si le fichier doit être crypté
             if (!_encryptionExtensions.Contains(fileExtension, StringComparer.OrdinalIgnoreCase))
             {
                 Console.WriteLine($"Fichier ignoré pour cryptage : {file}");
                 return;
             }
 
-            Console.WriteLine($"Chiffrement du fichier : {file}");
-            int encryptionTime = CryptoSoft.EncryptFile(file, _encryptionKey);
-            Console.WriteLine($"Fichier {file} crypté en {encryptionTime}ms");
-
-            _logger.LogAction(new LogEntry
+            // Si le fichier dépasse le seuil, synchroniser le transfert
+            if (fileInfo.Length > _transferThresholdInKiloBytes * 1024)
             {
-                Timestamp = DateTime.Now,
-                BackupName = job.Name,
-                SourceFilePath = file,
-                TargetFilePath = file,
-                FileSize = new FileInfo(file).Length,
-                TransferTimeMs = 0,
-                EncryptionTimeMs = encryptionTime,
-                Status = "Fichier crypté avec succès",
-                Level = Logger.LogLevel.Info
-            });
+                lock (_bigFileLock)
+                {
+                    while (_bigFileTransferInProgress)
+                    {
+                        Monitor.Wait(_bigFileLock);
+                    }
+                    _bigFileTransferInProgress = true;
+                }
+
+                try
+                {
+                    Console.WriteLine($"Chiffrement du fichier volumineux : {file}");
+                    int encryptionTime = CryptoSoft.EncryptFile(file, _encryptionKey);
+                    Console.WriteLine($"Fichier {file} crypté en {encryptionTime}ms");
+
+                    _logger.LogAction(new LogEntry
+                    {
+                        Timestamp = DateTime.Now,
+                        BackupName = job.Name,
+                        SourceFilePath = file,
+                        TargetFilePath = file,
+                        FileSize = fileInfo.Length,
+                        TransferTimeMs = 0,
+                        EncryptionTimeMs = encryptionTime,
+                        Status = "Fichier crypté avec succès",
+                        Level = Logger.LogLevel.Info
+                    });
+                }
+                finally
+                {
+                    lock (_bigFileLock)
+                    {
+                        _bigFileTransferInProgress = false;
+                        Monitor.PulseAll(_bigFileLock);
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine($"Chiffrement du fichier : {file}");
+                int encryptionTime = CryptoSoft.EncryptFile(file, _encryptionKey);
+                Console.WriteLine($"Fichier {file} crypté en {encryptionTime}ms");
+
+                _logger.LogAction(new LogEntry
+                {
+                    Timestamp = DateTime.Now,
+                    BackupName = job.Name,
+                    SourceFilePath = file,
+                    TargetFilePath = file,
+                    FileSize = fileInfo.Length,
+                    TransferTimeMs = 0,
+                    EncryptionTimeMs = encryptionTime,
+                    Status = "Fichier crypté avec succès",
+                    Level = Logger.LogLevel.Info
+                });
+            }
         }
 
         /// <summary>
-        /// Checks if a business software is running.
+        /// Vérifie si le logiciel métier est en cours d'exécution.
         /// </summary>
-        /// <returns>True if the business software is running; otherwise, false.</returns>
         public bool IsBusinessSoftwareRunning()
         {
             return Process.GetProcessesByName(_businessSoftwareName).Any();
         }
 
         /// <summary>
-        /// Gets the current status of the backup process.
+        /// Retourne le statut actuel du backup manager.
         /// </summary>
-        /// <returns>A string representing the current status.</returns>
         public string GetStatus()
         {
             return _status;
