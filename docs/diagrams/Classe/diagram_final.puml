@@ -208,7 +208,6 @@ package EasySave.GUI {
     - _selectedJob: BackupJob
     + SelectedJob: BackuoJob
     - _realTimeStatus: string
-    -- 
     + MainWindowViewModel()
     - Job_PropertyChanged(sender: object, e: PropertyChangedEventArgs): void
     - async ExecuteAllJobsAsync(): Task
@@ -227,9 +226,7 @@ package EasySave.GUI {
     - _selectedBackupJob: BackupJob
     + LanguageHelperInstance: LanguageHelper
     + BackupJobs: ObservableCollection<FinishedBackupJob>
-    + CancelCommand: ReactiveCommand<Unit, Unit>
     + SelectedBackupJob: BackupJob
-    -- 
     + ListAllJobViewModel(window: Window, facade: EasySaveFacade)
     + LoadBackupJobs(): void
     - LoadBackupJobsFromJson(filePath: string):void
@@ -240,10 +237,7 @@ package EasySave.GUI {
 
   class LanguageSelectionViewModel {
     - _window: Window
-    + SelectEnglishCommand: ReactiveCommand<Unit, Unit>
-    + SelectFrenchCommand: ReactiveCommand<Unit, Unit>
     + LanguageHelperInstance: LanguageHelper
-    -- 
     + LanguageSelectionViewModel(window: Window)
     - OpenMainWindow(): void
   }
@@ -267,12 +261,7 @@ package EasySave.GUI {
     + SourceDirectoryError: string
     + TargetDirectoryError: string
     + CanSave: bool
-    + SaveCommand: ReactiveCommand<Unit, BackupJob?>
-    + CancelCommand: ReactiveCommand<Unit, Unit>
-    + BrowseSourceCommand: ReactiveCommand<Unit, Unit>
-    + BrowseTargetCommand: ReactiveCommand<Unit, Unit>
     - Window? _window
-    --
     + JobFormViewModel(Window window, BackupJob? existingJob)
     + JobFormViewModel()
     - SaveJob(): BackupJob
@@ -297,14 +286,6 @@ package EasySave.GUI {
       + NewPriorityExtension: string
       + PriorityExtensions: ObservableCollection<string>
       + LogFormatOptions: List<string>
-      + AddExtensionCommand: ReactiveCommand<string, Unit>
-      + RemoveExtensionCommand: ReactiveCommand<string, Unit>
-      + SaveCommand: ReactiveCommand<Window, Unit>
-      + ChooseLogDirectoryCommand: ReactiveCommand<Window, Unit>
-      + CloseCommand: ReactiveCommand<Window, Unit>
-      + AddPriorityExtensionCommand: ReactiveCommand<string, Unit>
-      + RemovePriorityExtensionCommand: ReactiveCommand<string, Unit>
-      --
       + ConfigurationViewModel()
       + LoadSettings(): void
       + SaveSettings(): void
