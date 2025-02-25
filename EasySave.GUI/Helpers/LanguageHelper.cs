@@ -8,12 +8,9 @@ namespace EasySave.GUI.Helpers
     {
         private static readonly Lazy<LanguageHelper> _instance = new(() => new LanguageHelper());
         public static LanguageHelper Instance => _instance.Value;
-
-        private string _language = "en"; // Langue par défaut
+        private string _language = "en"; 
         public event PropertyChangedEventHandler? PropertyChanged;
-
         public string CurrentLanguage => _language;
-
         private static readonly Dictionary<string, Dictionary<string, string>> messages = new()
         {
             {
@@ -37,7 +34,7 @@ namespace EasySave.GUI.Helpers
                     { "ProgressTabHeader", "Progress" },
                     { "ConfigurationWindowTitle", "Configuration" },
                     { "LogFormatLabel", "Log Format:" },
-                    { "LogDirectoryLabel", "Log Directory:" },  // Nouvelle clé
+                    { "LogDirectoryLabel", "Log Directory:" },  
                     { "ExtensionsToEncryptLabel", "Extensions to Encrypt:" },
                     { "BusinessSoftwareLabel", "Blocking business software:" },
                     { "ButtonRemove", "Remove" },
@@ -50,10 +47,7 @@ namespace EasySave.GUI.Helpers
                     { "BackupTypeLabel", "Backup Type:" },
                     { "MenuItemLanguage", "Language" },
                     { "ChooseYourLanguage", "Choose your language:" },
-
-                    // Clé ajoutée pour la liste des jobs
                     { "JobsListAllTitle", "Job List" },
-                    // Clé ajoutée pour la liste de tous les jobs
                     {"AllBackupJobsTitle", "All Backup Jobs"},
                     {"AllJobsList", "All Jobs List"},
                     {"LabelSource", "📂 Source:"},
@@ -91,6 +85,17 @@ namespace EasySave.GUI.Helpers
                     { "ButtonAddExtension", "Add" },
                     { "ButtonRemoveExtension", "Remove" },
                     { "PriorityExtensions", "Priority extensions" },
+                    { "Status_Running", "Running" },
+                    { "Status_Paused",  "Paused" },
+                    { "Status_Stopped", "Stopped" },
+                    { "Status_Finished", "Finished" },
+                    { "ButtonPause", "Pause" },
+                    { "ButtonResume", "Resume" },
+                    { "ButtonStop", "Stop" },
+                    { "ExecutionPausedJob", "⏸️ Job \"{0}\" paused." },
+                    { "ExecutionResumedJob", "▶️ Job \"{0}\" resumed." },
+                    { "ExecutionStoppedJob", "⏹️ Job \"{0}\" stopped."},
+                    { "Status_Starting", "Starting" }
                 }
             },
             {
@@ -127,10 +132,7 @@ namespace EasySave.GUI.Helpers
                     { "BackupTypeLabel", "Type de Sauvegarde :" },
                     { "MenuItemLanguage", "Langue" },
                     { "ChooseYourLanguage", "Choisissez votre langue :" },
-
-                    // Clé ajoutée pour la liste des jobs
                     { "JobsListAllTitle", "Liste des Travaux en cours" },
-                    // Clé ajoutée pour la liste de tous les jobs
                     {"AllBackupJobsTitle", "Tous les travaux"},
                     {"AllJobsList", "Liste des travaux effectués"},
                     {"LabelSource", "📂 Source:"},
@@ -141,7 +143,6 @@ namespace EasySave.GUI.Helpers
                     {"LabelEncryptionTime", "🔒 Temps de cryptage:"},
                     {"LabelStatus", "✅ Status:"},
                     {"LabelStrategy", "📊 Stratégie:"},
-
                     { "English", "Anglais" },
                     { "French", "Français" },
                     { "JobsListTitle", "Voici vos travaux de sauvegarde créés en cours !" },
@@ -169,9 +170,28 @@ namespace EasySave.GUI.Helpers
                     { "ButtonAddExtension", "Ajouter" },
                     { "ButtonRemoveExtension", "Retirer" },
                     { "PriorityExtensions", "Extensions prioritaires" },
+                    { "Status_Running", "En cours" },
+                    { "Status_Paused",  "En pause" },
+                    { "Status_Stopped", "Arrêté" },
+                    { "Status_Finished", "Terminé" },
+                    { "ButtonPause", "Pause" },
+                    { "ButtonResume", "Reprendre" },
+                    { "ButtonStop", "Arrêter" },{ "ExecutionPausedJob", "⏸️ Job \"{0}\" mis en pause." },
+                    { "ExecutionResumedJob", "▶️ Job \"{0}\" repris." },
+                    { "ExecutionStoppedJob", "⏹️ Job \"{0}\" stoppé." },
+                    { "Status_Starting", "Démarrage" }
                 }
             }
         };
+
+        public string TranslateStatus(string rawStatus)
+        {
+            // rawStatus sera "Running", "Paused", etc.
+            // On construit la clé "Status_" + rawStatus
+            var finalKey = "Status_" + rawStatus;
+            return GetMessage(finalKey);
+        }
+
 
         private LanguageHelper() { }
 
@@ -247,8 +267,10 @@ namespace EasySave.GUI.Helpers
         public string ButtonAddExtension => GetMessage("ButtonAddExtension");
         public string ButtonRemoveExtension => GetMessage("ButtonRemoveExtension");
         public string PriorityExtensionsLabel => "PriorityExtensions:";
-
-
+        public string ButtonPause => GetMessage("ButtonPause");
+        public string ButtonResume => GetMessage("ButtonResume");
+        public string ButtonStop => GetMessage("ButtonStop");
+        public string GetStatus(string statusKey) => GetMessage("Status_" + statusKey);
         public string GetMessage(string key) =>
             messages[_language].TryGetValue(key, out var value)
                 ? value

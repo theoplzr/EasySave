@@ -71,6 +71,9 @@ namespace EasySave.GUI.ViewModels
         public ReactiveCommand<Unit, Unit> OpenConfigurationCommand { get; }
         public ReactiveCommand<Unit, Unit> ExitCommand { get; }
         public ReactiveCommand<string, Unit> ChangeLanguageCommand { get; }
+        public ReactiveCommand<Unit, Unit> PauseJobCommand { get; }
+        public ReactiveCommand<Unit, Unit> ResumeJobCommand { get; }
+        public ReactiveCommand<Unit, Unit> StopJobCommand { get; }
 
         /// <summary>
         /// Initializes the main window ViewModel.
@@ -106,6 +109,35 @@ namespace EasySave.GUI.ViewModels
             {
                 job.PropertyChanged += Job_PropertyChanged;
             }
+
+            PauseJobCommand = ReactiveCommand.Create(() =>
+            {
+                if (SelectedJob != null)
+                {
+                    _facade.PauseJob(SelectedJob.Id);
+                    RealTimeStatus = LanguageHelperInstance.GetMessage("JobPaused");
+                }
+            });
+
+            ResumeJobCommand = ReactiveCommand.Create(() =>
+            {
+                if (SelectedJob != null)
+                {
+                    _facade.ResumeJob(SelectedJob.Id);
+                    RealTimeStatus = LanguageHelperInstance.GetMessage("JobResumed");
+                }
+            });
+
+            StopJobCommand = ReactiveCommand.Create(() =>
+            {
+                if (SelectedJob != null)
+                {
+                    _facade.StopJob(SelectedJob.Id);
+                    RealTimeStatus = LanguageHelperInstance.GetMessage("JobStopped");
+                }
+            });
+
+            _facade.AddObserver(new UiObserver(this));
 
             OpenAddJobWindowCommand = ReactiveCommand.Create(OpenAddJobWindow);
             OpenModifyJobWindowCommand = ReactiveCommand.Create(OpenModifyJobWindow);

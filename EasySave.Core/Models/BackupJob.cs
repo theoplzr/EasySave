@@ -64,6 +64,23 @@ namespace EasySave.Core.Models
             }
         }
 
+        private string _status = "Idle"; // État par défaut
+        /// <summary>
+        /// Status of the backup job (Running, Paused, Stopped, Finished).
+        /// </summary>
+        public string Status
+        {
+            get => _status;
+            set
+            {
+                if (_status != value)
+                {
+                    _status = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         /// <summary>
         /// Event triggered when a property value changes.
         /// </summary>

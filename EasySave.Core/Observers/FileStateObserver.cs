@@ -1,5 +1,9 @@
 using EasySave.Core.Models;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace EasySave.Core.Observers
 {
@@ -42,7 +46,7 @@ namespace EasySave.Core.Observers
             // Write all states to the JSON file
             var allStates = _states.Values.ToList();
 
-            // Générer un JSON avec la progression incluse
+            // Générer un JSON avec la progression incluse (utiliser ProgressPercentage)
             var formattedStates = allStates.Select(s => new
             {
                 s.BackupName,
@@ -52,7 +56,7 @@ namespace EasySave.Core.Observers
                 s.TotalSize,
                 s.RemainingFiles,
                 s.RemainingSize,
-                s.Progress,  
+                Progress = s.ProgressPercentage, // Mise à jour ici
                 s.CurrentSourceFile,
                 s.CurrentTargetFile,
                 s.JobId

@@ -80,11 +80,12 @@
 
       <!-- Contenu principal -->
       <Grid>
-        <!-- Nouvelle structure de lignes pour inclure le titre de la liste -->
+        <!-- Nouvelle structure de lignes pour inclure le titre, la liste et les contrôles -->
         <Grid.RowDefinitions>
           <RowDefinition Height="Auto"/>    <!-- Menu -->
           <RowDefinition Height="Auto"/>    <!-- Titre de la liste -->
           <RowDefinition Height="*"/>       <!-- Liste des jobs -->
+          <RowDefinition Height="Auto"/>    <!-- Boutons de contrôle -->
           <RowDefinition Height="Auto"/>    <!-- Statut en temps réel -->
         </Grid.RowDefinitions>
 
@@ -140,8 +141,18 @@
           </ItemsControl>
         </ScrollViewer>
 
+        <!-- Boutons de contrôle (Pause, Resume, Stop) -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+          <Button Content="{Binding LanguageHelperInstance.ButtonPause}"
+                  Command="{Binding PauseJobCommand}" Margin="5"/>
+          <Button Content="{Binding LanguageHelperInstance.ButtonResume}"
+                  Command="{Binding ResumeJobCommand}" Margin="5"/>
+          <Button Content="{Binding LanguageHelperInstance.ButtonStop}"
+                  Command="{Binding StopJobCommand}" Margin="5"/>
+        </StackPanel>
+
         <!-- Statut en temps réel -->
-        <Border Grid.Row="3" Background="White" BorderBrush="Gray" BorderThickness="1" Padding="10" Margin="20">
+        <Border Grid.Row="4" Background="White" BorderBrush="Gray" BorderThickness="1" Padding="10" Margin="20">
           <StackPanel>
             <TextBlock Text="{Binding LanguageHelperInstance.RealTimeStatusHeader}" 
                        FontWeight="Bold" FontSize="14"/>

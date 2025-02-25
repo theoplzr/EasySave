@@ -1,11 +1,12 @@
 [
   {
-    "Id": "e3089f06-3ef0-446c-9019-3ae1b8f05cee",
-    "Name": "Test",
-    "SourceDirectory": "/Users/tpellizzari/Documents/Source2/",
-    "TargetDirectory": "/Users/tpellizzari/Documents/Target2/",
+    "Id": "c9c67bb4-6727-4a40-b53e-25bd45812bf5",
+    "Name": "Noir",
+    "SourceDirectory": "/Users/tpellizzari/Documents/Source5/",
+    "TargetDirectory": "/Users/tpellizzari/Documents/Target5/",
     "BackupType": 0,
     "Ordinal": 0,
-    "IsSelected": false
+    "IsSelected": false,
+    "Status": "En cours"
   }
 ]

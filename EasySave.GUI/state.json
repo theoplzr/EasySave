@@ -1,15 +1,15 @@
 [
   {
-    "BackupName": "Test",
-    "LastActionTime": "2025-02-25T13:38:44.815166+01:00",
-    "Status": "En cours",
-    "TotalFiles": 5,
+    "BackupName": "Noir",
+    "LastActionTime": "2025-02-25T20:04:14.94651+01:00",
+    "Status": "Running",
+    "TotalFiles": 7,
     "TotalSize": 0,
     "RemainingFiles": 0,
     "RemainingSize": 0,
     "Progress": 100,
-    "CurrentSourceFile": "/Users/tpellizzari/Documents/Source2/test_large1.txt",
-    "CurrentTargetFile": "/Users/tpellizzari/Documents/Target2/test_large1.txt",
-    "JobId": "e3089f06-3ef0-446c-9019-3ae1b8f05cee"
+    "CurrentSourceFile": "/Users/tpellizzari/Documents/Target5/.DS_Store",
+    "CurrentTargetFile": "/Users/tpellizzari/Documents/Target5/.DS_Store",
+    "JobId": "c9c67bb4-6727-4a40-b53e-25bd45812bf5"
   }
 ]

@@ -85,5 +85,20 @@ namespace EasySave.Core.Facade
         {
             return _backupManager.GetStatus();
         }
+
+        public void PauseJob(Guid jobId)
+        {
+            _backupManager.PauseJob(jobId);
+        }
+
+        public void ResumeJob(Guid jobId)
+        {
+            _backupManager.ResumeJob(jobId);
+        }
+
+        public void StopJob(Guid jobId)
+        {
+            _backupManager.StopJob(jobId);
+        }
     }
 }

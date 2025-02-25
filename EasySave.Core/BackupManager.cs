@@ -9,6 +9,7 @@ using System.Diagnostics;
 using CryptoSoftLib;
 using System.IO;
 using System.Threading;
+using System.Linq;
 
 namespace EasySave.Core
 {
@@ -29,6 +30,9 @@ namespace EasySave.Core
         private readonly string _encryptionKey;
         private readonly object _observersLock = new();
         private string _status = string.Empty; // Initialisation du statut
+
+        // Association de chaque job à son contrôleur (pour pause/play/stop)
+        private readonly Dictionary<Guid, JobController> _jobControllers = new();
 
         // Seuil configurable en kilo-octets pour le transfert de gros fichiers
         private readonly int _transferThresholdInKiloBytes;
@@ -95,6 +99,9 @@ namespace EasySave.Core
             if (job == null) throw new ArgumentNullException(nameof(job));
 
             _backupJobs.Add(job);
+            // Créer et associer un contrôleur pour ce job
+            _jobControllers[job.Id] = new JobController();
+
             SaveChanges();
             Console.WriteLine($"✅ Backup job '{job.Name}' added successfully.");
         }
@@ -140,6 +147,8 @@ namespace EasySave.Core
 
             var jobToRemove = _backupJobs[index];
             _backupJobs.RemoveAt(index);
+            // Supprimer le contrôleur associé
+            _jobControllers.Remove(jobToRemove.Id);
             SaveChanges();
             Console.WriteLine($"Backup job '{jobToRemove.Name}' removed.");
         }
@@ -153,13 +162,10 @@ namespace EasySave.Core
 
             if (!string.IsNullOrEmpty(newName))
                 job.Name = newName;
-
             if (!string.IsNullOrEmpty(newSource))
                 job.SourceDirectory = newSource;
-
             if (!string.IsNullOrEmpty(newTarget))
                 job.TargetDirectory = newTarget;
-
             if (newType.HasValue)
             {
                 job.BackupType = newType.Value;
@@ -187,9 +193,19 @@ namespace EasySave.Core
 
         /// <summary>
         /// Exécute le job en une seule passe, traitant d'abord les fichiers prioritaires puis les non-prioritaires.
+        /// Intègre les contrôles de pause et d'arrêt.
         /// </summary>
         private async Task ExecuteBackup(BackupJob job)
         {
+            // Récupérer le contrôleur associé au job
+            if (!_jobControllers.TryGetValue(job.Id, out JobController controller))
+            {
+                controller = new JobController();
+                _jobControllers[job.Id] = controller;
+            }
+
+            controller.State = JobState.Running;
+
             bool alreadyLog = false;
             // Attendre tant que le logiciel métier est actif
             while (IsBusinessSoftwareRunning())
@@ -208,7 +224,8 @@ namespace EasySave.Core
                 await Task.Delay(2000);
             }
 
-            // Mise à jour de l'état de sauvegarde
+            // Création d'un état initial avec les données réelles du job
+            int totalFiles = Directory.GetFiles(job.SourceDirectory, "*", SearchOption.AllDirectories).Length;
             BackupState state = new BackupState
             {
                 JobId = job.Id,
@@ -217,15 +234,19 @@ namespace EasySave.Core
                 LastActionTime = DateTime.Now,
                 CurrentSourceFile = "En attente...",
                 CurrentTargetFile = "En attente...",
-                TotalFiles = Directory.GetFiles(job.SourceDirectory, "*", SearchOption.AllDirectories).Length
+                TotalFiles = totalFiles,
+                TotalSize = 0, // Calcul à implémenter si nécessaire
+                RemainingFiles = totalFiles,
+                RemainingSize = 0,
+                ProgressPercentage = 0
             };
 
             NotifyObservers(state);
 
             // Choisir l’algorithme de sauvegarde en passant _businessSoftwareName au constructeur
             AbstractBackupAlgorithm algorithm = job.BackupType == BackupType.Complete
-                ? new FullBackupAlgorithm(_logger, state => NotifyObservers(state), () => SaveChanges(), _businessSoftwareName)
-                : new DifferentialBackupAlgorithm(_logger, state => NotifyObservers(state), () => SaveChanges(), _businessSoftwareName);
+                ? new FullBackupAlgorithm(_logger, s => NotifyObservers(s), () => SaveChanges(), _businessSoftwareName)
+                : new DifferentialBackupAlgorithm(_logger, s => NotifyObservers(s), () => SaveChanges(), _businessSoftwareName);
 
             try
             {
@@ -233,25 +254,87 @@ namespace EasySave.Core
 
                 // Récupérer tous les fichiers dans le dossier cible
                 var allFiles = Directory.GetFiles(job.TargetDirectory);
-                // Séparer les fichiers prioritaires et non prioritaires
-                var priorityFiles = allFiles.Where(file => _priorityExtensions.Any(ext => file.EndsWith(ext, StringComparison.OrdinalIgnoreCase))).ToList();
+                var priorityFiles = allFiles.Where(file => _priorityExtensions.Any(ext => file.EndsWith(ext, System.StringComparison.OrdinalIgnoreCase))).ToList();
                 var normalFiles = allFiles.Except(priorityFiles).ToList();
+                int totalToProcess = priorityFiles.Count + normalFiles.Count;
+                int processedFiles = 0;
 
-                // Traiter d'abord les fichiers prioritaires
-                foreach (var file in priorityFiles)
+                foreach (var file in priorityFiles.Concat(normalFiles))
                 {
+                    // Contrôle de pause et d'arrêt
+                    controller.PauseEvent.Wait(controller.CancellationTokenSource.Token);
+                    if (controller.CancellationTokenSource.Token.IsCancellationRequested)
+                    {
+                        Console.WriteLine($"Job '{job.Name}' stoppé.");
+                        break;
+                    }
+
                     SaveFile(file, job);
-                }
-                // Puis les fichiers non prioritaires
-                foreach (var file in normalFiles)
-                {
-                    SaveFile(file, job);
+                    processedFiles++;
+
+                    // Mise à jour de l'état avec les vraies données
+                    state.LastActionTime = DateTime.Now;
+                    state.CurrentSourceFile = file;
+                    state.CurrentTargetFile = Path.Combine(job.TargetDirectory, Path.GetFileName(file));
+                    state.RemainingFiles = totalToProcess - processedFiles;
+                    state.ProgressPercentage = (int)((processedFiles / (double)totalToProcess) * 100);
+
+                    // Si 100% atteint, définir le statut comme "Finished"
+                    if(state.ProgressPercentage >= 100)
+                    {
+                        state.Status = "Finished";
+                    }
+                    else
+                    {
+                        state.Status = "Running";
+                    }
+
+                    state.Status = "Starting";
+                    NotifyObservers(state);  
+                    await Task.Delay(1000);  
+
+                    state.Status = "Running";
+                    NotifyObservers(state);
+
+                    NotifyObservers(state);
                 }
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 Console.WriteLine($"Erreur lors de l'exécution de la sauvegarde : {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// Notifie la progression d'un job via les observateurs.
+        /// Ici, on se contente de récupérer les vraies données du job.
+        /// </summary>
+        private void NotifyProgress(Guid jobId, double progress)
+        {
+            // Récupérer le job correspondant pour obtenir le nom réel
+            var job = _backupJobs.FirstOrDefault(j => j.Id == jobId);
+            string backupName = job?.Name ?? "Unknown";
+
+            BackupState state = new BackupState
+            {
+                JobId = jobId,
+                BackupName = backupName,
+                Status = "En cours",
+                CurrentSourceFile = "En cours",
+                CurrentTargetFile = "En cours",
+                TotalFiles = job != null ? Directory.GetFiles(job.SourceDirectory, "*", SearchOption.AllDirectories).Length : 0,
+                TotalSize = 0,
+                RemainingFiles = 0,
+                RemainingSize = 0,
+                ProgressPercentage = (int)progress
+            };
+
+            // Si la progression atteint 100%, on définit le statut comme "Terminé"
+            if (state.ProgressPercentage >= 100)
+            {
+                state.Status = "Finished";
+            }
+            NotifyObservers(state);
         }
 
         /// <summary>
@@ -262,14 +345,12 @@ namespace EasySave.Core
             var fileInfo = new FileInfo(file);
             var fileExtension = Path.GetExtension(file);
 
-            // Vérifier si le fichier doit être crypté
-            if (!_encryptionExtensions.Contains(fileExtension, StringComparer.OrdinalIgnoreCase))
+            if (!_encryptionExtensions.Contains(fileExtension, System.StringComparer.OrdinalIgnoreCase))
             {
                 Console.WriteLine($"Fichier ignoré pour cryptage : {file}");
                 return;
             }
 
-            // Si le fichier dépasse le seuil, synchroniser le transfert
             if (fileInfo.Length > _transferThresholdInKiloBytes * 1024)
             {
                 lock (_bigFileLock)
@@ -284,6 +365,9 @@ namespace EasySave.Core
                 try
                 {
                     Console.WriteLine($"Chiffrement du fichier volumineux : {file}");
+                    // Délai artificiel de 3 secondes pour simuler un temps de traitement long
+                    System.Threading.Thread.Sleep(3000);
+
                     int encryptionTime = CryptoSoft.EncryptFile(file, _encryptionKey);
                     Console.WriteLine($"Fichier {file} crypté en {encryptionTime}ms");
 
@@ -312,6 +396,8 @@ namespace EasySave.Core
             else
             {
                 Console.WriteLine($"Chiffrement du fichier : {file}");
+                System.Threading.Thread.Sleep(500);
+
                 int encryptionTime = CryptoSoft.EncryptFile(file, _encryptionKey);
                 Console.WriteLine($"Fichier {file} crypté en {encryptionTime}ms");
 
@@ -344,6 +430,98 @@ namespace EasySave.Core
         public string GetStatus()
         {
             return _status;
+        }
+
+        // ------------------------- Méthodes de contrôle (Pause, Resume, Stop) -------------------------
+
+        /// <summary>
+        /// Met en pause le job spécifié.
+        /// </summary>
+        public void PauseJob(Guid jobId)
+        {
+            if (_jobControllers.TryGetValue(jobId, out JobController controller) && controller.State == JobState.Running)
+            {
+                controller.State = JobState.Paused;
+                controller.PauseEvent.Reset();
+                _status = "Paused"; // Mise à jour du statut global
+                Console.WriteLine($"Job {jobId} mis en pause."); // ✅ Ajout pour affichage console
+
+                // Création d'un état mis à jour pour notifier l'UI
+                var job = _backupJobs.FirstOrDefault(j => j.Id == jobId);
+                var state = new BackupState
+                {
+                    JobId = jobId,
+                    BackupName = job?.Name ?? "Unknown",
+                    Status = "Paused",
+                    LastActionTime = DateTime.Now,
+                    CurrentSourceFile = "Paused",
+                    CurrentTargetFile = "Paused",
+                    TotalFiles = job != null ? Directory.GetFiles(job.SourceDirectory, "*", SearchOption.AllDirectories).Length : 0,
+                    RemainingFiles = 0,
+                    TotalSize = 0,
+                    RemainingSize = 0,
+                    ProgressPercentage = 0
+                };
+
+                NotifyObservers(state);
+            }
+        }
+
+        public void ResumeJob(Guid jobId)
+        {
+            if (_jobControllers.TryGetValue(jobId, out JobController controller) && controller.State == JobState.Paused)
+            {
+                controller.State = JobState.Running;
+                controller.PauseEvent.Set();
+                Console.WriteLine($"Job {jobId} repris.");
+
+                var job = _backupJobs.FirstOrDefault(j => j.Id == jobId);
+                var state = new BackupState
+                {
+                    JobId = jobId,
+                    BackupName = job?.Name ?? "Unknown",
+                    Status = "Running",
+                    LastActionTime = DateTime.Now,
+                    CurrentSourceFile = "Running",
+                    CurrentTargetFile = "Running",
+                    TotalFiles = job != null ? Directory.GetFiles(job.SourceDirectory, "*", SearchOption.AllDirectories).Length : 0,
+                    RemainingFiles = 0,
+                    TotalSize = 0,
+                    RemainingSize = 0,
+                    ProgressPercentage = 0
+                };
+
+                NotifyObservers(state);
+            }
+        }
+
+        public void StopJob(Guid jobId)
+        {
+            if (_jobControllers.TryGetValue(jobId, out JobController controller))
+            {
+                controller.State = JobState.Stopped;
+                controller.CancellationTokenSource.Cancel();
+                controller.PauseEvent.Set();
+                Console.WriteLine($"Job {jobId} stoppé.");
+
+                var job = _backupJobs.FirstOrDefault(j => j.Id == jobId);
+                var state = new BackupState
+                {
+                    JobId = jobId,
+                    BackupName = job?.Name ?? "Unknown",
+                    Status = "Stopped",
+                    LastActionTime = DateTime.Now,
+                    CurrentSourceFile = "Stopped",
+                    CurrentTargetFile = "Stopped",
+                    TotalFiles = job != null ? Directory.GetFiles(job.SourceDirectory, "*", SearchOption.AllDirectories).Length : 0,
+                    RemainingFiles = 0,
+                    TotalSize = 0,
+                    RemainingSize = 0,
+                    ProgressPercentage = 0
+                };
+
+                NotifyObservers(state);
+            }
         }
     }
 }
