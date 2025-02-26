@@ -1,23 +1,22 @@
-using System.Collections.ObjectModel;
-using System.Reactive;
-using ReactiveUI;
 using Avalonia.Controls;
-using EasySave.Core.Models;
 using EasySave.Core.Facade;
+using EasySave.Core.Models;
 using EasySave.GUI.Helpers;
-using System.Reactive.Linq;
-using System;
-using System.IO;
-using System.Collections.Generic;
 using Newtonsoft.Json;
+using ReactiveUI;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Reactive;
 using System.Xml.Linq;
 
 namespace EasySave.GUI.ViewModels
 {
     /// <summary>
-    /// ViewModel for displaying and managing the list of all backup jobs.
-    /// This class handles listing, selecting, and removing backup jobs.
+    /// ViewModel for displaying and managing a list of all backup jobs.
+    /// Loads job logs from JSON and XML files, displaying them in a UI collection.
     /// </summary>
     public class ListAllJobViewModel : ReactiveObject
     {
@@ -26,23 +25,22 @@ namespace EasySave.GUI.ViewModels
         private BackupJob? _selectedBackupJob;
 
         /// <summary>
-        /// Gets the singleton instance of the LanguageHelper class.
+        /// Provides access to localized messages.
         /// </summary>
         public LanguageHelper LanguageHelperInstance => LanguageHelper.Instance;
 
         /// <summary>
-        /// Collection of backup jobs displayed in the UI.
+        /// An observable collection of <see cref="FinishedBackupJob"/> records for UI display.
         /// </summary>
         public ObservableCollection<FinishedBackupJob> BackupJobs { get; }
 
         /// <summary>
-        /// Command to close the window.
+        /// Command to close the window and return to the previous view.
         /// </summary>
         public ReactiveCommand<Unit, Unit> CancelCommand { get; }
 
         /// <summary>
-        /// Gets or sets the currently selected backup job.
-        /// When a job is selected in the UI, this property is updated.
+        /// Gets or sets the currently selected <see cref="BackupJob"/>.
         /// </summary>
         public BackupJob? SelectedBackupJob
         {
@@ -51,79 +49,82 @@ namespace EasySave.GUI.ViewModels
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ListAllJobViewModel"/> class.
-        /// Loads backup jobs from both JSON and XML files.
+        /// Initializes a new instance of the <see cref="ListAllJobViewModel"/> class,
+        /// retrieving and displaying all backup job logs.
         /// </summary>
+        /// <param name="window">The parent window context.</param>
+        /// <param name="facade">The <see cref="EasySaveFacade"/> for managing backup operations.</param>
         public ListAllJobViewModel(Window window, EasySaveFacade facade)
         {
             _window = window;
             _facade = facade;
             BackupJobs = new ObservableCollection<FinishedBackupJob>();
-            LoadBackupJobs();
             CancelCommand = ReactiveCommand.Create(Cancel);
+
+            LoadBackupJobs();
         }
 
         /// <summary>
-        /// Loads backup jobs from both JSON and XML log files,
-        /// sorted by their creation date from most recent to oldest.
+        /// Loads backup job logs from JSON and XML files, located in the default log directory.
+        /// Sorts them by file creation time (most recent first).
         /// </summary>
         public void LoadBackupJobs()
         {
             string logDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Logs");
-
             if (!Directory.Exists(logDirectory))
             {
-                Console.WriteLine($"The directory {logDirectory} does not exist.");
+                Console.WriteLine($"Directory '{logDirectory}' does not exist.");
                 return;
             }
 
             var logFiles = Directory.GetFiles(logDirectory, "*.json")
                 .Concat(Directory.GetFiles(logDirectory, "*.xml"))
-                .OrderByDescending(File.GetCreationTime) // Sort by most recent first
+                .OrderByDescending(File.GetCreationTime)
                 .ToList();
 
             foreach (var file in logFiles)
             {
                 try
                 {
-                    if (file.EndsWith(".json"))
+                    if (file.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
                     {
                         LoadBackupJobsFromJson(file);
                     }
-                    else if (file.EndsWith(".xml"))
+                    else if (file.EndsWith(".xml", StringComparison.OrdinalIgnoreCase))
                     {
                         LoadBackupJobsFromXml(file);
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error reading file {file}: {ex.Message}");
+                    Console.WriteLine($"Error reading file '{file}': {ex.Message}");
                 }
             }
         }
 
         /// <summary>
-        /// Loads backup jobs from a specific JSON file.
+        /// Reads backup job logs from a JSON file and adds them to the <see cref="BackupJobs"/> collection.
         /// </summary>
+        /// <param name="filePath">The path to the JSON file.</param>
         private void LoadBackupJobsFromJson(string filePath)
         {
             try
             {
                 string jsonContent = File.ReadAllText(filePath);
-                List<FinishedBackupJob> finishedBackupJobs = ParseFinishedBackupJobs(jsonContent);
-                foreach (var job in finishedBackupJobs)
+                var finishedJobs = ParseFinishedBackupJobs(jsonContent);
+                foreach (var job in finishedJobs)
                 {
                     BackupJobs.Add(job);
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error parsing JSON file {filePath}: {ex.Message}");
+                Console.WriteLine($"Error parsing JSON file '{filePath}': {ex.Message}");
             }
         }
 
         /// <summary>
-        /// Parses a JSON string and converts it into a list of FinishedBackupJob objects.
+        /// Parses JSON content into a list of <see cref="FinishedBackupJob"/> records.
         /// </summary>
         private List<FinishedBackupJob> ParseFinishedBackupJobs(string jsonContent)
         {
@@ -150,17 +151,19 @@ namespace EasySave.GUI.ViewModels
         }
 
         /// <summary>
-        /// Loads backup jobs from a specific XML file.
+        /// Reads backup job logs from an XML file and adds them to the <see cref="BackupJobs"/> collection.
         /// </summary>
+        /// <param name="filePath">The path to the XML file.</param>
         private void LoadBackupJobsFromXml(string filePath)
         {
             try
             {
                 XDocument xmlDoc = XDocument.Load(filePath);
                 var logEntries = xmlDoc.Descendants("LogEntry");
+
                 foreach (var entry in logEntries)
                 {
-                    FinishedBackupJob finishedJob = new FinishedBackupJob(
+                    var finishedJob = new FinishedBackupJob(
                         entry.Element("BackupName")?.Value ?? "Unknown",
                         entry.Element("SourceFilePath")?.Value ?? "Unknown",
                         entry.Element("TargetFilePath")?.Value ?? "Unknown",
@@ -169,19 +172,21 @@ namespace EasySave.GUI.ViewModels
                         Convert.ToInt32(entry.Element("EncryptionTimeMs")?.Value ?? "0"),
                         entry.Element("Status")?.Value ?? "Unknown",
                         entry.Element("Level")?.Value ?? "Info",
-                        DateTime.TryParse(entry.Element("Timestamp")?.Value, out DateTime timestamp) ? timestamp : DateTime.Now
+                        DateTime.TryParse(entry.Element("Timestamp")?.Value, out DateTime timestamp)
+                            ? timestamp
+                            : DateTime.Now
                     );
                     BackupJobs.Add(finishedJob);
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error parsing XML file {filePath}: {ex.Message}");
+                Console.WriteLine($"Error parsing XML file '{filePath}': {ex.Message}");
             }
         }
 
         /// <summary>
-        /// Closes the window when the Cancel button is clicked.
+        /// Closes the current window, returning to the previous UI context.
         /// </summary>
         private void Cancel()
         {

@@ -1,16 +1,20 @@
 using EasySave.Core.Models;
 using EasySave.Core.Models.BackupStrategies;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace EasySave.Core.Repositories
 {
     /// <summary>
-    /// Implements <see cref="IBackupJobRepository"/> to store backup jobs in a JSON file.
+    /// Stores and retrieves <see cref="BackupJob"/> objects using a JSON file.
+    /// Implements <see cref="IBackupJobRepository"/>.
     /// </summary>
     public class JsonBackupJobRepository : IBackupJobRepository
     {
         /// <summary>
-        /// The file path where backup jobs are stored.
+        /// The file path where backup jobs are persisted.
         /// </summary>
         private readonly string _filePath;
 
@@ -35,7 +39,7 @@ namespace EasySave.Core.Repositories
             var json = File.ReadAllText(_filePath);
             var jobs = JsonConvert.DeserializeObject<List<BackupJob>>(json) ?? new List<BackupJob>();
 
-            // Reinstantiate the backup strategy for each loaded job if needed
+            // Reinitialize the backup strategy for each loaded job
             foreach (var job in jobs)
             {
                 job._backupStrategy = BackupStrategyFactory.GetStrategy(job.BackupType);
@@ -54,9 +58,13 @@ namespace EasySave.Core.Repositories
             File.WriteAllText(_filePath, json);
         }
 
+        /// <summary>
+        /// Retrieves all backup jobs from the storage.
+        /// </summary>
+        /// <returns>A list of <see cref="BackupJob"/> instances.</returns>
         public List<BackupJob> GetAllJobs()
         {
-        return Load(); 
+            return Load();
         }
     }
 }

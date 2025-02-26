@@ -5,71 +5,84 @@ using EasySave.Core.Models;
 using EasySave.Core.Utils;
 using EasySave.Core.Observers;
 using EasySave.Core.Repositories;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace EasySaveApp
 {
-    class Program
+    /// <summary>
+    /// Main entry point for the EasySave application. Manages user interactions,
+    /// configuration, and initialization of core components.
+    /// </summary>
+    internal class Program
     {
-        static void Main(string[] args)
+        /// <summary>
+        /// Application entry point.
+        /// </summary>
+        /// <param name="args">Command-line arguments specifying backup job indices or ranges (optional).</param>
+        private static void Main(string[] args)
         {
-            // Charger la configuration depuis appsettings.json
+            // Load configuration from appsettings.json
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             var configuration = builder.Build();
 
-            // Lire la config pour la langue avec une valeur par défaut "en"
+            // Read the language setting from configuration. Default is "en" if not provided.
             string? language = configuration["Language"];
 
-            // Vérification pour éviter de passer un `null` à `SetLanguage()`
+            // Validate and prompt for language if necessary
             if (string.IsNullOrWhiteSpace(language) || (language != "en" && language != "fr"))
             {
                 do
                 {
                     Console.WriteLine("Choose language (en/fr): ");
                     language = Console.ReadLine()?.Trim().ToLower();
-                } while (language != "en" && language != "fr");
+                } 
+                while (language != "en" && language != "fr");
             }
 
-            // Appliquer la langue
+            // Apply selected language
             LanguageHelper.Instance.SetLanguage(language);
             Console.WriteLine($"Language selected: {language}");
 
-            // Définir le répertoire de logs selon la configuration et l'OS
+            // Retrieve the log directory from configuration or use a default path
             string logDirectory = configuration["Logging:LogDirectory"] ?? string.Empty;
             if (string.IsNullOrWhiteSpace(logDirectory))
             {
                 logDirectory = GetDefaultLogDirectory();
             }
 
-            // Créer le dossier de logs s'il n'existe pas
+            // Create the log directory if it doesn't exist
             if (!Directory.Exists(logDirectory))
             {
                 Directory.CreateDirectory(logDirectory);
             }
 
-            // Créer le repository pour la persistance (JSON)
+            // Create the repository for persistence (JSON-based)
             string repositoryPath = "backup_jobs.json";
             IBackupJobRepository jobRepository = new JsonBackupJobRepository(repositoryPath);
 
-            // Créer un observer pour l'état (fichier state.json)
+            // Create a file state observer (writes state to state.json)
             string stateFilePath = "state.json";
             var fileStateObserver = new FileStateObserver(stateFilePath);
 
-            // Instancier la Façade avec les dépendances
+            // Instantiate the facade with required dependencies
             var facade = new EasySaveFacade(jobRepository, logDirectory, fileStateObserver, configuration);
-            
-            // Vérifier si des arguments en ligne de commande sont passés
+
+            // If command-line arguments were provided, handle backup jobs from these arguments and exit
             if (args.Length > 0)
             {
                 ExecuteBackupFromArgs(facade, args);
                 return;
             }
 
-            // Boucle principale de l’application (menu)
+            // Main application loop (menu)
             while (true)
             {
-                Console.WriteLine("\n--- " + LanguageHelper.Instance.GetMessage("MenuTitle") + " ---");
+                Console.WriteLine($"\n--- {LanguageHelper.Instance.GetMessage("MenuTitle")} ---");
                 Console.WriteLine(LanguageHelper.Instance.GetMessage("OptionAddJob"));
                 Console.WriteLine(LanguageHelper.Instance.GetMessage("OptionExecuteAll"));
                 Console.WriteLine(LanguageHelper.Instance.GetMessage("OptionListJobs"));
@@ -79,7 +92,6 @@ namespace EasySaveApp
                 Console.Write("> ");
 
                 var choice = Console.ReadLine();
-
                 switch (choice)
                 {
                     case "1":
@@ -89,17 +101,22 @@ namespace EasySaveApp
                             facade.AddJob(job);
                         }
                         break;
+
                     case "2":
                         facade.ExecuteAllJobs();
                         Console.WriteLine("🚀  All jobs executed successfully.");
                         break;
+
                     case "3":
                         facade.ListJobs();
-                        Console.WriteLine("✅  List of jobs completed.");
+                        Console.WriteLine("✅  Listing of jobs completed.");
                         break;
+
                     case "4":
                         Console.Write(LanguageHelper.Instance.GetMessage("EnterIndexRemove"));
-                        if (!int.TryParse(Console.ReadLine(), out int removeIndex) || removeIndex < 1 || removeIndex > facade.GetJobCount())
+                        if (!int.TryParse(Console.ReadLine(), out int removeIndex) 
+                            || removeIndex < 1 
+                            || removeIndex > facade.GetJobCount())
                         {
                             Console.WriteLine("❌ Invalid job index. Please enter a valid number.");
                         }
@@ -109,9 +126,12 @@ namespace EasySaveApp
                             Console.WriteLine($"✅ Job {removeIndex} removed successfully.");
                         }
                         break;
+
                     case "5":
                         Console.Write(LanguageHelper.Instance.GetMessage("EnterIndexUpdate"));
-                        if (!int.TryParse(Console.ReadLine(), out int updateIndex) || updateIndex < 1 || updateIndex > facade.GetJobCount())
+                        if (!int.TryParse(Console.ReadLine(), out int updateIndex) 
+                            || updateIndex < 1 
+                            || updateIndex > facade.GetJobCount())
                         {
                             Console.WriteLine("❌ Invalid job index. Please enter a valid number.");
                         }
@@ -121,9 +141,11 @@ namespace EasySaveApp
                             Console.WriteLine($"✅ Job {updateIndex} updated successfully.");
                         }
                         break;
+
                     case "6":
                         Console.WriteLine(LanguageHelper.Instance.GetMessage("Goodbye"));
                         return;
+
                     default:
                         Console.WriteLine(LanguageHelper.Instance.GetMessage("InvalidChoice"));
                         break;
@@ -131,21 +153,25 @@ namespace EasySaveApp
             }
         }
 
+        /// <summary>
+        /// Executes backup jobs based on command-line arguments, which can be single indices or ranges.
+        /// </summary>
+        /// <param name="facade">The <see cref="EasySaveFacade"/> managing the backup operations.</param>
+        /// <param name="args">Command-line arguments specifying job indices/ranges, e.g. "1;3-5;7".</param>
         private static void ExecuteBackupFromArgs(EasySaveFacade facade, string[] args)
         {
             string param = args[0];
-            List<int> jobIndices = new List<int>();
+            var jobIndices = new List<int>();
 
-            var segments = param.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-
+            var segments = param.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var segment in segments)
             {
                 if (segment.Contains("-"))
                 {
                     var rangeParts = segment.Split('-');
-                    if (rangeParts.Length == 2 &&
-                        int.TryParse(rangeParts[0], out int start) &&
-                        int.TryParse(rangeParts[1], out int end))
+                    if (rangeParts.Length == 2 
+                        && int.TryParse(rangeParts[0], out int start) 
+                        && int.TryParse(rangeParts[1], out int end))
                     {
                         for (int i = start; i <= end; i++)
                         {
@@ -154,7 +180,7 @@ namespace EasySaveApp
                     }
                     else
                     {
-                        Console.WriteLine($"⚠ Erreur : Format de plage invalide dans '{segment}'.");
+                        Console.WriteLine($"⚠ Error: Invalid range format in '{segment}'.");
                     }
                 }
                 else if (int.TryParse(segment, out int singleIndex))
@@ -163,12 +189,14 @@ namespace EasySaveApp
                 }
                 else
                 {
-                    Console.WriteLine($"⚠ Erreur : Format invalide pour '{segment}'.");
+                    Console.WriteLine($"⚠ Error: Invalid format '{segment}'.");
                 }
             }
 
+            // Remove duplicates and sort indices
             jobIndices = jobIndices.Distinct().OrderBy(x => x).ToList();
 
+            // Execute each valid job index
             foreach (var index in jobIndices)
             {
                 if (index < facade.GetJobCount())
@@ -177,25 +205,31 @@ namespace EasySaveApp
                 }
                 else
                 {
-                    Console.WriteLine($"⚠ Erreur : Index {index + 1} hors de portée.");
+                    Console.WriteLine($"⚠ Error: Index {index + 1} is out of range.");
                 }
             }
         }
 
+        /// <summary>
+        /// Prompts the user to create a new <see cref="BackupJob"/> by entering details in the console.
+        /// </summary>
+        /// <returns>A new <see cref="BackupJob"/> if all fields are valid; otherwise <c>null</c>.</returns>
         private static BackupJob? CreateJobFromConsole()
         {
-            Console.WriteLine("\n" + LanguageHelper.Instance.GetMessage("AddJobTitle"));
+            Console.WriteLine($"\n{LanguageHelper.Instance.GetMessage("AddJobTitle")}");
 
             Console.Write(LanguageHelper.Instance.GetMessage("EnterJobName"));
-            var name = Console.ReadLine()?.Trim();
+            string? name = Console.ReadLine()?.Trim();
 
             Console.Write(LanguageHelper.Instance.GetMessage("EnterSourceDir"));
-            var sourceDirectory = Console.ReadLine()?.Trim();
+            string? sourceDirectory = Console.ReadLine()?.Trim();
 
             Console.Write(LanguageHelper.Instance.GetMessage("EnterTargetDir"));
-            var targetDirectory = Console.ReadLine()?.Trim();
+            string? targetDirectory = Console.ReadLine()?.Trim();
 
-            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(sourceDirectory) || string.IsNullOrEmpty(targetDirectory))
+            if (string.IsNullOrEmpty(name) 
+                || string.IsNullOrEmpty(sourceDirectory) 
+                || string.IsNullOrEmpty(targetDirectory))
             {
                 Console.WriteLine(LanguageHelper.Instance.GetMessage("ErrorFieldsRequired"));
                 return null;
@@ -205,12 +239,20 @@ namespace EasySaveApp
             Console.WriteLine(LanguageHelper.Instance.GetMessage("OptionComplete"));
             Console.WriteLine(LanguageHelper.Instance.GetMessage("OptionDifferential"));
             Console.Write("> ");
-            var backupTypeInput = Console.ReadLine();
-            BackupType backupType = backupTypeInput == "1" ? BackupType.Complete : BackupType.Differential;
+            string? backupTypeInput = Console.ReadLine();
+
+            BackupType backupType = (backupTypeInput == "1") 
+                ? BackupType.Complete 
+                : BackupType.Differential;
 
             return new BackupJob(name, sourceDirectory, targetDirectory, backupType);
         }
 
+        /// <summary>
+        /// Prompts the user to update the properties of an existing backup job.
+        /// </summary>
+        /// <param name="facade">The <see cref="EasySaveFacade"/> instance managing backup jobs.</param>
+        /// <param name="index">Zero-based index of the job to update.</param>
         private static void UpdateJob(EasySaveFacade facade, int index)
         {
             Console.Write(LanguageHelper.Instance.GetMessage("EnterNewName"));
@@ -224,14 +266,25 @@ namespace EasySaveApp
 
             Console.Write(LanguageHelper.Instance.GetMessage("EnterNewBackupType"));
             string? typeInput = Console.ReadLine();
-            BackupType? newType = typeInput == "1" ? BackupType.Complete : typeInput == "2" ? BackupType.Differential : null;
+
+            BackupType? newType = typeInput == "1" 
+                ? BackupType.Complete 
+                : typeInput == "2" 
+                    ? BackupType.Differential 
+                    : null;
 
             facade.UpdateJob(index, newName, newSource, newTarget, newType);
         }
 
+        /// <summary>
+        /// Gets the default directory for log files based on the current operating system.
+        /// </summary>
+        /// <returns>A string representing the default log directory path.</returns>
         private static string GetDefaultLogDirectory()
         {
-            return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? @"C:\Logs" : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/Logs";
+            return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) 
+                ? @"C:\Logs" 
+                : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Logs");
         }
     }
 }

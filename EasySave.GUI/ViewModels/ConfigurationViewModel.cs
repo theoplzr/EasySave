@@ -1,37 +1,41 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Text.Json;
 using System.Diagnostics;
-using System.Threading.Tasks;
-using ReactiveUI;
-using System.Reactive;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using EasySave.GUI.Helpers;
 using EasySaveLogs;
+using ReactiveUI;
+using System.Reactive;
 
 namespace EasySave.GUI.ViewModels
 {
     /// <summary>
-    /// ViewModel responsible for managing application configuration settings.
+    /// ViewModel responsible for managing application configuration settings (log format, directory, encryption options).
     /// </summary>
     public class ConfigurationViewModel : ReactiveObject
     {
         private string _logFormat = "XML";
-        private string _businessSoftware = "Calculator";
+        private string _businessSoftware = "Teams";
         private string _logDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Logs");
         private ObservableCollection<string> _encryptionExtensions = new();
 
+        private string _newExtension;
+        private ObservableCollection<string> _priorityExtensions = new();
+        private string _newPriorityExtension;
+
         /// <summary>
-        /// Instance of the language helper for multi-language support.
+        /// Gets an instance of <see cref="LanguageHelper"/> for multi-language support.
         /// </summary>
         public LanguageHelper LanguageHelperInstance => LanguageHelper.Instance;
 
         /// <summary>
-        /// Gets or sets the log format (JSON or XML).
+        /// Gets or sets the log format (e.g., JSON or XML).
         /// </summary>
         public string LogFormat
         {
@@ -40,7 +44,7 @@ namespace EasySave.GUI.ViewModels
         }
 
         /// <summary>
-        /// Gets or sets the log directory path.
+        /// Gets or sets the log directory path on the local machine.
         /// </summary>
         public string LogDirectory
         {
@@ -49,7 +53,7 @@ namespace EasySave.GUI.ViewModels
         }
 
         /// <summary>
-        /// Gets or sets the name of the business software that may pause operations.
+        /// Gets or sets the name of the business software to monitor (which can pause operations).
         /// </summary>
         public string BusinessSoftware
         {
@@ -58,7 +62,7 @@ namespace EasySave.GUI.ViewModels
         }
 
         /// <summary>
-        /// Gets or sets the list of file extensions that require encryption.
+        /// Gets or sets the collection of file extensions that should be encrypted.
         /// </summary>
         public ObservableCollection<string> EncryptionExtensions
         {
@@ -66,28 +70,39 @@ namespace EasySave.GUI.ViewModels
             set => this.RaiseAndSetIfChanged(ref _encryptionExtensions, value);
         }
 
-        private string _newPriorityExtension;
-        public string NewPriorityExtension
-        {
-            get => _newPriorityExtension;
-            set => this.RaiseAndSetIfChanged(ref _newPriorityExtension, value);
-        }
-
-        private ObservableCollection<string> _priorityExtensions = new();
-        public ObservableCollection<string> PriorityExtensions
-        {
-            get => _priorityExtensions;
-            set => this.RaiseAndSetIfChanged(ref _priorityExtensions, value);
-        }
-        private string _newExtension;
+        /// <summary>
+        /// Holds the new extension (typing buffer) before being added to <see cref="EncryptionExtensions"/>.
+        /// </summary>
         public string NewExtension
         {
             get => _newExtension;
             set => this.RaiseAndSetIfChanged(ref _newExtension, value);
         }
 
+        /// <summary>
+        /// Gets or sets the collection of priority extensions.
+        /// </summary>
+        public ObservableCollection<string> PriorityExtensions
+        {
+            get => _priorityExtensions;
+            set => this.RaiseAndSetIfChanged(ref _priorityExtensions, value);
+        }
+
+        /// <summary>
+        /// Holds the new extension (typing buffer) before being added to <see cref="PriorityExtensions"/>.
+        /// </summary>
+        public string NewPriorityExtension
+        {
+            get => _newPriorityExtension;
+            set => this.RaiseAndSetIfChanged(ref _newPriorityExtension, value);
+        }
+
+        /// <summary>
+        /// A static list of supported log formats for UI selection.
+        /// </summary>
         public List<string> LogFormatOptions { get; } = new() { "JSON", "XML" };
 
+        // Reactive Commands
         public ReactiveCommand<string, Unit> AddExtensionCommand { get; }
         public ReactiveCommand<string, Unit> RemoveExtensionCommand { get; }
         public ReactiveCommand<Window, Unit> SaveCommand { get; }
@@ -97,29 +112,30 @@ namespace EasySave.GUI.ViewModels
         public ReactiveCommand<string, Unit> RemovePriorityExtensionCommand { get; }
 
         /// <summary>
-        /// Initializes a new instance of the ConfigurationViewModel class.
+        /// Initializes a new instance of the <see cref="ConfigurationViewModel"/> class.
+        /// Loads existing settings, sets up commands for adding/removing extensions, and handles saving.
         /// </summary>
         public ConfigurationViewModel()
         {
             LoadSettings();
+
+            // Define commands
             AddExtensionCommand = ReactiveCommand.Create<string>(AddExtension);
             RemoveExtensionCommand = ReactiveCommand.Create<string>(RemoveExtension);
+
             SaveCommand = ReactiveCommand.Create<Window>(window =>
             {
                 SaveSettings();
-                // Reconfigure le Logger avec le nouveau format choisi
+                // Reconfigure the logger with the newly selected format
                 Logger.GetInstance(LogDirectory, LogFormat).Reconfigure(LogFormat);
                 window?.Close();
             });
+
             ChooseLogDirectoryCommand = ReactiveCommand.CreateFromTask<Window>(ChooseLogDirectory);
-            
-            // Correction de CloseCommand avec vérification de null
+
             CloseCommand = ReactiveCommand.Create<Window>(window =>
             {
-                if (window != null)
-                {
-                    window.Close();
-                }
+                window?.Close();
             });
 
             AddPriorityExtensionCommand = ReactiveCommand.Create<string>(extension =>
@@ -128,12 +144,11 @@ namespace EasySave.GUI.ViewModels
                 {
                     if (!extension.StartsWith("."))
                     {
-                        extension = "." + extension; 
+                        extension = "." + extension;
                     }
                     PriorityExtensions.Add(extension);
                 }
-                
-                // Clear the input field after adding
+                // Clear the input field
                 NewPriorityExtension = string.Empty;
             });
 
@@ -147,13 +162,13 @@ namespace EasySave.GUI.ViewModels
         }
 
         /// <summary>
-        /// Loads configuration settings from a file.
+        /// Loads settings from the appsettings.GUI.json file, if available.
         /// </summary>
         public void LoadSettings()
         {
             try
             {
-                string configPath = "appsettings.GUI.json";
+                const string configPath = "appsettings.GUI.json";
                 if (File.Exists(configPath))
                 {
                     string json = File.ReadAllText(configPath);
@@ -161,9 +176,14 @@ namespace EasySave.GUI.ViewModels
 
                     LogFormat = config?.LogFormat;
                     BusinessSoftware = config?.BusinessSoftware;
-                    LogDirectory = config?.LogDirectory ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Logs");
-                    EncryptionExtensions = new ObservableCollection<string>(config?.EncryptionExtensions ?? new List<string> { ".txt", ".docx" });
-                    PriorityExtensions = new ObservableCollection<string>(config?.PriorityExtensions ?? new List<string> { ".txt", ".docx" });
+                    LogDirectory = config?.LogDirectory
+                        ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Logs");
+                    EncryptionExtensions = new ObservableCollection<string>(
+                        config?.EncryptionExtensions ?? new List<string> { ".txt", ".docx" }
+                    );
+                    PriorityExtensions = new ObservableCollection<string>(
+                        config?.PriorityExtensions ?? new List<string> { ".txt", ".docx" }
+                    );
 
                     Debug.WriteLine($"{LanguageHelperInstance.LogFormatLabel} : {LogDirectory}");
                 }
@@ -175,7 +195,7 @@ namespace EasySave.GUI.ViewModels
         }
 
         /// <summary>
-        /// Saves configuration settings to a file.
+        /// Saves the current settings to the appsettings.GUI.json file.
         /// </summary>
         public void SaveSettings()
         {
@@ -202,24 +222,26 @@ namespace EasySave.GUI.ViewModels
         }
 
         /// <summary>
-        /// Add an extension to encrypt.
+        /// Adds an extension to the <see cref="EncryptionExtensions"/> list if not already present.
         /// </summary>
+        /// <param name="extension">The extension to add (e.g., ".txt").</param>
         public void AddExtension(string extension)
         {
             if (!string.IsNullOrWhiteSpace(extension) && !EncryptionExtensions.Contains(extension))
             {
                 if (!extension.StartsWith("."))
                 {
-                    extension = "." + extension; 
+                    extension = "." + extension;
                 }
                 EncryptionExtensions.Add(extension);
             }
-            NewExtension = string.Empty; // Vide le champ après l'ajout
+            NewExtension = string.Empty; // Clear the text field after adding
         }
 
         /// <summary>
-        /// Remove an extension to encrypt.
+        /// Removes an extension from the <see cref="EncryptionExtensions"/> list.
         /// </summary>
+        /// <param name="extension">The extension to remove.</param>
         public void RemoveExtension(string extension)
         {
             if (!string.IsNullOrWhiteSpace(extension) && EncryptionExtensions.Contains(extension))
@@ -229,8 +251,9 @@ namespace EasySave.GUI.ViewModels
         }
 
         /// <summary>
-        /// Choose the log directory.
+        /// Opens a folder picker for selecting a new log directory.
         /// </summary>
+        /// <param name="window">The owner window for the folder picker dialog.</param>
         private async Task ChooseLogDirectory(Window window)
         {
             var folders = await window.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
@@ -245,11 +268,15 @@ namespace EasySave.GUI.ViewModels
         }
     }
 
+    /// <summary>
+    /// Represents the data structure stored in the appsettings.GUI.json file.
+    /// </summary>
     public class ConfigurationData
     {
         public string LogFormat { get; set; } = "JSON";
         public string BusinessSoftware { get; set; } = "Calculator";
-        public string LogDirectory { get; set; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Logs");
+        public string LogDirectory { get; set; } =
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Logs");
         public List<string> EncryptionExtensions { get; set; } = new();
         public List<string> PriorityExtensions { get; set; } = new();
     }

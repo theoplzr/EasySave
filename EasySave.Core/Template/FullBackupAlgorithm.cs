@@ -1,33 +1,62 @@
-using System.Diagnostics;
+using CryptoSoftLib;
 using EasySave.Core.Models;
 using EasySaveLogs;
-using CryptoSoftLib;
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 
 namespace EasySave.Core.Template
 {
+    /// <summary>
+    /// Represents a full backup algorithm, which copies all files regardless of modification.
+    /// </summary>
     public class FullBackupAlgorithm : AbstractBackupAlgorithm
     {
-        public FullBackupAlgorithm(Logger logger, Action<BackupState>? notifyObserver, Action? saveChanges, string businessSoftwareName)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FullBackupAlgorithm"/> class.
+        /// </summary>
+        /// <param name="logger">The logger instance for recording actions.</param>
+        /// <param name="notifyObserver">Callback to notify observers about backup state changes.</param>
+        /// <param name="saveChanges">Callback to persist state changes.</param>
+        /// <param name="businessSoftwareName">Name of the business software to detect for interruption.</param>
+        public FullBackupAlgorithm(
+            Logger logger,
+            Action<BackupState>? notifyObserver,
+            Action? saveChanges,
+            string businessSoftwareName
+        )
             : base(logger, notifyObserver, saveChanges, businessSoftwareName)
         {
         }
 
+        /// <summary>
+        /// In a full backup, every file should be copied, so always returns <c>true</c>.
+        /// </summary>
+        /// <param name="filePath">The path to the source file.</param>
+        /// <param name="job">The current backup job.</param>
+        /// <returns>Always <c>true</c>.</returns>
         protected override bool ShouldCopyFile(string filePath, BackupJob job)
         {
             return true;
         }
 
+        /// <summary>
+        /// Performs the actual file copying for a full backup, applying optional encryption as needed.
+        /// </summary>
         protected override void CopyFile(
             BackupJob job,
             string filePath,
             ref int filesProcessed,
             ref long bytesProcessed,
             int totalFiles,
-            long totalSize)
+            long totalSize
+        )
         {
             var relativePath = Path.GetRelativePath(job.SourceDirectory, filePath);
             var targetFilePath = Path.Combine(job.TargetDirectory, relativePath);
 
+            // Ensure the target directory exists
             var targetDirectory = Path.GetDirectoryName(targetFilePath);
             if (!string.IsNullOrEmpty(targetDirectory) && !Directory.Exists(targetDirectory))
             {
@@ -39,6 +68,7 @@ namespace EasySave.Core.Template
 
             try
             {
+                // Copy file
                 File.Copy(filePath, targetFilePath, true);
                 stopwatch.Stop();
 
@@ -46,12 +76,12 @@ namespace EasySave.Core.Template
                 filesProcessed++;
                 bytesProcessed += fileSize;
 
-                // Mise à jour de l'état (TotalFiles et RemainingFiles mis à jour)
-                BackupState updatedState = new BackupState
+                // Update and notify state
+                var updatedState = new BackupState
                 {
                     JobId = job.Id,
                     BackupName = job.Name,
-                    Status = "En cours",
+                    Status = "In progress",
                     LastActionTime = DateTime.Now,
                     CurrentSourceFile = filePath,
                     CurrentTargetFile = targetFilePath,
@@ -60,6 +90,7 @@ namespace EasySave.Core.Template
                 };
                 Notify(updatedState);
 
+                // Check if the file should be encrypted
                 int encryptionTime = 0;
                 var fileExtension = Path.GetExtension(filePath);
                 var encryptionExtensions = ConfigurationProvider.EncryptionExtensions;
@@ -70,19 +101,20 @@ namespace EasySave.Core.Template
                     {
                         string encryptionKey = ConfigurationProvider.EncryptionKey;
                         encryptionTime = CryptoSoft.EncryptFile(targetFilePath, encryptionKey);
-                        Console.WriteLine($"Fichier crypté : {targetFilePath} en {encryptionTime}ms");
+                        Console.WriteLine($"Encrypted file: {targetFilePath} in {encryptionTime}ms");
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Erreur de cryptage sur {targetFilePath} : {ex.Message}");
+                        Console.WriteLine($"Encryption error on {targetFilePath}: {ex.Message}");
                         encryptionTime = -1;
                     }
                 }
                 else
                 {
-                    Console.WriteLine($"Fichier ignoré pour cryptage : {targetFilePath}");
+                    Console.WriteLine($"Skipped encryption for file: {targetFilePath}");
                 }
 
+                // Log the copy action
                 LogAction(new LogEntry
                 {
                     Timestamp = DateTime.Now,
@@ -100,6 +132,8 @@ namespace EasySave.Core.Template
             catch (Exception ex)
             {
                 stopwatch.Stop();
+
+                // Log the error
                 LogAction(new LogEntry
                 {
                     Timestamp = DateTime.Now,

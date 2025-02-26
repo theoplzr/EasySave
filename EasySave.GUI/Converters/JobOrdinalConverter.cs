@@ -1,18 +1,31 @@
+using Avalonia.Data.Converters;
+using EasySave.GUI.Helpers;
 using System;
 using System.Globalization;
-using Avalonia.Data.Converters;
-using EasySave.GUI.Helpers;  
 
 namespace EasySave.GUI.Converters
 {
+    /// <summary>
+    /// Converts a zero-based job index to a localized ordinal string (e.g., "Job n°1" or "Travail n°1").
+    /// </summary>
     public class JobOrdinalConverter : IValueConverter
     {
+        /// <summary>
+        /// Converts an integer index to a localized ordinal string based on the current language.
+        /// </summary>
+        /// <param name="value">The job index (zero-based).</param>
+        /// <param name="targetType">The target conversion type (unused).</param>
+        /// <param name="parameter">Additional parameter (unused).</param>
+        /// <param name="culture">The current culture (unused).</param>
+        /// <returns>A localized ordinal string indicating the job number.</returns>
         public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             if (value is int index)
             {
-                // Utiliser la langue définie dans LanguageHelper
+                // Retrieve the current language from the LanguageHelper
                 string lang = LanguageHelper.Instance.CurrentLanguage;
+                
+                // Build the ordinal string based on the current language
                 if (lang == "fr")
                 {
                     return index switch
@@ -38,9 +51,13 @@ namespace EasySave.GUI.Converters
                     };
                 }
             }
+            // If the value is not an integer, return the original value or an empty string
             return value ?? "";
         }
 
+        /// <summary>
+        /// Conversion back is not supported in this scenario.
+        /// </summary>
         public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             throw new NotSupportedException();

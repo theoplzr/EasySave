@@ -1,42 +1,45 @@
 using EasySave.Core.Models;
 using EasySaveLogs;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Diagnostics;
+using System.Threading;
 
 namespace EasySave.Core.Template
 {
     /// <summary>
-    /// Classe abstraite définissant le modèle des algorithmes de sauvegarde.
-    /// Implémente le pattern Template Method pour structurer le processus de sauvegarde.
+    /// An abstract class defining the template for backup algorithms.
+    /// Implements the Template Method pattern to structure the backup process.
     /// </summary>
     public abstract class AbstractBackupAlgorithm
     {
         /// <summary>
-        /// Instance du logger pour enregistrer les actions de sauvegarde.
+        /// The logger instance used to record backup actions.
         /// </summary>
         protected readonly Logger _logger;
 
         /// <summary>
-        /// Callback pour notifier les observateurs des changements d'état de la sauvegarde.
+        /// A callback method to notify observers about changes in the backup state.
         /// </summary>
         private readonly Action<BackupState>? _notifyObserver;
 
         /// <summary>
-        /// Action pour sauvegarder les modifications de l'état de la sauvegarde.
+        /// An action to persist changes in the backup state if needed.
         /// </summary>
         private readonly Action? _saveChanges;
 
-        private string _status;
         private readonly string _businessSoftwareName;
+        private string _status;
 
         /// <summary>
-        /// Constructeur de l'algorithme de sauvegarde.
+        /// Initializes a new instance of the <see cref="AbstractBackupAlgorithm"/> class.
         /// </summary>
-        /// <param name="logger">Instance du logger pour enregistrer les actions.</param>
-        /// <param name="notifyObserver">Action pour notifier les observateurs des changements d'état.</param>
-        /// <param name="saveChanges">Action pour persister les modifications d'état.</param>
+        /// <param name="logger">The logger instance to record backup actions.</param>
+        /// <param name="notifyObserver">Action to notify observers about state changes.</param>
+        /// <param name="saveChanges">Action to persist state changes.</param>
+        /// <param name="businessSoftwareName">The name of the business software to detect.</param>
         protected AbstractBackupAlgorithm(
             Logger logger,
             Action<BackupState>? notifyObserver,
@@ -52,56 +55,66 @@ namespace EasySave.Core.Template
         }
 
         /// <summary>
-        /// Exécute le processus de sauvegarde en suivant la logique définie.
+        /// Executes the backup process following a defined template of steps.
         /// </summary>
-        /// <param name="job">Le job de sauvegarde à exécuter.</param>
+        /// <param name="job">The backup job to execute.</param>
         public void Execute(BackupJob job)
         {
-            Prepare(job); // Préparer le job de sauvegarde
-            var files = GatherFiles(job); // Récupérer les fichiers à sauvegarder
+            // 1) Prepare the environment
+            Prepare(job);
 
-            // Variables de suivi pour la progression
+            // 2) Gather the files to back up
+            var files = GatherFiles(job);
+
+            // Tracking variables for file processing and progress
             int filesProcessed = 0;
             long bytesProcessed = 0;
             long totalSize = files.Sum(f => new FileInfo(f).Length);
             int totalFiles = files.Count();
 
-            // Traiter chaque fichier
+            // 3) Process each file
             foreach (var file in files)
             {
+                // If the business software is running, pause the backup
                 while (IsBusinessSoftwareRunning())
                 {
                     _status = "paused";
-                    Thread.Sleep(2000);
+                    Thread.Sleep(2000); // Wait briefly before checking again
                 }
 
+                // Resume running state
                 _status = "running";
+
+                // If the file meets the criteria defined by the derived class, copy it
                 if (ShouldCopyFile(file, job))
                 {
                     CopyFile(job, file, ref filesProcessed, ref bytesProcessed, totalFiles, totalSize);
                 }
             }
 
-            FinalizeBackup(job); // Finaliser le processus de sauvegarde
+            // 4) Finalize the backup process
+            FinalizeBackup(job);
 
-            // Sauvegarder les modifications si nécessaire
+            // Optionally persist changes
             _saveChanges?.Invoke();
         }
 
         /// <summary>
-        /// Prépare l'environnement pour le job de sauvegarde.
+        /// Prepares the environment for the backup job.
         /// </summary>
-        /// <param name="job">Le job de sauvegarde courant.</param>
+        /// <param name="job">The current backup job.</param>
         protected virtual void Prepare(BackupJob job)
         {
             _status = "preparation";
-            Console.WriteLine($"[Template] Démarrage de la sauvegarde {job.Name} ...");
+            Console.WriteLine($"[Template] Starting backup '{job.Name}'...");
 
+            // Verify that the source directory exists
             if (!Directory.Exists(job.SourceDirectory))
             {
-                Console.WriteLine($"Le dossier source n'existe pas : {job.SourceDirectory}");
+                Console.WriteLine($"The source directory does not exist: {job.SourceDirectory}");
             }
 
+            // Verify that the target directory exists; if not, create it
             if (!Directory.Exists(job.TargetDirectory))
             {
                 if (!string.IsNullOrEmpty(job.TargetDirectory))
@@ -112,32 +125,34 @@ namespace EasySave.Core.Template
         }
 
         /// <summary>
-        /// Récupère la liste des fichiers à sauvegarder depuis le dossier source.
+        /// Gathers all files to be backed up from the source directory.
         /// </summary>
-        /// <param name="job">Le job de sauvegarde.</param>
-        /// <returns>Une collection de chemins de fichiers à sauvegarder.</returns>
+        /// <param name="job">The backup job containing source details.</param>
+        /// <returns>A collection of file paths to be backed up.</returns>
         protected virtual IEnumerable<string> GatherFiles(BackupJob job)
         {
             return Directory.GetFiles(job.SourceDirectory, "*.*", SearchOption.AllDirectories);
         }
 
         /// <summary>
-        /// Détermine si un fichier doit être copié en fonction de la configuration du job.
+        /// Determines whether a file should be copied based on the job's configuration.
+        /// Implemented by derived classes (e.g., full vs. differential).
         /// </summary>
-        /// <param name="filePath">Le chemin du fichier.</param>
-        /// <param name="job">Le job de sauvegarde.</param>
-        /// <returns>Vrai si le fichier doit être copié, sinon faux.</returns>
+        /// <param name="filePath">The file path to evaluate.</param>
+        /// <param name="job">The backup job instance.</param>
+        /// <returns><c>true</c> if the file should be copied; otherwise, <c>false</c>.</returns>
         protected abstract bool ShouldCopyFile(string filePath, BackupJob job);
 
         /// <summary>
-        /// Copie un fichier du dossier source vers le dossier cible.
+        /// Copies a file from the source directory to the target directory.
+        /// Logic to handle encryption or logging is also placed here.
         /// </summary>
-        /// <param name="job">Le job de sauvegarde.</param>
-        /// <param name="filePath">Le chemin du fichier à copier.</param>
-        /// <param name="filesProcessed">Référence au nombre de fichiers traités.</param>
-        /// <param name="bytesProcessed">Référence à la taille totale des fichiers traités.</param>
-        /// <param name="totalFiles">Nombre total de fichiers à traiter.</param>
-        /// <param name="totalSize">Taille totale des fichiers à sauvegarder.</param>
+        /// <param name="job">The backup job instance.</param>
+        /// <param name="filePath">The file path of the file to copy.</param>
+        /// <param name="filesProcessed">Reference to the count of already processed files.</param>
+        /// <param name="bytesProcessed">Reference to the total processed file size in bytes.</param>
+        /// <param name="totalFiles">Total number of files to process.</param>
+        /// <param name="totalSize">Total size of all files to process.</param>
         protected abstract void CopyFile(
             BackupJob job,
             string filePath,
@@ -148,38 +163,46 @@ namespace EasySave.Core.Template
         );
 
         /// <summary>
-        /// Effectue les actions finales après la sauvegarde.
+        /// Performs any final actions after the backup is complete.
         /// </summary>
-        /// <param name="job">Le job de sauvegarde terminé.</param>
+        /// <param name="job">The completed backup job.</param>
         protected virtual void FinalizeBackup(BackupJob job)
         {
             _status = "finished";
-            Console.WriteLine($"[Template] Sauvegarde '{job.Name}' terminée.");
+            Console.WriteLine($"[Template] Backup '{job.Name}' completed.");
         }
 
         /// <summary>
-        /// Notifie les observateurs de l'état courant de la sauvegarde.
+        /// Notifies registered observers about the current backup state.
         /// </summary>
-        /// <param name="state">L'état courant de la sauvegarde.</param>
+        /// <param name="state">An updated <see cref="BackupState"/> representing the current backup state.</param>
         protected void Notify(BackupState state)
         {
             _notifyObserver?.Invoke(state);
         }
 
         /// <summary>
-        /// Enregistre une action dans le système de log.
+        /// Logs an action to the underlying logging system.
         /// </summary>
-        /// <param name="entry">Le log à enregistrer.</param>
+        /// <param name="entry">The <see cref="LogEntry"/> to record.</param>
         protected void LogAction(LogEntry entry)
         {
             _logger.LogAction(entry);
         }
 
+        /// <summary>
+        /// Gets the current status of the backup (e.g., waiting, paused, running, finished).
+        /// </summary>
+        /// <returns>A string representing the current status.</returns>
         public string GetStatus()
         {
             return _status;
         }
 
+        /// <summary>
+        /// Checks if the specified business software is currently running.
+        /// </summary>
+        /// <returns><c>true</c> if the software is detected; otherwise, <c>false</c>.</returns>
         public bool IsBusinessSoftwareRunning()
         {
             return Process.GetProcessesByName(_businessSoftwareName).Any();

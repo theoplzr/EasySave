@@ -1,12 +1,12 @@
 [
   {
-    "Id": "c9c67bb4-6727-4a40-b53e-25bd45812bf5",
-    "Name": "Noir",
-    "SourceDirectory": "/Users/tpellizzari/Documents/Source5/",
-    "TargetDirectory": "/Users/tpellizzari/Documents/Target5/",
+    "Id": "2d97cd35-71a0-45d5-99fd-868b09b1277d",
+    "Name": "Salut",
+    "SourceDirectory": "/Users/tpellizzari/Documents/Source4/",
+    "TargetDirectory": "/Users/tpellizzari/Documents/Target4/",
     "BackupType": 0,
     "Ordinal": 0,
-    "IsSelected": false,
-    "Status": "En cours"
+    "IsSelected": true,
+    "Status": "Finished"
   }
 ]

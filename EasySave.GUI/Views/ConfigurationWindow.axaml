@@ -7,17 +7,20 @@
         Width="400" Height="500"
         Background="White">
   
+  <!-- The DataContext is assigned to the ConfigurationViewModel -->
   <Window.DataContext>
     <vm:ConfigurationViewModel/>
   </Window.DataContext>
-  
+
+  <!-- Main container with a border and corner radius -->
   <Border Padding="20" Background="#FAFAFA" CornerRadius="10" BorderBrush="#3498db" BorderThickness="2">
-    <!-- Utilisation d'un Grid à deux lignes -->
     <Grid RowDefinitions="*,Auto">
-      <!-- Ligne 0 : contenu principal -->
+      
+      <!-- Row 0: Main content -->
       <ScrollViewer Grid.Row="0">
         <StackPanel Spacing="15">
           
+          <!-- Header Title -->
           <Border Background="#3498db" CornerRadius="6" Padding="10">
             <TextBlock Text="{Binding LanguageHelperInstance.ConfigurationWindowTitle}" 
                        FontSize="22" 
@@ -26,7 +29,7 @@
                        HorizontalAlignment="Center"/>
           </Border>
           
-          <!-- Champ pour le format du log (garder tel quel) -->
+          <!-- Log Format Field -->
           <StackPanel Orientation="Vertical" Spacing="5">
             <TextBlock Text="{Binding LanguageHelperInstance.LogFormatLabel}" 
                        FontWeight="SemiBold" 
@@ -37,6 +40,7 @@
                       Foreground="#2c3e50"/>
           </StackPanel>
           
+          <!-- Business Software -->
           <StackPanel Orientation="Vertical" Spacing="5">
             <TextBlock Text="{Binding LanguageHelperInstance.BusinessSoftwareLabel}" 
                        FontWeight="SemiBold" 
@@ -46,7 +50,7 @@
                      Foreground="#2c3e50"/>
           </StackPanel>
           
-          <!-- Champ pour le répertoire des logs -->
+          <!-- Log Directory -->
           <StackPanel Orientation="Vertical" Spacing="5">
             <TextBlock Text="{Binding LanguageHelperInstance.LogDirectoryLabel}" 
                        FontWeight="SemiBold"/>
@@ -66,25 +70,23 @@
             </Grid>
           </StackPanel>
           
-          <!-- Champ pour les extensions à crypter -->
+          <!-- Encryption Extensions -->
           <StackPanel Orientation="Vertical" Spacing="5">
             <TextBlock Text="{Binding LanguageHelperInstance.ExtensionsToEncryptLabel}" 
                        FontWeight="SemiBold" 
                        Foreground="#2c3e50"/>
-            <!-- Liste des extensions -->
             <ListBox x:Name="ExtensionsListBox"
                      ItemsSource="{Binding EncryptionExtensions}" 
                      Height="80" 
                      Background="#ecf0f1" 
                      Foreground="#2c3e50"/>
-            <!-- Boutons Add et Remove pour gérer les extensions -->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Spacing="5">
               <TextBox x:Name="NewExtensionTextBox" 
-                      Width="100" 
-                      Watermark="Extension" 
-                      Text="{Binding NewExtension, UpdateSourceTrigger=PropertyChanged}"
-                      Background="#ecf0f1" 
-                      Foreground="#2c3e50"/>
+                       Width="100" 
+                       Watermark="Extension" 
+                       Text="{Binding NewExtension, UpdateSourceTrigger=PropertyChanged}"
+                       Background="#ecf0f1" 
+                       Foreground="#2c3e50"/>
               <Button Content="{Binding LanguageHelperInstance.ButtonAddExtension}" 
                       Command="{Binding AddExtensionCommand}" 
                       CommandParameter="{Binding NewExtension}"
@@ -100,42 +102,39 @@
 
           <!-- Priority Extensions Section -->
           <StackPanel Orientation="Vertical" Spacing="5">
-              <TextBlock Text="{Binding LanguageHelperInstance.PriorityExtensionsLabel}" 
-                        FontWeight="SemiBold" 
-                        Foreground="#2c3e50"/>
-              
-              <!-- List of priority extensions -->
-              <ListBox x:Name="PriorityExtensionsListBox"
-                      ItemsSource="{Binding PriorityExtensions}" 
-                      Height="80" 
-                      Background="#ecf0f1" 
-                      Foreground="#2c3e50"/>
-              
-              <!-- Add and Remove buttons for priority extensions -->
-              <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Spacing="5">
-                  <TextBox Text="{Binding NewPriorityExtension, Mode=TwoWay}" 
-                      Width="100" 
-                      Watermark="Extension" 
-                      Background="#ecf0f1" 
-                      Foreground="#2c3e50"/>
-                  <Button Content="{Binding LanguageHelperInstance.ButtonAddExtension}" 
+            <TextBlock Text="{Binding LanguageHelperInstance.PriorityExtensionsLabel}" 
+                       FontWeight="SemiBold" 
+                       Foreground="#2c3e50"/>
+            
+            <ListBox x:Name="PriorityExtensionsListBox"
+                     ItemsSource="{Binding PriorityExtensions}" 
+                     Height="80" 
+                     Background="#ecf0f1" 
+                     Foreground="#2c3e50"/>
+            
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Spacing="5">
+              <TextBox Text="{Binding NewPriorityExtension, Mode=TwoWay}" 
+                       Width="100" 
+                       Watermark="Extension" 
+                       Background="#ecf0f1" 
+                       Foreground="#2c3e50"/>
+              <Button Content="{Binding LanguageHelperInstance.ButtonAddExtension}" 
                       Command="{Binding AddPriorityExtensionCommand}" 
                       CommandParameter="{Binding NewPriorityExtension}"
                       Background="#27AE60" 
                       Foreground="White"/>
-                  <Button Content="{Binding LanguageHelperInstance.ButtonRemoveExtension}" 
-                          Command="{Binding RemovePriorityExtensionCommand}" 
-                          CommandParameter="{Binding SelectedItem, ElementName=PriorityExtensionsListBox}"
-                          Background="#E74C3C" 
-                          Foreground="White"/>
-              </StackPanel>
+              <Button Content="{Binding LanguageHelperInstance.ButtonRemoveExtension}" 
+                      Command="{Binding RemovePriorityExtensionCommand}" 
+                      CommandParameter="{Binding SelectedItem, ElementName=PriorityExtensionsListBox}"
+                      Background="#E74C3C" 
+                      Foreground="White"/>
+            </StackPanel>
           </StackPanel>
-
           
         </StackPanel>
       </ScrollViewer>
       
-      <!-- Ligne 1 : boutons Save et Cancel, placés en bas -->
+      <!-- Row 1: Save and Cancel buttons at the bottom -->
       <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,10,0,0">
         <Button Content="{Binding LanguageHelperInstance.ButtonSave}" 
                 Command="{Binding SaveCommand}" 

@@ -4,13 +4,34 @@ using System.ComponentModel;
 
 namespace EasySave.GUI.Helpers
 {
+    /// <summary>
+    /// A helper class that manages language-specific text messages and provides
+    /// property change notifications to update the UI when the language changes.
+    /// </summary>
     public class LanguageHelper : INotifyPropertyChanged
     {
         private static readonly Lazy<LanguageHelper> _instance = new(() => new LanguageHelper());
+
+        /// <summary>
+        /// Gets the singleton instance of <see cref="LanguageHelper"/>.
+        /// </summary>
         public static LanguageHelper Instance => _instance.Value;
-        private string _language = "en"; 
+
+        private string _language = "en";
+
+        /// <summary>
+        /// An event that is triggered when a property value changes (used for data binding in the UI).
+        /// </summary>
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        /// <summary>
+        /// Gets the current language code (e.g. "en" or "fr").
+        /// </summary>
         public string CurrentLanguage => _language;
+
+        /// <summary>
+        /// A dictionary that maps language codes to another dictionary of key-value message pairs.
+        /// </summary>
         private static readonly Dictionary<string, Dictionary<string, string>> messages = new()
         {
             {
@@ -34,7 +55,7 @@ namespace EasySave.GUI.Helpers
                     { "ProgressTabHeader", "Progress" },
                     { "ConfigurationWindowTitle", "Configuration" },
                     { "LogFormatLabel", "Log Format:" },
-                    { "LogDirectoryLabel", "Log Directory:" },  
+                    { "LogDirectoryLabel", "Log Directory:" },
                     { "ExtensionsToEncryptLabel", "Extensions to Encrypt:" },
                     { "BusinessSoftwareLabel", "Blocking business software:" },
                     { "ButtonRemove", "Remove" },
@@ -48,16 +69,16 @@ namespace EasySave.GUI.Helpers
                     { "MenuItemLanguage", "Language" },
                     { "ChooseYourLanguage", "Choose your language:" },
                     { "JobsListAllTitle", "Job List" },
-                    {"AllBackupJobsTitle", "All Backup Jobs"},
-                    {"AllJobsList", "All Jobs List"},
-                    {"LabelSource", "📂 Source:"},
-                    {"LabelTarget", "🎯 Target:"},
-                    {"LabelTimestamp", "🕒 Timestamp:"},
-                    {"LabelFileSize", "📏 File Size:"},
-                    {"LabelTransferTime", "⚡ Transfer Time:"},
-                    {"LabelEncryptionTime", "🔒 Encryption Time:"},
-                    {"LabelStatus", "✅ Status:"},
-                    {"LabelStrategy", "📊 Strategy:"},
+                    { "AllBackupJobsTitle", "All Backup Jobs" },
+                    { "AllJobsList", "All Jobs List" },
+                    { "LabelSource", "📂 Source:" },
+                    { "LabelTarget", "🎯 Target:" },
+                    { "LabelTimestamp", "🕒 Timestamp:" },
+                    { "LabelFileSize", "📏 File Size:" },
+                    { "LabelTransferTime", "⚡ Transfer Time:" },
+                    { "LabelEncryptionTime", "🔒 Encryption Time:" },
+                    { "LabelStatus", "✅ Status:" },
+                    { "LabelStrategy", "📊 Strategy:" },
                     { "English", "English" },
                     { "French", "French" },
                     { "JobsListTitle", "Here are your backup jobs created in progress!" },
@@ -94,7 +115,7 @@ namespace EasySave.GUI.Helpers
                     { "ButtonStop", "Stop" },
                     { "ExecutionPausedJob", "⏸️ Job \"{0}\" paused." },
                     { "ExecutionResumedJob", "▶️ Job \"{0}\" resumed." },
-                    { "ExecutionStoppedJob", "⏹️ Job \"{0}\" stopped."},
+                    { "ExecutionStoppedJob", "⏹️ Job \"{0}\" stopped." },
                     { "Status_Starting", "Starting" }
                 }
             },
@@ -119,7 +140,7 @@ namespace EasySave.GUI.Helpers
                     { "ProgressTabHeader", "Progression" },
                     { "ConfigurationWindowTitle", "Configuration" },
                     { "LogFormatLabel", "Format du Log :" },
-                    { "LogDirectoryLabel", "Répertoire des logs :" },  // Nouvelle clé
+                    { "LogDirectoryLabel", "Répertoire des logs :" },
                     { "ExtensionsToEncryptLabel", "Extensions à Chiffrer :" },
                     { "BusinessSoftwareLabel", "Logiciel métier bloquant :" },
                     { "ButtonRemove", "Retirer" },
@@ -133,16 +154,16 @@ namespace EasySave.GUI.Helpers
                     { "MenuItemLanguage", "Langue" },
                     { "ChooseYourLanguage", "Choisissez votre langue :" },
                     { "JobsListAllTitle", "Liste des Travaux en cours" },
-                    {"AllBackupJobsTitle", "Tous les travaux"},
-                    {"AllJobsList", "Liste des travaux effectués"},
-                    {"LabelSource", "📂 Source:"},
-                    {"LabelTarget", "🎯 Destination:"},
-                    {"LabelTimestamp", "🕒 Horaire:"},
-                    {"LabelFileSize", "📏 Taille du fichier:"},
-                    {"LabelTransferTime", "⚡ Temps de transfert:"},
-                    {"LabelEncryptionTime", "🔒 Temps de cryptage:"},
-                    {"LabelStatus", "✅ Status:"},
-                    {"LabelStrategy", "📊 Stratégie:"},
+                    { "AllBackupJobsTitle", "Tous les travaux" },
+                    { "AllJobsList", "Liste des travaux effectués" },
+                    { "LabelSource", "📂 Source:" },
+                    { "LabelTarget", "🎯 Destination:" },
+                    { "LabelTimestamp", "🕒 Horaire:" },
+                    { "LabelFileSize", "📏 Taille du fichier:" },
+                    { "LabelTransferTime", "⚡ Temps de transfert:" },
+                    { "LabelEncryptionTime", "🔒 Temps de cryptage:" },
+                    { "LabelStatus", "✅ Status:" },
+                    { "LabelStrategy", "📊 Stratégie:" },
                     { "English", "Anglais" },
                     { "French", "Français" },
                     { "JobsListTitle", "Voici vos travaux de sauvegarde créés en cours !" },
@@ -176,7 +197,8 @@ namespace EasySave.GUI.Helpers
                     { "Status_Finished", "Terminé" },
                     { "ButtonPause", "Pause" },
                     { "ButtonResume", "Reprendre" },
-                    { "ButtonStop", "Arrêter" },{ "ExecutionPausedJob", "⏸️ Job \"{0}\" mis en pause." },
+                    { "ButtonStop", "Arrêter" },
+                    { "ExecutionPausedJob", "⏸️ Job \"{0}\" mis en pause." },
                     { "ExecutionResumedJob", "▶️ Job \"{0}\" repris." },
                     { "ExecutionStoppedJob", "⏹️ Job \"{0}\" stoppé." },
                     { "Status_Starting", "Démarrage" }
@@ -184,26 +206,36 @@ namespace EasySave.GUI.Helpers
             }
         };
 
+        /// <summary>
+        /// Translates a raw status like "Running" or "Paused" into the corresponding localized message.
+        /// </summary>
+        /// <param name="rawStatus">The raw status string to localize.</param>
+        /// <returns>A localized status string based on the current language.</returns>
         public string TranslateStatus(string rawStatus)
         {
-            // rawStatus sera "Running", "Paused", etc.
-            // On construit la clé "Status_" + rawStatus
+            // Construct the key: e.g., "Status_Running", "Status_Paused", etc.
             var finalKey = "Status_" + rawStatus;
             return GetMessage(finalKey);
         }
 
-
         private LanguageHelper() { }
 
+        /// <summary>
+        /// Sets the current language, triggering property change notifications so bound UI elements refresh.
+        /// </summary>
+        /// <param name="language">The language code ("en" or "fr").</param>
         public void SetLanguage(string language)
         {
             _language = language;
             NotifyAllProperties();
         }
 
+        /// <summary>
+        /// Notifies the UI that all property values may have changed (causes re-binding).
+        /// </summary>
         private void NotifyAllProperties()
         {
-            // Mise à jour de toutes les propriétés
+            // Update all properties
             foreach (var property in typeof(LanguageHelper).GetProperties())
             {
                 NotifyPropertyChanged(property.Name);
@@ -213,7 +245,18 @@ namespace EasySave.GUI.Helpers
         private void NotifyPropertyChanged(string propertyName)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        // Propriétés accessibles
+        /// <summary>
+        /// Retrieves a localized message string by its key.
+        /// If the key is not found, returns "[MISSING: key]".
+        /// </summary>
+        /// <param name="key">The key to look up in the dictionary.</param>
+        /// <returns>A string containing the localized message.</returns>
+        public string GetMessage(string key) =>
+            messages[_language].TryGetValue(key, out var value)
+                ? value
+                : $"[MISSING: {key}]";
+
+        // Exposing commonly used properties for direct data binding or easy access
         public string MainWindowTitle => GetMessage("MainWindowTitle");
         public string FileMenuHeader => GetMessage("FileMenuHeader");
         public string MenuItemConfiguration => GetMessage("MenuItemConfiguration");
@@ -232,7 +275,7 @@ namespace EasySave.GUI.Helpers
         public string ProgressTabHeader => GetMessage("ProgressTabHeader");
         public string ConfigurationWindowTitle => GetMessage("ConfigurationWindowTitle");
         public string LogFormatLabel => GetMessage("LogFormatLabel");
-        public string LogDirectoryLabel => GetMessage("LogDirectoryLabel");  // Nouvelle propriété
+        public string LogDirectoryLabel => GetMessage("LogDirectoryLabel");
         public string ExtensionsToEncryptLabel => GetMessage("ExtensionsToEncryptLabel");
         public string BusinessSoftwareLabel => GetMessage("BusinessSoftwareLabel");
         public string ButtonRemove => GetMessage("ButtonRemove");
@@ -270,10 +313,13 @@ namespace EasySave.GUI.Helpers
         public string ButtonPause => GetMessage("ButtonPause");
         public string ButtonResume => GetMessage("ButtonResume");
         public string ButtonStop => GetMessage("ButtonStop");
+
+        /// <summary>
+        /// Retrieves the localized status message by appending "Status_" to the given key
+        /// and looking up the dictionary.
+        /// </summary>
+        /// <param name="statusKey">The suffix of the status key (e.g. "Running").</param>
+        /// <returns>The localized status string.</returns>
         public string GetStatus(string statusKey) => GetMessage("Status_" + statusKey);
-        public string GetMessage(string key) =>
-            messages[_language].TryGetValue(key, out var value)
-                ? value
-                : $"[MISSING: {key}]";
     }
 }

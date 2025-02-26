@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using EasySave.Core.Models.BackupStrategies;
@@ -10,6 +11,25 @@ namespace EasySave.Core.Models
     /// </summary>
     public class BackupJob : INotifyPropertyChanged
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BackupJob"/> class.
+        /// </summary>
+        /// <param name="name">The name of the backup job.</param>
+        /// <param name="sourceDirectory">The source directory.</param>
+        /// <param name="targetDirectory">The target directory.</param>
+        /// <param name="backupType">The type of backup (Complete or Differential).</param>
+        /// <exception cref="ArgumentNullException">Thrown if any parameter is null.</exception>
+        public BackupJob(string name, string sourceDirectory, string targetDirectory, BackupType backupType)
+        {
+            Name = name ?? throw new ArgumentNullException(nameof(name), "The backup job name cannot be null.");
+            SourceDirectory = sourceDirectory ?? throw new ArgumentNullException(nameof(sourceDirectory), "The source directory cannot be null.");
+            TargetDirectory = targetDirectory ?? throw new ArgumentNullException(nameof(targetDirectory), "The target directory cannot be null.");
+            BackupType = backupType;
+
+            // Determine the backup strategy based on the specified backup type.
+            _backupStrategy = BackupStrategyFactory.GetStrategy(backupType);
+        }
+
         /// <summary>
         /// Unique identifier for the backup job.
         /// </summary>
@@ -37,6 +57,7 @@ namespace EasySave.Core.Models
 
         /// <summary>
         /// The backup strategy used for this job (determined by the backup type).
+        /// Not serialized into JSON.
         /// </summary>
         [JsonIgnore]
         public IBackupStrategy _backupStrategy;
@@ -64,9 +85,10 @@ namespace EasySave.Core.Models
             }
         }
 
-        private string _status = "Idle"; // État par défaut
+        private string _status = "Idle"; // Default state
+
         /// <summary>
-        /// Status of the backup job (Running, Paused, Stopped, Finished).
+        /// Status of the backup job (e.g., Running, Paused, Stopped, Finished).
         /// </summary>
         public string Status
         {
@@ -90,26 +112,9 @@ namespace EasySave.Core.Models
         /// Notifies UI components when a property changes.
         /// </summary>
         /// <param name="propertyName">The name of the property that changed.</param>
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null!)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BackupJob"/> class.
-        /// </summary>
-        /// <param name="name">The name of the backup job.</param>
-        /// <param name="sourceDirectory">The source directory.</param>
-        /// <param name="targetDirectory">The target directory.</param>
-        /// <param name="backupType">The type of backup (Complete or Differential).</param>
-        /// <exception cref="ArgumentNullException">Thrown if any parameter is null.</exception>
-        public BackupJob(string name, string sourceDirectory, string targetDirectory, BackupType backupType)
-        {
-            Name = name ?? throw new ArgumentNullException(nameof(name), "The backup job name cannot be null.");
-            SourceDirectory = sourceDirectory ?? throw new ArgumentNullException(nameof(sourceDirectory), "The source directory cannot be null.");
-            TargetDirectory = targetDirectory ?? throw new ArgumentNullException(nameof(targetDirectory), "The target directory cannot be null.");
-            BackupType = backupType;
-            _backupStrategy = BackupStrategyFactory.GetStrategy(backupType);
         }
 
         /// <summary>
