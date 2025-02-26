@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EasySave.Remote.Server")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+34b28f375c2c7312b1712d159d611990f2932627")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ce0e22a9e0b09dd7198b3ba44019c9fdd308263d")]
 [assembly: System.Reflection.AssemblyProductAttribute("EasySave.Remote.Server")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EasySave.Remote.Server")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

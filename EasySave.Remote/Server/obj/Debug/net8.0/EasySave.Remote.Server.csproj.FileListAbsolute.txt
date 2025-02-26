@@ -1,97 +1,194 @@
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\EasySave.GUI.deps.json
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\EasySave.GUI.runtimeconfig.json
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\EasySave.GUI.exe
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\EasySave.Remote.Server.exe
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\EasySave.Remote.Server.deps.json
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\EasySave.Remote.Server.runtimeconfig.json
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\EasySave.Remote.Server.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\EasySave.Remote.Server.pdb
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Avalonia.Base.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Avalonia.Controls.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Avalonia.DesignerSupport.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Avalonia.Dialogs.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Avalonia.Markup.Xaml.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Avalonia.Markup.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Avalonia.Metal.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Avalonia.MicroCom.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Avalonia.OpenGL.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Avalonia.Vulkan.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Avalonia.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Avalonia.Controls.ColorPicker.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Avalonia.Controls.DataGrid.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Avalonia.Desktop.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Avalonia.Diagnostics.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Avalonia.Fonts.Inter.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Avalonia.FreeDesktop.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Avalonia.Native.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Avalonia.ReactiveUI.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Avalonia.Remote.Protocol.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Avalonia.Skia.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Avalonia.Themes.Fluent.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Avalonia.Themes.Simple.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Avalonia.Win32.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Avalonia.X11.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\CommunityToolkit.Mvvm.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\DynamicData.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\HarfBuzzSharp.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\MicroCom.Runtime.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Microsoft.Extensions.Configuration.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Microsoft.Extensions.Configuration.Abstractions.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Microsoft.Extensions.Configuration.Binder.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Microsoft.Extensions.Configuration.FileExtensions.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Microsoft.Extensions.Configuration.Json.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Microsoft.Extensions.FileProviders.Abstractions.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Microsoft.Extensions.FileProviders.Physical.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Microsoft.Extensions.FileSystemGlobbing.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Microsoft.Extensions.Primitives.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Newtonsoft.Json.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\ReactiveUI.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\SkiaSharp.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Splat.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\System.IO.Pipelines.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\System.Reactive.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\System.Text.Encodings.Web.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\System.Text.Json.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\Tmds.DBus.Protocol.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\runtimes\win-arm64\native\av_libglesv2.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\runtimes\win-x64\native\av_libglesv2.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\runtimes\win-x86\native\av_libglesv2.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\runtimes\osx\native\libAvaloniaNative.dylib
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\runtimes\linux-arm\native\libHarfBuzzSharp.so
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\runtimes\linux-arm64\native\libHarfBuzzSharp.so
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\runtimes\linux-musl-x64\native\libHarfBuzzSharp.so
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\runtimes\linux-x64\native\libHarfBuzzSharp.so
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\runtimes\osx\native\libHarfBuzzSharp.dylib
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\runtimes\win-arm64\native\libHarfBuzzSharp.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\runtimes\win-x64\native\libHarfBuzzSharp.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\runtimes\win-x86\native\libHarfBuzzSharp.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\runtimes\linux-arm\native\libSkiaSharp.so
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\runtimes\linux-arm64\native\libSkiaSharp.so
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\runtimes\linux-musl-x64\native\libSkiaSharp.so
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\runtimes\linux-x64\native\libSkiaSharp.so
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\runtimes\osx\native\libSkiaSharp.dylib
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\runtimes\win-arm64\native\libSkiaSharp.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\runtimes\win-x64\native\libSkiaSharp.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\runtimes\win-x86\native\libSkiaSharp.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\runtimes\browser\lib\net8.0\System.Text.Encodings.Web.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\CryptoSoftLib.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\EasySave.Core.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\EasySave.GUI.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\EasySaveLogs.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\EasySave.Core.pdb
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\EasySave.GUI.pdb
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\CryptoSoftLib.pdb
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\bin\Debug\net8.0\EasySaveLogs.pdb
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\obj\Debug\net8.0\EasySave.Remote.Server.csproj.AssemblyReference.cache
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\obj\Debug\net8.0\Avalonia\Resources.Inputs.cache
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\obj\Debug\net8.0\EasySave.Remote.Server.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\obj\Debug\net8.0\EasySave.Remote.Server.AssemblyInfoInputs.cache
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\obj\Debug\net8.0\EasySave.Remote.Server.AssemblyInfo.cs
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\obj\Debug\net8.0\EasySave.Remote.Server.csproj.CoreCompileInputs.cache
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\obj\Debug\net8.0\EasySave.Remote.Server.sourcelink.json
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\obj\Debug\net8.0\EasySave.0E6772C1.Up2Date
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\obj\Debug\net8.0\EasySave.Remote.Server.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\obj\Debug\net8.0\refint\EasySave.Remote.Server.dll
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\obj\Debug\net8.0\EasySave.Remote.Server.pdb
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\obj\Debug\net8.0\EasySave.Remote.Server.genruntimeconfig.cache
-C:\Users\ethan\OneDrive\Bureau\web\EasySave.Remote\Server\obj\Debug\net8.0\ref\EasySave.Remote.Server.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/EasySave.GUI.deps.json
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/EasySave.GUI.runtimeconfig.json
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/EasySave.GUI.exe
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/EasySave.Remote.Server.exe
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/EasySave.Remote.Server.deps.json
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/EasySave.Remote.Server.runtimeconfig.json
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/EasySave.Remote.Server.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/EasySave.Remote.Server.pdb
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Base.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Controls.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.DesignerSupport.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Dialogs.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Markup.Xaml.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Markup.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Metal.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.MicroCom.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.OpenGL.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Vulkan.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Controls.ColorPicker.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Controls.DataGrid.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Desktop.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Diagnostics.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Fonts.Inter.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.FreeDesktop.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Native.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.ReactiveUI.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Remote.Protocol.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Skia.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Themes.Fluent.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Themes.Simple.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Win32.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.X11.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/CommunityToolkit.Mvvm.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/DynamicData.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/HarfBuzzSharp.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/MicroCom.Runtime.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Microsoft.Extensions.Configuration.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Microsoft.Extensions.Configuration.Abstractions.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Microsoft.Extensions.Configuration.Binder.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Microsoft.Extensions.Configuration.FileExtensions.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Microsoft.Extensions.Configuration.Json.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Microsoft.Extensions.FileProviders.Abstractions.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Microsoft.Extensions.FileProviders.Physical.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Microsoft.Extensions.FileSystemGlobbing.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Microsoft.Extensions.Primitives.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Newtonsoft.Json.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/ReactiveUI.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/SkiaSharp.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Splat.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/System.IO.Pipelines.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/System.Reactive.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/System.Text.Encodings.Web.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/System.Text.Json.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/Tmds.DBus.Protocol.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/win-arm64/native/av_libglesv2.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/win-x64/native/av_libglesv2.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/win-x86/native/av_libglesv2.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/osx/native/libAvaloniaNative.dylib
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/linux-arm/native/libHarfBuzzSharp.so
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/linux-arm64/native/libHarfBuzzSharp.so
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/linux-musl-x64/native/libHarfBuzzSharp.so
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/linux-x64/native/libHarfBuzzSharp.so
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/osx/native/libHarfBuzzSharp.dylib
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/win-arm64/native/libHarfBuzzSharp.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/win-x64/native/libHarfBuzzSharp.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/win-x86/native/libHarfBuzzSharp.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/linux-arm/native/libSkiaSharp.so
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/linux-arm64/native/libSkiaSharp.so
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/linux-musl-x64/native/libSkiaSharp.so
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/linux-x64/native/libSkiaSharp.so
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/osx/native/libSkiaSharp.dylib
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/win-arm64/native/libSkiaSharp.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/win-x64/native/libSkiaSharp.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/win-x86/native/libSkiaSharp.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/browser/lib/net8.0/System.Text.Encodings.Web.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/CryptoSoftLib.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/EasySave.Core.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/EasySave.GUI.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/EasySaveLogs.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/EasySave.Core.pdb
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/EasySave.GUI.pdb
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/CryptoSoftLib.pdb
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/bin/Debug/net8.0/EasySaveLogs.pdb
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/obj/Debug/net8.0/EasySave.Remote.Server.csproj.AssemblyReference.cache
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/obj/Debug/net8.0/Avalonia/Resources.Inputs.cache
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/obj/Debug/net8.0/EasySave.Remote.Server.GeneratedMSBuildEditorConfig.editorconfig
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/obj/Debug/net8.0/EasySave.Remote.Server.AssemblyInfoInputs.cache
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/obj/Debug/net8.0/EasySave.Remote.Server.AssemblyInfo.cs
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/obj/Debug/net8.0/EasySave.Remote.Server.csproj.CoreCompileInputs.cache
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/obj/Debug/net8.0/EasySave.Remote.Server.sourcelink.json
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/obj/Debug/net8.0/EasySave.0E6772C1.Up2Date
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/obj/Debug/net8.0/EasySave.Remote.Server.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/obj/Debug/net8.0/refint/EasySave.Remote.Server.dll
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/obj/Debug/net8.0/EasySave.Remote.Server.pdb
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/obj/Debug/net8.0/EasySave.Remote.Server.genruntimeconfig.cache
+C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Server/obj/Debug/net8.0/ref/EasySave.Remote.Server.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/EasySave.GUI.deps.json
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/EasySave.GUI.runtimeconfig.json
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/EasySave.GUI
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/EasySave.Remote.Server
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/EasySave.Remote.Server.deps.json
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/EasySave.Remote.Server.runtimeconfig.json
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/EasySave.Remote.Server.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/EasySave.Remote.Server.pdb
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Base.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Controls.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.DesignerSupport.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Dialogs.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Markup.Xaml.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Markup.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Metal.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.MicroCom.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.OpenGL.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Vulkan.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Controls.ColorPicker.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Controls.DataGrid.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Desktop.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Diagnostics.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Fonts.Inter.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.FreeDesktop.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Native.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.ReactiveUI.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Remote.Protocol.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Skia.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Themes.Fluent.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Themes.Simple.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.Win32.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Avalonia.X11.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/CommunityToolkit.Mvvm.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/DynamicData.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/HarfBuzzSharp.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/MicroCom.Runtime.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Microsoft.Extensions.Configuration.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Microsoft.Extensions.Configuration.Abstractions.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Microsoft.Extensions.Configuration.Binder.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Microsoft.Extensions.Configuration.FileExtensions.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Microsoft.Extensions.Configuration.Json.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Microsoft.Extensions.FileProviders.Abstractions.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Microsoft.Extensions.FileProviders.Physical.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Microsoft.Extensions.FileSystemGlobbing.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Microsoft.Extensions.Primitives.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Newtonsoft.Json.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/ReactiveUI.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/SkiaSharp.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Splat.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/System.IO.Pipelines.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/System.Reactive.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/System.Text.Encodings.Web.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/System.Text.Json.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/Tmds.DBus.Protocol.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/win-arm64/native/av_libglesv2.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/win-x64/native/av_libglesv2.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/win-x86/native/av_libglesv2.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/osx/native/libAvaloniaNative.dylib
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/linux-arm/native/libHarfBuzzSharp.so
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/linux-arm64/native/libHarfBuzzSharp.so
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/linux-musl-x64/native/libHarfBuzzSharp.so
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/linux-x64/native/libHarfBuzzSharp.so
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/osx/native/libHarfBuzzSharp.dylib
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/win-arm64/native/libHarfBuzzSharp.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/win-x64/native/libHarfBuzzSharp.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/win-x86/native/libHarfBuzzSharp.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/linux-arm/native/libSkiaSharp.so
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/linux-arm64/native/libSkiaSharp.so
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/linux-musl-x64/native/libSkiaSharp.so
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/linux-x64/native/libSkiaSharp.so
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/osx/native/libSkiaSharp.dylib
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/win-arm64/native/libSkiaSharp.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/win-x64/native/libSkiaSharp.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/win-x86/native/libSkiaSharp.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/runtimes/browser/lib/net8.0/System.Text.Encodings.Web.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/CryptoSoftLib.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/EasySave.Core.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/EasySave.GUI.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/EasySaveLogs.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/EasySave.Core.pdb
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/EasySave.GUI.pdb
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/CryptoSoftLib.pdb
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/bin/Debug/net8.0/EasySaveLogs.pdb
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/obj/Debug/net8.0/EasySave.Remote.Server.csproj.AssemblyReference.cache
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/obj/Debug/net8.0/Avalonia/Resources.Inputs.cache
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/obj/Debug/net8.0/EasySave.Remote.Server.GeneratedMSBuildEditorConfig.editorconfig
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/obj/Debug/net8.0/EasySave.Remote.Server.AssemblyInfoInputs.cache
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/obj/Debug/net8.0/EasySave.Remote.Server.AssemblyInfo.cs
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/obj/Debug/net8.0/EasySave.Remote.Server.csproj.CoreCompileInputs.cache
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/obj/Debug/net8.0/EasySave.Remote.Server.sourcelink.json
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/obj/Debug/net8.0/EasySave.0E6772C1.Up2Date
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/obj/Debug/net8.0/EasySave.Remote.Server.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/obj/Debug/net8.0/refint/EasySave.Remote.Server.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/obj/Debug/net8.0/EasySave.Remote.Server.pdb
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/obj/Debug/net8.0/EasySave.Remote.Server.genruntimeconfig.cache
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/obj/Debug/net8.0/ref/EasySave.Remote.Server.dll

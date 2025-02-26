@@ -3,17 +3,118 @@
         xmlns:vm="clr-namespace:EasySave.Remote.Client.ViewModels"
         x:Class="EasySave.Remote.Client.Views.MainWindow"
         x:DataType="vm:RemoteViewModel"
-        Title="Console Déportée - EasySave"
-        Width="600" Height="400">
-  <Window.DataContext>
-    <vm:RemoteViewModel/>
-  </Window.DataContext>
-  <StackPanel Margin="20" Spacing="10">
-    <TextBlock Text="{Binding StatusMessage}" FontSize="14"/>
-    <Button Content="Connecter" Command="{Binding ConnectCommand}" />
-    <Button Content="Lister les jobs" Command="{Binding ListJobsCommand}" />
-    <Button Content="Exécuter tous les jobs" Command="{Binding ExecuteCommand}" />
-    <Button Content="Pause" Command="{Binding PauseCommand}" />
-    <Button Content="Reprendre" Command="{Binding ResumeCommand}" />
-  </StackPanel>
+        Title="Console déportée - EasySave"
+        Width="600" Height="550"
+        Background="#F4F4F4">
+
+    <Window.DataContext>
+        <vm:RemoteViewModel/>
+    </Window.DataContext>
+
+    <Grid RowDefinitions="Auto,*,Auto" ColumnDefinitions="*">
+        <!-- Titre -->
+        <TextBlock Text="EasySave - Console déportée"
+                   FontSize="22"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Center"
+                   Foreground="#0078D7"
+                   Margin="0,15,0,15"
+                   Grid.Row="0"/>
+
+        <!-- Zone de statut (scrollable avec un meilleur design) -->
+        <Border Grid.Row="1"
+                Background="White"
+                CornerRadius="10"
+                Padding="15"
+                Margin="20"
+                BorderBrush="{Binding StatusColor}"
+                BorderThickness="2"
+                BoxShadow="0 2 6 #888">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <TextBlock Text="{Binding StatusMessage}" 
+                           FontSize="15"
+                           Foreground="Black"
+                           FontWeight="Medium"
+                           TextWrapping="Wrap"
+                           MaxHeight="220"
+                           TextAlignment="Center"
+                           HorizontalAlignment="Center"/>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Boutons Actions bien centrés -->
+        <StackPanel Grid.Row="2" HorizontalAlignment="Center" Spacing="15" Margin="10">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="15">
+                <Button Content="Connecter"
+                        Command="{Binding ConnectCommand}"
+                        Background="#0078D7"
+                        Foreground="White"
+                        FontSize="14"
+                        Width="130"
+                        Padding="10"
+                        CornerRadius="5"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"/>
+
+                <Button Content="Lister les jobs"
+                        Command="{Binding ListJobsCommand}"
+                        Background="#28A745"
+                        Foreground="White"
+                        FontSize="14"
+                        Width="130"
+                        Padding="10"
+                        CornerRadius="5"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="15">
+                <Button Content="Exécuter"
+                        Command="{Binding ExecuteCommand}"
+                        Background="#DC3545"
+                        Foreground="White"
+                        FontSize="14"
+                        Width="130"
+                        Padding="10"
+                        CornerRadius="5"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"/>
+
+                <Button Content="Pause"
+                        Command="{Binding PauseCommand}"
+                        Background="#FFC107"
+                        Foreground="Black"
+                        FontSize="14"
+                        Width="130"
+                        Padding="10"
+                        CornerRadius="5"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="15">
+                <Button Content="Reprendre"
+                        Command="{Binding ResumeCommand}"
+                        Background="#17A2B8"
+                        Foreground="White"
+                        FontSize="14"
+                        Width="130"
+                        Padding="10"
+                        CornerRadius="5"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"/>
+
+                <Button Content="Stop"
+                        Command="{Binding StopCommand}"
+                        Background="#FF0000"
+                        Foreground="White"
+                        FontSize="14"
+                        Width="130"
+                        Padding="10"
+                        CornerRadius="5"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
 </Window>

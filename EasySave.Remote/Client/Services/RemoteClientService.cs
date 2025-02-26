@@ -8,9 +8,6 @@ using System.Collections.Generic;
 
 namespace EasySave.Remote.Client.Services
 {
-    /// <summary>
-    /// Service de communication par socket avec le serveur EasySave.
-    /// </summary>
     public class RemoteClientService
     {
         private readonly string _serverIp;
@@ -52,12 +49,14 @@ namespace EasySave.Remote.Client.Services
         public async Task<string> SendCommandAsync(string command, object? parameters = null)
         {
             if (_clientSocket == null)
-                throw new InvalidOperationException("Non connecté.");
+                throw new InvalidOperationException("Non connecté au serveur.");
 
             var messageObj = new { command, parameters };
             string messageJson = JsonSerializer.Serialize(messageObj);
-            byte[] msg = Encoding.UTF8.GetBytes(messageJson);
+            
+            Console.WriteLine($"Envoi de la commande: {messageJson}");
 
+            byte[] msg = Encoding.UTF8.GetBytes(messageJson);
             await _clientSocket.SendAsync(new ArraySegment<byte>(msg), SocketFlags.None);
 
             // Lire la taille du message de réponse (4 octets)
@@ -65,8 +64,10 @@ namespace EasySave.Remote.Client.Services
             int sizeReceived = await _clientSocket.ReceiveAsync(new ArraySegment<byte>(sizeBuffer), SocketFlags.None);
             if (sizeReceived == 0)
                 return string.Empty;
+            
             int dataSize = BitConverter.ToInt32(sizeBuffer, 0);
 
+            // Lire le message complet
             byte[] dataBuffer = new byte[dataSize];
             int totalReceived = 0;
             while (totalReceived < dataSize)
@@ -76,7 +77,11 @@ namespace EasySave.Remote.Client.Services
                     break;
                 totalReceived += bytesRead;
             }
-            return Encoding.UTF8.GetString(dataBuffer, 0, totalReceived);
+
+            string response = Encoding.UTF8.GetString(dataBuffer, 0, totalReceived);
+            Console.WriteLine($"Réponse reçue: {response}"); 
+            return response;
         }
+
     }
 }

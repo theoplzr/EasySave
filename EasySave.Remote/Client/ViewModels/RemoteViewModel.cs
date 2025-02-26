@@ -1,20 +1,28 @@
+using Avalonia.Media; 
 using Avalonia.Threading;
 using ReactiveUI;
 using System;
 using System.Reactive;
 using System.Threading.Tasks;
+using System.Text.Json; 
+
 using EasySave.Remote.Client.Services;
 
 namespace EasySave.Remote.Client.ViewModels
 {
-    /// <summary>
-    /// ViewModel pour l'interface de la console déportée.
-    /// Permet de se connecter au serveur, d'envoyer des commandes et d'afficher les réponses.
-    /// </summary>
     public class RemoteViewModel : ReactiveObject
     {
         private readonly RemoteClientService _clientService;
-        private string _statusMessage = "Déconnecté";
+        private string _statusMessage = "Client déconnecté du serveur";
+        private Guid _currentJobId = Guid.Empty;  // ID du job en cours
+
+        // ✅ Ajout de la propriété pour la couleur du statut
+        private IBrush _statusColor = Brushes.Gray; 
+        public IBrush StatusColor
+        {
+            get => _statusColor;
+            set => this.RaiseAndSetIfChanged(ref _statusColor, value);
+        }
 
         public string StatusMessage
         {
@@ -27,17 +35,18 @@ namespace EasySave.Remote.Client.ViewModels
         public ReactiveCommand<Unit, Unit> ExecuteCommand { get; }
         public ReactiveCommand<Unit, Unit> PauseCommand { get; }
         public ReactiveCommand<Unit, Unit> ResumeCommand { get; }
+        public ReactiveCommand<Unit, Unit> StopCommand { get; }
 
         public RemoteViewModel()
         {
             _clientService = new RemoteClientService();
 
-            // Créer les commandes sans forcer explicitement l'outputScheduler.
             ConnectCommand = ReactiveCommand.CreateFromTask(ConnectAsync);
             ListJobsCommand = ReactiveCommand.CreateFromTask(ListJobsAsync);
             ExecuteCommand = ReactiveCommand.CreateFromTask(ExecuteJobsAsync);
-            PauseCommand = ReactiveCommand.CreateFromTask(() => SendPauseCommandAsync(Guid.Empty));
-            ResumeCommand = ReactiveCommand.CreateFromTask(() => SendResumeCommandAsync(Guid.Empty));
+            PauseCommand = ReactiveCommand.CreateFromTask(PauseJobAsync);
+            ResumeCommand = ReactiveCommand.CreateFromTask(ResumeJobAsync);
+            StopCommand = ReactiveCommand.CreateFromTask(StopJobAsync);
         }
 
         private async Task ConnectAsync()
@@ -45,7 +54,8 @@ namespace EasySave.Remote.Client.ViewModels
             bool connected = await _clientService.ConnectAsync();
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                StatusMessage = connected ? "Connecté" : "Échec de la connexion";
+                StatusMessage = connected ? "✅ Client connecté au serveur !" : "❌ Échec de connexion avec le serveur.";
+                StatusColor = connected ? Brushes.Green : Brushes.Red;
             });
         }
 
@@ -54,35 +64,116 @@ namespace EasySave.Remote.Client.ViewModels
             string response = await _clientService.SendCommandAsync("list");
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                StatusMessage = $"Liste des jobs reçue:\n{response}";
+                StatusMessage = $"📋 Liste des jobs :\n{response}";
+                StatusColor = Brushes.Blue;
             });
         }
 
         private async Task ExecuteJobsAsync()
         {
             string response = await _clientService.SendCommandAsync("execute");
+
+            // Extraction de l'ID du job depuis la réponse du serveur
+            Guid jobId = ExtractJobIdFromResponse(response);
+            
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                StatusMessage = $"Commande d'exécution envoyée:\n{response}";
+                if (jobId != Guid.Empty)
+                {
+                    _currentJobId = jobId;
+                    StatusMessage = $"Job lancé ! ID: {_currentJobId}\n{response}";
+                    StatusColor = Brushes.Green;
+                }
+                else
+                {
+                    StatusMessage = "Erreur : Impossible de récupérer l'ID du job.";
+                    StatusColor = Brushes.Red;
+                }
+            });
+        }
+        private async Task PauseJobAsync()
+        {
+            if (_currentJobId == Guid.Empty)
+            {
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    StatusMessage = "Erreur : Aucun job en cours.";
+                    StatusColor = Brushes.Orange;
+                });
+                return;
+            }
+
+            Console.WriteLine($"Envoi de la commande pause pour le job {_currentJobId}");
+            string response = await _clientService.SendCommandAsync("pause", new { jobId = _currentJobId });
+
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                StatusColor = Brushes.Orange;
             });
         }
 
-        private async Task SendPauseCommandAsync(Guid jobId)
+        private async Task ResumeJobAsync()
         {
-            string response = await _clientService.SendCommandAsync("pause", new { jobId });
+            if (_currentJobId == Guid.Empty)
+            {
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    StatusMessage = "Erreur : Aucun job en cours.";
+                    StatusColor = Brushes.Orange;
+                });
+                return;
+            }
+
+            Console.WriteLine($"Envoi de la commande reprise pour le job {_currentJobId}");
+            string response = await _clientService.SendCommandAsync("resume", new { jobId = _currentJobId });
+
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                StatusMessage = $"Commande pause envoyée:\n{response}";
+                StatusMessage = $"Job {_currentJobId} repris.\n{response}";
+                StatusColor = Brushes.Green;
             });
+        }
+        private async Task StopJobAsync()
+        {
+            if (_currentJobId == Guid.Empty)
+            {
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    StatusMessage = "Erreur : Aucun job en cours.";
+                    StatusColor = Brushes.Orange;
+                });
+                return;
+            }
+
+            string response = await _clientService.SendCommandAsync("stop", new { jobId = _currentJobId });
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                StatusMessage = $"Job {_currentJobId} arrêté.\n{response}";
+                StatusColor = Brushes.Red;
+            });
+
+            _currentJobId = Guid.Empty; // Réinitialisation après l'arrêt
         }
 
-        private async Task SendResumeCommandAsync(Guid jobId)
+       private Guid ExtractJobIdFromResponse(string response)
         {
-            string response = await _clientService.SendCommandAsync("resume", new { jobId });
-            await Dispatcher.UIThread.InvokeAsync(() =>
+            try
             {
-                StatusMessage = $"Commande reprise envoyée:\n{response}";
-            });
+                using (JsonDocument doc = JsonDocument.Parse(response))
+                {
+                    if (doc.RootElement.TryGetProperty("jobId", out JsonElement jobIdElement))
+                    {
+                        return Guid.Parse(jobIdElement.GetString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erreur d'extraction de jobId: {ex.Message}");
+            }
+
+            return Guid.Empty; 
         }
+
     }
 }

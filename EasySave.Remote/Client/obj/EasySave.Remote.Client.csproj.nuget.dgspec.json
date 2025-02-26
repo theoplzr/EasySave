@@ -1,32 +1,26 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\EasySave.Remote\\Client\\EasySave.Remote.Client.csproj": {}
+    "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Client/EasySave.Remote.Client.csproj": {}
   },
   "projects": {
-    "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\CryptoSoftLib\\CryptoSoftLib.csproj": {
+    "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/CryptoSoftLib/CryptoSoftLib.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\CryptoSoftLib\\CryptoSoftLib.csproj",
+        "projectUniqueName": "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/CryptoSoftLib/CryptoSoftLib.csproj",
         "projectName": "CryptoSoftLib",
-        "projectPath": "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\CryptoSoftLib\\CryptoSoftLib.csproj",
-        "packagesPath": "C:\\Users\\ethan\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\CryptoSoftLib\\obj\\",
+        "projectPath": "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/CryptoSoftLib/CryptoSoftLib.csproj",
+        "packagesPath": "/Users/tpellizzari/.nuget/packages/",
+        "outputPath": "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/CryptoSoftLib/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\ethan\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/tpellizzari/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
+          "/usr/local/share/dotnet/library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -44,8 +38,7 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "9.0.100"
+        }
       },
       "frameworks": {
         "net8.0": {
@@ -66,44 +59,38 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.401/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\EasySave.Core\\EasySave.Core.csproj": {
+    "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Core/EasySave.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\EasySave.Core\\EasySave.Core.csproj",
+        "projectUniqueName": "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Core/EasySave.Core.csproj",
         "projectName": "EasySave.Core",
-        "projectPath": "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\EasySave.Core\\EasySave.Core.csproj",
-        "packagesPath": "C:\\Users\\ethan\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\EasySave.Core\\obj\\",
+        "projectPath": "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Core/EasySave.Core.csproj",
+        "packagesPath": "/Users/tpellizzari/.nuget/packages/",
+        "outputPath": "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Core/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\ethan\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/tpellizzari/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
+          "/usr/local/share/dotnet/library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\CryptoSoftLib\\CryptoSoftLib.csproj": {
-                "projectPath": "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\CryptoSoftLib\\CryptoSoftLib.csproj"
+              "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/CryptoSoftLib/CryptoSoftLib.csproj": {
+                "projectPath": "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/CryptoSoftLib/CryptoSoftLib.csproj"
               },
-              "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\EasySaveLogs\\EasySaveLogs.csproj": {
-                "projectPath": "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\EasySaveLogs\\EasySaveLogs.csproj"
+              "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySaveLogs/EasySaveLogs.csproj": {
+                "projectPath": "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySaveLogs/EasySaveLogs.csproj"
               }
             }
           }
@@ -117,8 +104,7 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "9.0.100"
+        }
       },
       "frameworks": {
         "net8.0": {
@@ -157,41 +143,35 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.401/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\EasySave.Remote\\Client\\EasySave.Remote.Client.csproj": {
+    "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Client/EasySave.Remote.Client.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\EasySave.Remote\\Client\\EasySave.Remote.Client.csproj",
+        "projectUniqueName": "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Client/EasySave.Remote.Client.csproj",
         "projectName": "EasySave.Remote.Client",
-        "projectPath": "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\EasySave.Remote\\Client\\EasySave.Remote.Client.csproj",
-        "packagesPath": "C:\\Users\\ethan\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\EasySave.Remote\\Client\\obj\\",
+        "projectPath": "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Client/EasySave.Remote.Client.csproj",
+        "packagesPath": "/Users/tpellizzari/.nuget/packages/",
+        "outputPath": "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Client/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\ethan\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/tpellizzari/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
+          "/usr/local/share/dotnet/library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\EasySave.Core\\EasySave.Core.csproj": {
-                "projectPath": "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\EasySave.Core\\EasySave.Core.csproj"
+              "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Core/EasySave.Core.csproj": {
+                "projectPath": "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Core/EasySave.Core.csproj"
               }
             }
           }
@@ -205,8 +185,7 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "9.0.100"
+        }
       },
       "frameworks": {
         "net8.0": {
@@ -265,33 +244,27 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.401/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\EasySaveLogs\\EasySaveLogs.csproj": {
+    "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySaveLogs/EasySaveLogs.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\EasySaveLogs\\EasySaveLogs.csproj",
+        "projectUniqueName": "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySaveLogs/EasySaveLogs.csproj",
         "projectName": "EasySaveLogs",
-        "projectPath": "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\EasySaveLogs\\EasySaveLogs.csproj",
-        "packagesPath": "C:\\Users\\ethan\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\EasySaveLogs\\obj\\",
+        "projectPath": "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySaveLogs/EasySaveLogs.csproj",
+        "packagesPath": "/Users/tpellizzari/.nuget/packages/",
+        "outputPath": "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySaveLogs/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\ethan\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/tpellizzari/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
+          "/usr/local/share/dotnet/library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -309,8 +282,7 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "9.0.100"
+        }
       },
       "frameworks": {
         "net8.0": {
@@ -337,7 +309,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.401/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
