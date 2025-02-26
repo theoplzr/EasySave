@@ -1,6 +1,6 @@
 # 📚 EasySave 3.0
 
-[🇫🇷 Lire en Français](README_FR.md) | [🇬🇧 Read in English](README.md)
+[🇫🇷 Lire en Français](README_FR.md) 
 
 ## 📌 Introduction
 EasySave 3.0 is an advanced backup software designed for efficiency, flexibility, and ease of use. It offers:
