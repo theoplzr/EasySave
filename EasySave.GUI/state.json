@@ -1,15 +1,15 @@
 [
   {
-    "BackupName": "Théo",
-    "LastActionTime": "2025-02-17T17:07:03.531302+01:00",
-    "Status": "En cours",
-    "TotalFiles": 3,
+    "BackupName": "Salut",
+    "LastActionTime": "2025-02-26T09:36:33.069131+01:00",
+    "Status": "Finished",
+    "TotalFiles": 1,
     "TotalSize": 0,
     "RemainingFiles": 0,
     "RemainingSize": 0,
     "Progress": 100,
-    "CurrentSourceFile": "/Users/tpellizzari/Documents/Source1/test_6mo.txt",
-    "CurrentTargetFile": "/Users/tpellizzari/Documents/Target1/test_6mo.txt",
-    "JobId": "e21297df-86ee-4939-a2aa-abe30713b2c9"
+    "CurrentSourceFile": "/Users/tpellizzari/Documents/Target4/test_file.bin",
+    "CurrentTargetFile": "/Users/tpellizzari/Documents/Target4/test_file.bin",
+    "JobId": "2d97cd35-71a0-45d5-99fd-868b09b1277d"
   }
 ]

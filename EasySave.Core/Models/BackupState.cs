@@ -1,4 +1,7 @@
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace EasySave.Core.Models
 {
@@ -20,7 +23,7 @@ namespace EasySave.Core.Models
         /// <summary>
         /// Current status of the backup job (e.g., "Active", "Completed", "Error").
         /// </summary>
-        public required string Status { get; set; } 
+        public required string Status { get; set; }
         
         /// <summary>
         /// Total number of files to be backed up.
@@ -56,22 +59,25 @@ namespace EasySave.Core.Models
         /// Unique identifier for the backup job.
         /// </summary>
         public Guid JobId { get; set; }
-
+        
         /// <summary>
         /// Progress of the backup job in percentage (0 to 100).
+        /// This property is set explicitly (e.g., via a progress notification).
         /// </summary>
-        public int Progress => TotalFiles == 0 ? 100 : (int)(((TotalFiles - RemainingFiles) / (double)TotalFiles) * 100);
+        public int ProgressPercentage { get; set; }
 
         /// <summary>
         /// Saves the current state of all backup jobs to a JSON file.
         /// </summary>
-        /// <param name="states">List of <see cref="BackupState"/> instances to be saved.</param>
+        /// <param name="states">A list of <see cref="BackupState"/> instances to be saved.</param>
         /// <param name="filePath">The path of the JSON file where the state is stored.</param>
         public static void SaveState(List<BackupState> states, string filePath)
         {
-            try{
-                File.WriteAllText(filePath, JsonConvert.SerializeObject(states, Formatting.Indented));
-                }
+            try
+            {
+                var json = JsonConvert.SerializeObject(states, Formatting.Indented);
+                File.WriteAllText(filePath, json);
+            }
             catch (IOException ex)
             {
                 Console.WriteLine($"Error saving backup state: {ex.Message}");

@@ -1,0 +1,20 @@
+[
+  {
+    "Id": "21bae9ad-8830-4d8a-94f3-50276b81d76e",
+    "Name": "BasileSave",
+    "SourceDirectory": "/Users/Eleve/Documents/Test1/source1/",
+    "TargetDirectory": "/Users/Eleve/Documents/Test1/destination1/",
+    "BackupType": 0,
+    "Ordinal": 0,
+    "IsSelected": false
+  },
+  {
+    "Id": "00230c57-c6a9-46ce-b809-30d39ee3e78a",
+    "Name": "vvvv",
+    "SourceDirectory": "/Users/Eleve/Documents/Test1/source1/",
+    "TargetDirectory": "/Users/Eleve/Documents/Test1/destination2/",
+    "BackupType": 0,
+    "Ordinal": 1,
+    "IsSelected": false
+  }
+]

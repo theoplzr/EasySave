@@ -6,16 +6,14 @@ namespace EasySave.Core.Commands
     /// </summary>
     public class ExecuteJobCommand : BackupCommand
     {
-        /// <summary>
-        /// Index of the backup job to be executed.
-        /// </summary>
-        private int _jobIndex;
+        // Index of the backup job to be executed.
+        private readonly int _jobIndex;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ExecuteJobCommand"/> class.
+        /// Initializes a new instance of <see cref="ExecuteJobCommand"/>.
         /// </summary>
-        /// <param name="backupManager">Reference to the backup manager handling jobs.</param>
-        /// <param name="jobIndex">Index of the backup job to execute.</param>
+        /// <param name="backupManager">The manager responsible for executing backup operations.</param>
+        /// <param name="jobIndex">The index of the job to execute.</param>
         public ExecuteJobCommand(BackupManager backupManager, int jobIndex)
             : base(backupManager)
         {
@@ -23,7 +21,7 @@ namespace EasySave.Core.Commands
         }
 
         /// <summary>
-        /// Executes the command to run the specified backup job.
+        /// Executes the backup job that corresponds to the specified index.
         /// </summary>
         public override void Execute()
         {

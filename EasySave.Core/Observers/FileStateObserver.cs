@@ -1,5 +1,9 @@
 using EasySave.Core.Models;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace EasySave.Core.Observers
 {
@@ -30,19 +34,19 @@ namespace EasySave.Core.Observers
         }
 
         /// <summary>
-        /// Method called each time a backup state is updated.
+        /// Called each time a backup state is updated.
         /// Updates the local dictionary and writes all states to the JSON file.
         /// </summary>
         /// <param name="state">The current state of a given backup job.</param>
         public void Update(BackupState state)
         {
-            // Update the state in the dictionary
+            // Update or add the state in the dictionary
             _states[state.JobId] = state;
 
-            // Write all states to the JSON file
+            // Retrieve all states from the dictionary
             var allStates = _states.Values.ToList();
 
-            // Générer un JSON avec la progression incluse
+            // Build the data (including progress) to be written to the JSON file
             var formattedStates = allStates.Select(s => new
             {
                 s.BackupName,
@@ -52,12 +56,13 @@ namespace EasySave.Core.Observers
                 s.TotalSize,
                 s.RemainingFiles,
                 s.RemainingSize,
-                s.Progress,  
+                Progress = s.ProgressPercentage, 
                 s.CurrentSourceFile,
                 s.CurrentTargetFile,
                 s.JobId
             }).ToList();
 
+            // Serialize and write all states to the specified JSON file
             File.WriteAllText(_stateFilePath, JsonConvert.SerializeObject(formattedStates, Formatting.Indented));
         }
     }

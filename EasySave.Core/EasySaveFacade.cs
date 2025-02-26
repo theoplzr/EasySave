@@ -3,43 +3,43 @@ using EasySave.Core.Models;
 using EasySave.Core.Observers;
 using EasySave.Core.Repositories;
 using Microsoft.Extensions.Configuration;
+using System;
+using System.Collections.Generic;
 
 namespace EasySave.Core.Facade
 {
     /// <summary>
-    /// Provides a simplified interface (facade) for performing the main operations of EasySave
-    /// without exposing internal implementation details.
-    /// Implements the **Facade Design Pattern** to streamline interactions with the backup system.
+    /// Provides a simplified interface (facade) for performing main EasySave operations.
     /// </summary>
     public class EasySaveFacade
     {
-        /// <summary>
-        /// Instance of the <see cref="BackupManager"/> that handles backup jobs.
-        /// </summary>
         private readonly BackupManager _backupManager;
 
         /// <summary>
-        /// Initializes the EasySave facade with the required dependencies:
-        /// - A repository for backup job persistence.
-        /// - A log directory for logging backup activities.
-        /// - An optional observer for tracking backup state.
+        /// Initializes a new instance of the <see cref="EasySaveFacade"/> class.
         /// </summary>
-        /// <param name="jobRepository">The repository for managing backup job persistence.</param>
-        /// <param name="logDirectory">The directory where logs will be stored.</param>
-        /// <param name="stateObserver">An optional observer to update backup state (e.g., JSON file).</param>
-        public EasySaveFacade(IBackupJobRepository jobRepository, string logDirectory, IBackupObserver? stateObserver, IConfiguration configuration)
+        /// <param name="jobRepository">Repository for persisting backup jobs.</param>
+        /// <param name="logDirectory">Directory where logs are stored.</param>
+        /// <param name="stateObserver">Optional observer to receive backup state updates.</param>
+        /// <param name="configuration">Configuration object for custom settings.</param>
+        public EasySaveFacade(
+            IBackupJobRepository jobRepository, 
+            string logDirectory, 
+            IBackupObserver? stateObserver, 
+            IConfiguration configuration
+        )
         {
             _backupManager = new BackupManager(jobRepository, logDirectory, configuration);
-
             if (stateObserver != null)
             {
                 _backupManager.AddObserver(stateObserver);
             }
         }
+
         /// <summary>
-        /// Adds a new backup job.
+        /// Adds a new backup job via a command object.
         /// </summary>
-        /// <param name="job">The backup job to be added.</param>
+        /// <param name="job">The new <see cref="BackupJob"/> to add.</param>
         public void AddJob(BackupJob job)
         {
             var cmd = new AddJobCommand(_backupManager, job);
@@ -47,9 +47,9 @@ namespace EasySave.Core.Facade
         }
 
         /// <summary>
-        /// Removes an existing backup job identified by its index.
+        /// Removes a backup job by index.
         /// </summary>
-        /// <param name="index">The zero-based index of the job to remove.</param>
+        /// <param name="index">Zero-based index of the job to remove.</param>
         public void RemoveJob(int index)
         {
             var cmd = new RemoveJobCommand(_backupManager, index);
@@ -57,23 +57,23 @@ namespace EasySave.Core.Facade
         }
 
         /// <summary>
-        /// Get the Job index using the Job Id.
+        /// Retrieves a job's index by its unique identifier (GUID).
         /// </summary>
-        /// <param name="id">The id of the job to get.</param>
+        /// <param name="id">The job's <see cref="Guid"/>.</param>
+        /// <returns>An integer representing the job's zero-based index, or -1 if not found.</returns>
         public int GetJobIndexById(Guid id)
         {
             return _backupManager.GetAllJobs().FindIndex(job => job.Id == id);
         }
 
         /// <summary>
-        /// Updates an existing backup job by providing new values for its attributes.
-        /// Parameters that are null or empty will not be updated.
+        /// Updates properties of a backup job by its zero-based index.
         /// </summary>
-        /// <param name="index">The zero-based index of the job to update.</param>
-        /// <param name="newName">New name for the backup job (or null to keep the existing name).</param>
-        /// <param name="newSource">New source directory (or null).</param>
-        /// <param name="newTarget">New target directory (or null).</param>
-        /// <param name="newType">New backup type (or null).</param>
+        /// <param name="index">The job index.</param>
+        /// <param name="newName">Optional new name.</param>
+        /// <param name="newSource">Optional new source directory.</param>
+        /// <param name="newTarget">Optional new target directory.</param>
+        /// <param name="newType">Optional new <see cref="BackupType"/>.</param>
         public void UpdateJob(int index, string? newName, string? newSource, string? newTarget, BackupType? newType)
         {
             var cmd = new UpdateJobCommand(_backupManager, index, newName, newSource, newTarget, newType);
@@ -81,7 +81,7 @@ namespace EasySave.Core.Facade
         }
 
         /// <summary>
-        /// Executes all configured backup jobs.
+        /// Initiates the execution of all backup jobs asynchronously.
         /// </summary>
         public void ExecuteAllJobs()
         {
@@ -90,9 +90,9 @@ namespace EasySave.Core.Facade
         }
 
         /// <summary>
-        /// Executes a specific backup job identified by its index.
+        /// Executes a single backup job by its zero-based index.
         /// </summary>
-        /// <param name="index">The zero-based index of the job to execute.</param>
+        /// <param name="index">The zero-based index of the job.</param>
         public void ExecuteJobByIndex(int index)
         {
             var cmd = new ExecuteJobCommand(_backupManager, index);
@@ -100,7 +100,7 @@ namespace EasySave.Core.Facade
         }
 
         /// <summary>
-        /// Displays the list of existing backup jobs, including name, source, target, and type.
+        /// Prints a list of configured backup jobs to the console.
         /// </summary>
         public void ListJobs()
         {
@@ -109,27 +109,66 @@ namespace EasySave.Core.Facade
         }
 
         /// <summary>
-        /// Returns the total number of configured backup jobs.
+        /// Retrieves the number of currently configured backup jobs.
         /// </summary>
-        /// <returns>The number of configured backup jobs.</returns>
+        /// <returns>An integer representing the count of jobs.</returns>
         public int GetJobCount()
         {
             return _backupManager.GetBackupJobCount();
         }
 
         /// <summary>
-        /// Returns the list of all backup jobs.
+        /// Retrieves a list of all configured backup jobs.
         /// </summary>
         /// <returns>A list of <see cref="BackupJob"/> objects.</returns>
         public List<BackupJob> ListBackupJobs()
         {
-            return _backupManager.GetAllJobs(); // Assurez-vous que cette méthode existe dans BackupManager
+            return _backupManager.GetAllJobs();
         }
 
+        /// <summary>
+        /// Adds an <see cref="IBackupObserver"/> instance to track backup state changes.
+        /// </summary>
+        /// <param name="observer">The observer to add.</param>
         public void AddObserver(IBackupObserver observer)
         {
             _backupManager.AddObserver(observer);
         }
 
+        /// <summary>
+        /// Gets the current overall status of the backup system.
+        /// </summary>
+        /// <returns>A string containing the status.</returns>
+        public string GetStatus()
+        {
+            return _backupManager.GetStatus();
+        }
+
+        /// <summary>
+        /// Pauses the backup job with the specified <see cref="Guid"/>.
+        /// </summary>
+        /// <param name="jobId">The unique identifier of the job.</param>
+        public void PauseJob(Guid jobId)
+        {
+            _backupManager.PauseJob(jobId);
+        }
+
+        /// <summary>
+        /// Resumes a paused backup job with the specified <see cref="Guid"/>.
+        /// </summary>
+        /// <param name="jobId">The unique identifier of the job.</param>
+        public void ResumeJob(Guid jobId)
+        {
+            _backupManager.ResumeJob(jobId);
+        }
+
+        /// <summary>
+        /// Stops the backup job with the specified <see cref="Guid"/>, canceling any ongoing tasks.
+        /// </summary>
+        /// <param name="jobId">The unique identifier of the job.</param>
+        public void StopJob(Guid jobId)
+        {
+            _backupManager.StopJob(jobId);
+        }
     }
 }

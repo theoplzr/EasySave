@@ -6,20 +6,25 @@ using System.Threading.Tasks;
 namespace EasySaveLogs
 {
     /// <summary>
-    /// Surveille les modifications du fichier de configuration (appsettings.json)
-    /// et reconfigure dynamiquement le Logger.
+    /// Monitors the configuration file (appsettings.GUI.json) and dynamically
+    /// reconfigures the <see cref="Logger"/> when changes are detected.
     /// </summary>
     public class ConfigurationReloader
     {
         private readonly string _configPath = "appsettings.GUI.json";
         private readonly Logger _logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigurationReloader"/> class.
+        /// Sets up a file watcher to detect changes in the configuration file.
+        /// </summary>
+        /// <param name="logger">The <see cref="Logger"/> instance to be reconfigured.</param>
         public ConfigurationReloader(Logger logger)
         {
             _logger = logger;
-            // Récupérer le répertoire contenant le fichier de configuration.
-            string? directory = Path.GetDirectoryName(_configPath);
 
+            // Retrieve the directory containing the configuration file
+            string? directory = Path.GetDirectoryName(_configPath);
             if (string.IsNullOrWhiteSpace(directory))
             {
                 directory = Directory.GetCurrentDirectory();
@@ -34,9 +39,13 @@ namespace EasySaveLogs
             watcher.Changed += OnConfigChanged;
         }
 
+        /// <summary>
+        /// Triggered when the configuration file changes. Delays briefly to avoid reading conflicts,
+        /// then updates the logger's format if possible.
+        /// </summary>
         private void OnConfigChanged(object sender, FileSystemEventArgs e)
         {
-            // Attendre un court instant pour éviter des conflits de lecture
+            // Wait briefly to avoid file reading conflicts
             Task.Delay(500).Wait();
 
             try
@@ -45,23 +54,26 @@ namespace EasySaveLogs
                 var config = JsonSerializer.Deserialize<ConfigurationData>(json);
                 if (config != null)
                 {
-                    // Reconfigure le Logger avec la nouvelle valeur
+                    // Dynamically reconfigure the logger
                     _logger.Reconfigure(config.LogFormat);
-                    Console.WriteLine($"Configuration rechargée : LogFormat = {config.LogFormat}");
+                    Console.WriteLine($"Configuration reloaded: LogFormat = {config.LogFormat}");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erreur lors du rechargement de la configuration : {ex.Message}");
+                Console.WriteLine($"Error reloading configuration: {ex.Message}");
             }
         }
     }
 
     /// <summary>
-    /// Représente les données de configuration pour le logger.
+    /// Represents logger configuration data (e.g., log format).
     /// </summary>
     public class ConfigurationData
     {
+        /// <summary>
+        /// Specifies the desired log format (e.g., "JSON", "XML").
+        /// </summary>
         public string LogFormat { get; set; } = "JSON";
     }
 }
