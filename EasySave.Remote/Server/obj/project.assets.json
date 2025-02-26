@@ -2502,36 +2502,43 @@
     ]
   },
   "packageFolders": {
-    "/Users/tpellizzari/.nuget/packages/": {}
+    "C:\\Users\\ethan\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/EasySave.Server.csproj",
-      "projectName": "EasySave.Server",
-      "projectPath": "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/EasySave.Server.csproj",
-      "packagesPath": "/Users/tpellizzari/.nuget/packages/",
-      "outputPath": "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Server/obj/",
+      "projectUniqueName": "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\EasySave.Remote\\Server\\EasySave.Remote.Server.csproj",
+      "projectName": "EasySave.Remote.Server",
+      "projectPath": "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\EasySave.Remote\\Server\\EasySave.Remote.Server.csproj",
+      "packagesPath": "C:\\Users\\ethan\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\EasySave.Remote\\Server\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "/Users/tpellizzari/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\ethan\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
-        "/usr/local/share/dotnet/library-packs": {},
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Core/EasySave.Core.csproj": {
-              "projectPath": "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Core/EasySave.Core.csproj"
+            "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\EasySave.Core\\EasySave.Core.csproj": {
+              "projectPath": "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\EasySave.Core\\EasySave.Core.csproj"
             },
-            "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.GUI/EasySave.GUI.csproj": {
-              "projectPath": "/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.GUI/EasySave.GUI.csproj"
+            "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\EasySave.GUI\\EasySave.GUI.csproj": {
+              "projectPath": "C:\\Users\\ethan\\OneDrive\\Bureau\\web\\EasySave.GUI\\EasySave.GUI.csproj"
             }
           }
         }
@@ -2545,7 +2552,8 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      }
+      },
+      "SdkAnalysisLevel": "9.0.100"
     },
     "frameworks": {
       "net8.0": {
@@ -2576,7 +2584,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.401/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
