@@ -1,10 +1,19 @@
 # 📖 EasySave 3.0 - User Manual
 
+🇬🇧 **[English Version](#english-manual)**  
+🇫🇷 **[Version Française](#manuel-francais)**  
+
+---
+
+## <a name="english-manual"></a> 📌 **EasySave 3.0 - User Manual (English)**  
+
 ## 📌 Introduction
 EasySave 3.0 is a powerful backup software that provides:
 - **Graphical User Interface (GUI)** for an intuitive experience.
 - **Remote Console** for monitoring and controlling backups from another machine.
 - **Command Line Interface (CLI)** for advanced users and automation.
+
+➡️ [Go to French Version](#manuel-francais)  
 
 ---
 
@@ -139,3 +148,149 @@ EasySave 3.0 provides a flexible, reliable, and powerful backup solution for use
 
 📌 For additional support, visit our **GitHub Repository**: [EasySave Repository](https://github.com/theoplzr/EasySave).
 
+---
+
+## <a name="manuel-francais"></a> 📌 **EasySave 3.0 - Manuel d'Utilisateur (Français)**  
+
+# 📖 EasySave 3.0 - Manuel d'Utilisateur
+
+## 📌 Introduction
+EasySave 3.0 est un logiciel de sauvegarde performant qui offre :
+- **Une Interface Graphique (GUI)** pour une expérience intuitive.
+- **Une Console à Distance** pour surveiller et contrôler les sauvegardes depuis un autre appareil.
+- **Une Interface en Ligne de Commande (CLI)** pour les utilisateurs avancés et l'automatisation.
+
+➡️ [Retour à la version anglaise](#english-manual)  
+
+---
+
+# 🛠 Installation
+
+## 📥 Prérequis
+Avant d’installer EasySave, assurez-vous d’avoir :
+- **.NET 8.0** installé.
+- **Visual Studio 2022** (ou version plus récente).
+- **Git** (pour le contrôle de version).
+
+## 🚀 Étapes d’Installation
+1. **Télécharger le dépôt**
+   ```sh
+   git clone https://github.com/theoplzr/EasySave.git
+   ```
+2. **Se rendre dans le dossier du projet**
+   ```sh
+   cd EasySave
+   ```
+3. **Restaurer les dépendances**
+   ```sh
+   dotnet restore
+   ```
+4. **Compiler l’application**
+   ```sh
+   dotnet build
+   ```
+5. **Exécuter l’application**
+   ```sh
+   dotnet run
+   ```
+
+---
+
+# 🖥️ EasySave.GUI - Interface Graphique
+
+### 🏠 Écran d'Accueil
+Lors du lancement, l’interface affiche la liste des travaux de sauvegarde existants.
+
+### ⚙️ **Onglet Paramètres**
+Accessible en haut à droite, l’onglet **Paramètres** permet de configurer :
+- **Langue** : Basculer entre l’anglais et le français.
+- **Format des logs** : Choisir entre JSON ou XML.
+- **Répertoire des logs** : Définir l’emplacement des fichiers journaux.
+- **Extensions prioritaires** : Définir les extensions à sauvegarder en priorité.
+- **Extensions chiffrées** : Sélectionner les extensions de fichiers à chiffrer lors de la sauvegarde.
+
+### 🔄 **Panneau Principal (Centre)**
+- Affiche tous les **travaux de sauvegarde créés**.
+- Montre leur nom, répertoire source, répertoire cible, type de sauvegarde et état actuel.
+
+### 📌 **Boutons sur la gauche**
+1. **Ajouter un travail de sauvegarde** ➕
+2. **Modifier un travail existant** ✏️
+3. **Afficher l’historique des sauvegardes (Logs)** 📜
+4. **Supprimer un travail de sauvegarde** ❌
+5. **Exécuter tous les travaux de sauvegarde** ▶️
+
+### 📊 **Section Inférieure : Suivi en Temps Réel**
+- Affiche en direct l’état d’avancement des sauvegardes en cours.
+- Utile pour surveiller l’exécution et détecter d’éventuels problèmes.
+
+### ⏸️ **Boutons Pause / Stop / Reprise** (au-dessus du suivi en temps réel)
+- **Pause** ⏸️ : Met temporairement un travail de sauvegarde en attente.
+- **Stop** ⏹️ : Annule immédiatement une sauvegarde en cours.
+- **Reprise** ▶️ : Redémarre un travail mis en pause.
+
+⚠️ **Un travail doit être sélectionné pour pouvoir utiliser ces boutons.**
+
+---
+
+# 🖥️ EasySave.Client - Console à Distance
+La Console à Distance permet aux utilisateurs de contrôler EasySave depuis un autre appareil via **Sockets**.
+
+### 🔘 Boutons Disponibles
+1. **Connexion** : Établit une connexion avec le serveur EasySave.
+2. **Lister les Travaux** : Affiche tous les travaux de sauvegarde stockés sur le serveur.
+3. **Exécuter les Travaux** : Démarre l’exécution de tous les travaux de sauvegarde.
+4. **Mettre en Pause un Travail** : Suspend un travail sélectionné.
+5. **Reprendre un Travail** : Redémarre un travail mis en pause.
+
+---
+
+# 🖥️ EasySaveApp (CLI) - Interface en Ligne de Commande
+La version CLI permet un contrôle total via des commandes terminal.
+
+## Via la Console
+
+Allez dans le dossier EasySaveApp.
+Exécutez la commande suivante :
+```sh
+dotnet run
+```
+Choisissez la langue (en/fr).
+Naviguez dans le menu avec les options 1 à 6.
+
+## Via la Ligne de Commande
+
+Exemple :
+```sh
+dotnet run -- ‘1-3’ → Exécute les travaux 1, 2 et 3.
+dotnet run -- ‘1;3’ → Exécute uniquement les travaux 1 et 3.
+```
+
+## 🔧 Fonctions Principales
+
+1. **Créer un Travail**
+   - Sélectionnez **Option 1** (Ajouter un travail de sauvegarde).
+   - Renseignez *Nom*, *Répertoire Source*, *Répertoire Cible*, *Type* (1: Complet, 2: Différentiel).
+
+2. **Lister les Travaux**
+   - Sélectionnez **Option 3** (Lister tous les travaux).
+
+3. **Exécuter les Travaux**
+   - Sélectionnez **Option 2** (Exécuter tous les travaux) pour lancer toutes les sauvegardes.
+   - Ou exécutez des travaux spécifiques via la **ligne de commande** (ex : `"1-3"`).
+
+4. **Supprimer un Travail**
+   - Sélectionnez **Option 4** (Supprimer un travail), puis entrez l’index du travail à supprimer.
+
+5. **Modifier un Travail**
+   - Sélectionnez **Option 5** (Modifier un travail), entrez l’index et les nouveaux paramètres (laisser vide pour conserver les valeurs actuelles).
+
+---
+
+# 🎯 Conclusion
+EasySave 3.0 est une solution de sauvegarde flexible, fiable et performante qui répond aux besoins variés des utilisateurs :
+- **GUI** pour une utilisation simplifiée.
+- **Console à Distance** pour une gestion à distance.
+- **CLI** pour l’automatisation et les scripts.
+
+📌 Pour plus d’informations, consultez notre **Dépôt GitHub** : [EasySave Repository](https://github.com/theoplzr/EasySave).
