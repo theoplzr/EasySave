@@ -1,115 +1,167 @@
-# EasySave 3.0 - README
+# 📚 EasySave 3.0
 
-## 📖 Introduction
-EasySave 3.0 est une application de sauvegarde avancée qui offre des fonctionnalités modernes telles que les sauvegardes en parallèle, la gestion des fichiers prioritaires et une interface distante permettant un suivi en temps réel des opérations de sauvegarde.
+[🇫🇷 Lire en Français](README_FR.md) | [🇬🇧 Read in English](README.md)
 
----
-
-## 🛠️ Fonctionnalités Principales
-### ✅ Sauvegarde en Parallèle
-- Exécute plusieurs tâches de sauvegarde simultanément.
-- Optimisation de l'utilisation des ressources système.
-
-### 🔐 Gestion des Fichiers Prioritaires
-- Assure que les fichiers jugés prioritaires par l'utilisateur sont traités en premier.
-- Empêche la sauvegarde des fichiers non prioritaires tant que des fichiers prioritaires sont en attente.
-
-### 📏 Limitation des Fichiers Volumineux
-- Bloque la sauvegarde simultanée de fichiers volumineux pour éviter de surcharger la bande passante.
-- Taille limite configurable par l'utilisateur.
-
-### 🖥️ Interface Graphique & Console Déportée
-- Interface utilisateur intuitive développée avec **Avalonia**.
-- Suivi et gestion des sauvegardes à distance via une console client utilisant **Sockets**.
-
-### 📊 Gestion Dynamique des Ressources *(Optionnel)*
-- Réduction automatique des flux de sauvegarde en cas de surcharge réseau détectée.
+## 📌 Introduction
+EasySave 3.0 is an advanced backup software designed for efficiency, flexibility, and ease of use. It offers:
+- **Graphical User Interface (GUI)** for an intuitive experience.
+- **Remote Console** to monitor and control backups from another device.
+- **Command Line Interface (CLI)** for automation and advanced control.
 
 ---
 
-## 🚀 Installation
-### 📌 Prérequis
-- **.NET 8.0**
-- **Visual Studio 2022**
-- **Git** pour la gestion des versions
+## 🧐 Installation
 
-### 🔧 Étapes d’installation
-1. **Cloner le projet**
+### 📅 Prerequisites
+Before installing EasySave, ensure you have:
+- **.NET 8.0** installed.
+- **Visual Studio 2022** (or newer).
+- **Git** (for version control).
+
+### 🚀 Installation Steps
+1. **Clone the repository**
    ```sh
    git clone https://github.com/theoplzr/EasySave.git
    ```
-2. **Accéder au répertoire du projet**
+2. **Navigate to the project directory**
    ```sh
    cd EasySave
    ```
-3. **Restaurer les dépendances**
+3. **Restore dependencies**
    ```sh
    dotnet restore
    ```
-4. **Compiler l’application**
+4. **Build the application**
    ```sh
    dotnet build
    ```
-5. **Exécuter EasySave**
+5. **Run the application**
    ```sh
    dotnet run
    ```
 
 ---
 
-## 📂 Structure du Projet
-| 📄 Dossier/Fichier | 📌 Description |
-|-----------------|--------------|
-| `EasySave.GUI/` | Interface graphique développée avec Avalonia |
-| `EasySave.Server/` | Serveur de gestion des sauvegardes |
-| `EasySave.Client/` | Client distant pour la supervision et le contrôle |
-| `appsettings.json` | Fichier de configuration de l’application |
-| `Logs/` | Dossier contenant les logs des sauvegardes |
+## 🖥️ EasySave.GUI - Graphical User Interface
+
+### 🏠 Home Screen
+The GUI displays a list of existing backup jobs upon launch.
+
+### ⚙️ **Settings Tab**
+Located in the top-right corner, the **Settings** tab allows you to configure:
+- **Language**: Switch between English and French.
+- **Log Format**: Choose between JSON or XML.
+- **Log Directory**: Set the folder where logs are saved.
+- **Priority Extensions**: Define file extensions that should be backed up first.
+- **Encrypted Extensions**: Select file extensions to encrypt during backup.
+
+### 🔄 **Main Panel (Center)**
+- Displays all created **Backup Jobs**.
+- Shows their name, source directory, target directory, backup type, and current status.
+
+### 📌 **Left-Side Buttons**
+1. **Add a Backup Job** ➕
+2. **Modify an Existing Job** ✏️
+3. **View Backup History (Logs)** 📝
+4. **Delete a Backup Job** ❌
+5. **Execute All Backup Jobs** ▶️
+
+### 📊 **Bottom Section: Real-Time Status**
+- Displays live updates on the progress of running backup jobs.
+- Useful for monitoring execution and detecting issues.
+
+### ⏸️ **Pause / Stop / Resume Buttons** (Above Real-Time Status)
+- **Pause** ⏸️: Temporarily halts an ongoing backup.
+- **Stop** ⏹️: Cancels an active backup job.
+- **Resume** ▶️: Restarts a paused job.
+
+🚨 **To use these buttons, a job must be selected from the list.**
 
 ---
 
-## 📜 Manuel d’Utilisation
-### 🎬 Lancer une sauvegarde
-1. **Depuis l’interface graphique :**
-   - Sélectionner une tâche et cliquer sur **"Exécuter"**.
-2. **Depuis la console distante :**
-   - Se connecter au serveur et envoyer la commande : `execute`
+## 🖥️ EasySave.Client - Remote Console
+The **Remote Console** allows users to control EasySave from another device via **Sockets Communication**.
 
-### ⏸️ Mettre en pause une sauvegarde
-- `pause-[ID_TACHE]` → Suspend la tâche après la copie du fichier en cours.
-
-### ⏯️ Reprendre une sauvegarde en pause
-- `resume-[ID_TACHE]`
-
-### ❌ Arrêter une sauvegarde immédiatement
-- `stop-[ID_TACHE]`
+### 🛠 Available Buttons
+1. **Connect**: Establishes a connection to the EasySave Server.
+2. **List Jobs**: Displays all backup jobs stored on the server.
+3. **Execute Jobs**: Starts all backup jobs.
+4. **Pause Jobs**: Pauses a selected backup job.
+5. **Resume Jobs**: Resumes a paused job.
 
 ---
 
-## 🛠️ Support Technique
-### 📍 Emplacement des fichiers
-- **Configuration :** `appsettings.json`
-- **Logs :** `Logs/`
-- **Sauvegardes :** définies par l’utilisateur.
+## 🖥️ EasySaveApp (CLI) - Command Line Interface
+The CLI version provides full control through terminal commands.
 
-### 💻 Configuration Minimale Requise
-| Composant | Recommandation |
-|-----------|---------------|
+### Via Console
+1. Navigate to the **EasySaveApp** folder.
+2. Run:
+   ```sh
+   dotnet run
+   ```
+3. Choose the language (en/fr).
+4. Follow the menu (options 1 to 6).
+
+### Via Command Line
+Example:
+```sh
+dotnet run -- "1-3"  # Runs jobs 1, 2, and 3.
+dotnet run -- "1;3"  # Runs jobs 1 and 3.
+```
+
+### 🛠 Main Functions
+1. **Create a Job**  
+   - Select **Option 1** (Add a backup job).
+   - Enter *Name*, *Source Directory*, *Target Directory*, *Type* (1: Complete, 2: Differential).
+
+2. **List Jobs**  
+   - Select **Option 3** (List all jobs).
+
+3. **Execute Jobs**  
+   - Select **Option 2** (Execute all jobs).
+   - Or execute specific jobs via the **command line** (e.g., `"1-3"`).
+
+4. **Remove a Job**  
+   - Select **Option 4** (Remove a job), then enter the job index.
+
+5. **Update a Job**  
+   - Select **Option 5** (Update a job), enter the index and new fields (leave empty to keep existing values).
+
+---
+
+## 🧪 Technical Information
+### 📍 File Locations
+| File | Description |
+|------|------------|
+| `EasySave.GUI/` | Graphical User Interface (Avalonia-based) |
+| `EasySave.Server/` | Backup management server |
+| `EasySave.Client/` | Remote client for monitoring and control |
+| `appsettings.json` | Configuration file |
+| `Logs/` | Directory containing log files |
+
+### 💻 Minimum System Requirements
+| Component | Minimum Requirement |
+|-----------|--------------------|
+| Processor | Intel Core i3 or equivalent |
+| RAM | 4 GB |
+| Disk Space | 500 MB |
 | OS | Windows 10 / macOS / Linux |
 
 ---
 
-## 🚀 Prochaines Évolutions
-- 📊 Optimisation du cryptage des fichiers.
-- 🌐 Intégration d'une API REST pour gestion à distance.
-- ⚡ Amélioration du multi-threading pour les transferts.
+## 🚀 Future Enhancements
+- 📊 Improved file encryption performance.
+- 🌐 Integration of a **REST API** for remote management.
+- ⚡ Optimized **multi-threading** for faster backups.
 
 ---
 
-## 📞 Contact
-- 📘 GitHub : [EasySave Repository](https://github.com/theoplzr/EasySave)
+## 📞 Contact & Support
+📌 **GitHub Repository**: [EasySave Repository](https://github.com/theoplzr/EasySave)
+
+📚 [🇫🇷 Lire en Français](README_FR.md)
 
 ---
 
-🛠️ **Développé par Théo, Basile et Axel EasySave - 2024** 🚀
-
+🛠️ **Developed by the EasySave Community - 2024** 🚀
