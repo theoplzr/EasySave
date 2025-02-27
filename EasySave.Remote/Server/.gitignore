@@ -1,0 +1,27 @@
+## Server .gitignore for .NET server projects
+
+# Build outputs
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# IDE and Editor folders
+.vscode/
+.idea/
+
+# NuGet packages and cache
+*.nupkg
+.nuget/
+
+# Logs and temporary files
+*.log
+tmp/
+
+# OS generated files
+.DS_Store
+Thumbs.db
