@@ -1,32 +1,37 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <!-- Define the output as a Windows executable -->
     <OutputType>WinExe</OutputType>
+    <!-- Target .NET 8.0 framework -->
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-    <!-- Optionnel : Définir le StartupObject si vous utilisez une classe particulière pour lancer l'application -->
+    <!-- Optional: Specify the startup object if needed -->
     <!-- <StartupObject>EasySaveClient.CLI.client</StartupObject> -->
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- Avalonia packages for UI development -->
     <PackageReference Include="Avalonia" Version="11.2.1" />
     <PackageReference Include="Avalonia.Desktop" Version="11.2.1" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.1" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.1" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.1" />
-    <!-- Condition pour exclure Avalonia.Diagnostics en Release -->
+    <!-- Include Avalonia.Diagnostics only in Debug configuration -->
     <PackageReference Include="Avalonia.Diagnostics" Version="11.2.1">
       <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
+    <!-- ReactiveUI packages for MVVM and reactive programming support -->
     <PackageReference Include="ReactiveUI" Version="20.1.63" />
     <PackageReference Include="ReactiveUI.Fody" Version="19.5.41" />
     <PackageReference Include="System.Reactive" Version="6.0.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Reference to the EasySave.Core project -->
     <ProjectReference Include="..\..\EasySave.Core\EasySave.Core.csproj" />
   </ItemGroup>
 

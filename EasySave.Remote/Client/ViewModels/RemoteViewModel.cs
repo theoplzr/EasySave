@@ -1,35 +1,42 @@
-using Avalonia.Media; 
+using Avalonia.Media;
 using Avalonia.Threading;
 using ReactiveUI;
 using System;
 using System.Reactive;
 using System.Threading.Tasks;
-using System.Text.Json; 
+using System.Text.Json;
 
 using EasySave.Remote.Client.Services;
 
 namespace EasySave.Remote.Client.ViewModels
 {
+    // ViewModel for the remote client, handling UI actions and updating status.
     public class RemoteViewModel : ReactiveObject
     {
+        // Instance of the remote client service to manage communication.
         private readonly RemoteClientService _clientService;
-        private string _statusMessage = "Client déconnecté du serveur";
-        private Guid _currentJobId = Guid.Empty;  // ID du job en cours
+        
+        // Status message to display in the UI.
+        private string _statusMessage = "Client disconnected from server";
+        // GUID to track the current job. Initially set to an empty GUID.
+        private Guid _currentJobId = Guid.Empty;
 
-        // ✅ Ajout de la propriété pour la couleur du statut
-        private IBrush _statusColor = Brushes.Gray; 
+        // Brush representing the current status color.
+        private IBrush _statusColor = Brushes.Gray;
         public IBrush StatusColor
         {
             get => _statusColor;
             set => this.RaiseAndSetIfChanged(ref _statusColor, value);
         }
 
+        // Property for the status message.
         public string StatusMessage
         {
             get => _statusMessage;
             set => this.RaiseAndSetIfChanged(ref _statusMessage, value);
         }
 
+        // Reactive commands for various operations.
         public ReactiveCommand<Unit, Unit> ConnectCommand { get; }
         public ReactiveCommand<Unit, Unit> ListJobsCommand { get; }
         public ReactiveCommand<Unit, Unit> ExecuteCommand { get; }
@@ -37,6 +44,7 @@ namespace EasySave.Remote.Client.ViewModels
         public ReactiveCommand<Unit, Unit> ResumeCommand { get; }
         public ReactiveCommand<Unit, Unit> StopCommand { get; }
 
+        // Constructor initializes the client service and reactive commands.
         public RemoteViewModel()
         {
             _clientService = new RemoteClientService();
@@ -49,31 +57,35 @@ namespace EasySave.Remote.Client.ViewModels
             StopCommand = ReactiveCommand.CreateFromTask(StopJobAsync);
         }
 
+        // Connects to the server and updates the UI based on the connection status.
         private async Task ConnectAsync()
         {
             bool connected = await _clientService.ConnectAsync();
+            // Update the UI thread with connection status.
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                StatusMessage = connected ? "✅ Client connecté au serveur !" : "❌ Échec de connexion avec le serveur.";
+                StatusMessage = connected ? "Client connected to server!" : "Failed to connect to server.";
                 StatusColor = connected ? Brushes.Green : Brushes.Red;
             });
         }
 
+        // Requests the list of jobs from the server and updates the UI with the response.
         private async Task ListJobsAsync()
         {
             string response = await _clientService.SendCommandAsync("list");
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                StatusMessage = $"📋 Liste des jobs :\n{response}";
+                StatusMessage = $"📋 Job list:\n{response}";
                 StatusColor = Brushes.Blue;
             });
         }
 
+        // Executes jobs by sending the execute command and extracting the job ID from the response.
         private async Task ExecuteJobsAsync()
         {
             string response = await _clientService.SendCommandAsync("execute");
 
-            // Extraction de l'ID du job depuis la réponse du serveur
+            // Extract the job ID from the server's response.
             Guid jobId = ExtractJobIdFromResponse(response);
             
             await Dispatcher.UIThread.InvokeAsync(() =>
@@ -81,65 +93,74 @@ namespace EasySave.Remote.Client.ViewModels
                 if (jobId != Guid.Empty)
                 {
                     _currentJobId = jobId;
-                    StatusMessage = $"Job lancé ! ID: {_currentJobId}\n{response}";
+                    StatusMessage = $"Job started! ID: {_currentJobId}\n{response}";
                     StatusColor = Brushes.Green;
                 }
                 else
                 {
-                    StatusMessage = "Erreur : Impossible de récupérer l'ID du job.";
+                    StatusMessage = "Error: Unable to retrieve job ID.";
                     StatusColor = Brushes.Red;
                 }
             });
         }
+        
+        // Sends a pause command for the current job and updates the UI.
         private async Task PauseJobAsync()
         {
             if (_currentJobId == Guid.Empty)
             {
+                // If no job is running, display an error message.
                 await Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    StatusMessage = "Erreur : Aucun job en cours.";
+                    StatusMessage = "Error: No job in progress.";
                     StatusColor = Brushes.Orange;
                 });
                 return;
             }
 
-            Console.WriteLine($"Envoi de la commande pause pour le job {_currentJobId}");
+            Console.WriteLine($"Sending pause command for job {_currentJobId}");
             string response = await _clientService.SendCommandAsync("pause", new { jobId = _currentJobId });
 
+            // Update the UI to reflect that the job has been paused.
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
                 StatusColor = Brushes.Orange;
             });
         }
 
+        // Sends a resume command for the current job and updates the UI.
         private async Task ResumeJobAsync()
         {
             if (_currentJobId == Guid.Empty)
             {
+                // If no job is running, display an error message.
                 await Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    StatusMessage = "Erreur : Aucun job en cours.";
+                    StatusMessage = "Error: No job in progress.";
                     StatusColor = Brushes.Orange;
                 });
                 return;
             }
 
-            Console.WriteLine($"Envoi de la commande reprise pour le job {_currentJobId}");
+            Console.WriteLine($"Sending resume command for job {_currentJobId}");
             string response = await _clientService.SendCommandAsync("resume", new { jobId = _currentJobId });
 
+            // Update the UI to reflect that the job has been resumed.
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                StatusMessage = $"Job {_currentJobId} repris.\n{response}";
                 StatusColor = Brushes.Green;
             });
         }
+
+        // Sends a stop command for the current job, updates the UI, and resets the current job ID.
         private async Task StopJobAsync()
         {
             if (_currentJobId == Guid.Empty)
             {
+                // If no job is running, display an error message.
                 await Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    StatusMessage = "Erreur : Aucun job en cours.";
+                    StatusMessage = "Error: No job in progress.";
                     StatusColor = Brushes.Orange;
                 });
                 return;
@@ -148,19 +169,22 @@ namespace EasySave.Remote.Client.ViewModels
             string response = await _clientService.SendCommandAsync("stop", new { jobId = _currentJobId });
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                StatusMessage = $"Job {_currentJobId} arrêté.\n{response}";
+                StatusMessage = $"Job {_currentJobId} stopped.\n{response}";
                 StatusColor = Brushes.Red;
             });
 
-            _currentJobId = Guid.Empty; // Réinitialisation après l'arrêt
+            // Reset the current job ID after stopping the job.
+            _currentJobId = Guid.Empty;
         }
 
-       private Guid ExtractJobIdFromResponse(string response)
+        // Extracts the job ID from the JSON response received from the server.
+        private Guid ExtractJobIdFromResponse(string response)
         {
             try
             {
                 using (JsonDocument doc = JsonDocument.Parse(response))
                 {
+                    // Attempt to retrieve the "jobId" property from the JSON document.
                     if (doc.RootElement.TryGetProperty("jobId", out JsonElement jobIdElement))
                     {
                         return Guid.Parse(jobIdElement.GetString());
@@ -169,11 +193,12 @@ namespace EasySave.Remote.Client.ViewModels
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erreur d'extraction de jobId: {ex.Message}");
+                // Log any errors encountered during extraction.
+                Console.WriteLine($"Error extracting jobId: {ex.Message}");
             }
 
-            return Guid.Empty; 
+            // Return an empty GUID if extraction fails.
+            return Guid.Empty;
         }
-
     }
 }

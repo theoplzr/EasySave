@@ -1,17 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <!-- OutputType defines the type of build output (Executable) -->
     <OutputType>Exe</OutputType>
+    <!-- TargetFramework sets the target .NET framework version -->
     <TargetFramework>net8.0</TargetFramework>
+    <!-- Enables implicit using directives -->
     <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Enables nullable reference types for improved safety -->
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- References to related projects -->
     <ProjectReference Include="..\..\EasySave.Core\EasySave.Core.csproj" />
     <ProjectReference Include="..\..\EasySave.GUI\EasySave.GUI.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Package references for configuration support -->
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.2" />
   </ItemGroup>

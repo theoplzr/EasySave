@@ -186,3 +186,5 @@ C:/Users/ethan/OneDrive/Bureau/web/EasySave.Remote/Client/obj/Debug/net8.0/ref/E
 /Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Client/obj/Debug/net8.0/EasySave.8F980968.Up2Date
 /Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Client/obj/Debug/net8.0/EasySave.Remote.Client.genruntimeconfig.cache
 /Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Client/obj/Debug/net8.0/ref/EasySave.Remote.Client.dll
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Client/obj/Debug/net8.0/EasySave.Remote.Client.csproj.Fody.CopyLocal.cache
+/Users/tpellizzari/Desktop/CESI-A3/Génie logiciel/Projet/EasySave/EasySave.Remote/Client/obj/Debug/net8.0/EasySave.Remote.Client.csproj.Fody.RuntimeCopyLocal.cache
